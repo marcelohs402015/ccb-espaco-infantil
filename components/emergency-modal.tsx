@@ -79,7 +79,7 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
 
           <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-3">
             <p className="text-sm text-gray-700 text-center">
-              ⚠️ Ao clicar em "Ligar Agora", um <strong>alerta sonoro</strong> será tocado 
+              ⚠️ Ao clicar em &quot;Ligar Agora&quot;, um <strong>alerta sonoro</strong> será tocado 
               para chamar a atenção dos responsáveis.
             </p>
           </div>

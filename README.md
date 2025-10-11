@@ -170,19 +170,141 @@ git push origin main
 
 ---
 
+## 💾 Como Funciona a Gravação de Dados
+
+### Sistema de Armazenamento
+
+Este sistema foi desenvolvido com sabedoria para ser **simples, rápido e seguro**. Toda a gravação de dados acontece diretamente no **navegador** do dispositivo que você está usando, sem necessidade de servidores ou internet.
+
+### 📱 O que é o localStorage?
+
+O **localStorage** é uma tecnologia moderna dos navegadores que permite guardar informações diretamente no seu dispositivo (celular, tablet ou computador). É como um "caderninho digital" que o navegador mantém guardado com segurança.
+
+### 🔄 Como os Dados São Gravados?
+
+Quando você realiza qualquer ação no sistema, os dados são salvos **automaticamente e instantaneamente**:
+
+#### 1. **Cadastrar uma Criança** 🧒
+```
+Você preenche o formulário → Clica em "Cadastrar" → Sistema salva IMEDIATAMENTE no localStorage → Criança aparece na tela
+```
+
+#### 2. **Editar Informações** ✏️
+```
+Você clica em "Editar" → Modifica os dados → Clica em "Salvar" → Sistema ATUALIZA no localStorage → Mudanças aparecem instantaneamente
+```
+
+#### 3. **Remover uma Criança** 🗑️
+```
+Você clica em "Remover" → Confirma → Sistema DELETA do localStorage → Card desaparece da tela
+```
+
+#### 4. **Configurar Capacidade** ⚙️
+```
+Você define a capacidade → Clica em "Salvar" → Sistema GRAVA no localStorage → Nova capacidade fica ativa
+```
+
+#### 5. **Registrar Informações do Culto** 📖
+```
+Você preenche os dados → Clica em "Salvar" → Sistema ARMAZENA no localStorage → Resumo aparece na tela
+```
+
+### 🔐 Tecnologia Zustand + localStorage
+
+O sistema utiliza uma biblioteca moderna chamada **Zustand** que gerencia todos os dados e automaticamente sincroniza com o localStorage:
+
+```typescript
+// Quando você cadastra uma criança:
+1. Zustand recebe os dados da criança
+2. Zustand atualiza o estado da aplicação
+3. Middleware "persist" GRAVA automaticamente no localStorage
+4. Tela se atualiza instantaneamente mostrando a nova criança
+```
+
+### 📊 Estrutura dos Dados Salvos
+
+Os dados são organizados de forma inteligente no localStorage:
+
+```json
+{
+  "children": [
+    {
+      "id": "1697123456789",
+      "nome": "Maria da Silva",
+      "nomeResponsavel": "João da Silva",
+      "tipoResponsavel": "pai",
+      "celularResponsavel": "(11) 99999-9999",
+      "observacoes": "Alérgica a amendoim",
+      "horaEntrada": "09:30"
+    }
+  ],
+  "settings": {
+    "capacidadeMaxima": 30
+  },
+  "cultoObservacoes": {
+    "data": "2025-10-11",
+    "palavraLida": "João 3:16",
+    "hinosCantados": "Hino 5, 12, 23",
+    "aprendizado": "O amor de Deus"
+  }
+}
+```
+
+### ⚡ Gravação em Tempo Real
+
+- ✅ **Instantâneo**: Dados são salvos em milissegundos
+- ✅ **Automático**: Você não precisa se preocupar em "salvar"
+- ✅ **Confiável**: Sistema garante que os dados foram gravados
+- ✅ **Sincronizado**: Tela sempre mostra os dados mais recentes
+
+---
+
 ## 🔒 Privacidade e Segurança
 
-### Armazenamento Local
-- **Todos os dados são armazenados apenas no navegador do dispositivo**
-- Nenhuma informação é enviada para servidores externos
-- Os dados permanecem privados e seguros
+### Armazenamento 100% Local e Privado
+
+Este sistema foi desenvolvido pensando na **privacidade e segurança** das informações das crianças:
+
+- 🔐 **Todos os dados são armazenados APENAS no navegador do dispositivo**
+- 🚫 **Nenhuma informação é enviada para servidores externos**
+- 🔒 **Nenhum dado trafega pela internet**
+- 🛡️ **Os dados permanecem completamente privados e seguros**
+- ✝️ **Proteção divina e tecnológica para as informações dos pequeninos**
 
 ### Importante Saber:
-- ✅ Os dados permanecem enquanto o navegador estiver aberto
-- ✅ Os dados são salvos mesmo se você atualizar a página (F5)
-- ✅ Os dados são mantidos no localStorage do navegador
-- ⚠️ Se você limpar os dados do navegador, os registros serão perdidos
-- ℹ️ Cada dispositivo/navegador tem seus próprios dados (não sincronizam)
+
+#### ✅ **O que PERMANECE**:
+- Os dados ficam salvos mesmo se você **fechar o navegador**
+- Os dados são mantidos mesmo se você **atualizar a página (F5)**
+- Os dados permanecem se você **desligar e ligar o dispositivo**
+- Os dados ficam guardados **indefinidamente** no localStorage
+
+#### ⚠️ **O que PODE ser PERDIDO**:
+- Se você **limpar os dados do navegador** (Configurações → Limpar cache)
+- Se você **desinstalar o navegador**
+- Se você usar **modo anônimo/privado** (dados são temporários)
+- Se você **resetar o dispositivo** para configurações de fábrica
+
+#### ℹ️ **Importante sobre Múltiplos Dispositivos**:
+- Cada **dispositivo** tem seus próprios dados (celular ≠ tablet)
+- Cada **navegador** tem seus próprios dados (Chrome ≠ Firefox)
+- Os dados **NÃO sincronizam** entre dispositivos automaticamente
+- **Recomendação**: Use um **único dispositivo** dedicado ao Espaço Infantil
+
+### 🎯 Por que localStorage?
+
+Escolhemos o localStorage pelos seguintes motivos abençoados:
+
+1. **Simplicidade**: Não precisa de servidor, banco de dados ou configurações complexas
+2. **Rapidez**: Acesso instantâneo aos dados, sem delays
+3. **Privacidade**: Dados das crianças ficam seguros no dispositivo
+4. **Gratuito**: Sem custos mensais de hospedagem ou banco de dados
+5. **Confiável**: Tecnologia madura e testada em milhões de sites
+6. **Offline**: Funciona perfeitamente sem internet
+
+### 📖 Para Saber Mais
+
+Para detalhes técnicos completos sobre o armazenamento, consulte o arquivo **COMO-FUNCIONA.md** que explica em profundidade toda a arquitetura do sistema.
 
 ---
 

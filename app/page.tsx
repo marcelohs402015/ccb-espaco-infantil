@@ -51,40 +51,42 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <main className="min-h-screen">
       <Header />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 relative">
         {/* Capacity Status */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border-2 border-gray-100">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-3">
-              <Users className="w-8 h-8 text-purple-600" />
+        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border-4 border-purple-200 card-hover backdrop-blur-sm bg-opacity-95">
+          <div className="flex items-center justify-between flex-wrap gap-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-4 rounded-2xl shadow-lg animate-bounce-soft">
+                <Users className="w-10 h-10 text-white" />
+              </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
                   Capacidade do Espaço
                 </h2>
-                <p className="text-sm text-gray-600">
-                  Crianças presentes no momento
+                <p className="text-base text-gray-600 font-medium">
+                  🎈 Crianças presentes no momento
                 </p>
               </div>
             </div>
             
-            <div className="text-center">
-              <p className={`text-5xl font-bold ${getCapacidadeColor()}`}>
+            <div className="text-center bg-gradient-to-br from-purple-50 to-pink-50 px-8 py-4 rounded-2xl border-2 border-purple-200">
+              <p className={`text-6xl font-black ${getCapacidadeColor()} drop-shadow-lg`}>
                 {capacidadeAtual} / {capacidadeMaxima}
               </p>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-base text-gray-700 mt-2 font-semibold">
                 {percentualOcupacao.toFixed(0)}% ocupado
               </p>
             </div>
 
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors flex items-center gap-2"
+              className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-2xl button-pop flex items-center gap-2"
               aria-label="Configurações"
             >
-              <Settings className="w-5 h-5" />
+              <Settings className="w-6 h-6" />
               Configurar
             </button>
           </div>
@@ -137,40 +139,47 @@ export default function Home() {
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4 mb-8">
+        <div className="flex flex-wrap gap-6 mb-8">
           <button
             onClick={handleAddNewChild}
-            className="flex-1 min-w-[250px] px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            className="flex-1 min-w-[280px] px-8 py-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-black text-xl rounded-2xl hover:scale-105 transition-all shadow-2xl hover:shadow-purple-500/50 button-pop flex items-center justify-center gap-3 border-4 border-white/30 relative overflow-hidden group"
           >
-            <Plus className="w-6 h-6" />
-            Nova Criança
+            <div className="absolute inset-0 gradient-shine"></div>
+            <Plus className="w-8 h-8 group-hover:rotate-90 transition-transform" />
+            <span className="relative z-10">✨ Nova Criança</span>
           </button>
           
           <button
             onClick={() => setIsObservationsOpen(true)}
-            className="flex-1 min-w-[250px] px-6 py-4 bg-gradient-to-r from-green-600 to-teal-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            className="flex-1 min-w-[280px] px-8 py-6 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 text-white font-black text-xl rounded-2xl hover:scale-105 transition-all shadow-2xl hover:shadow-green-500/50 button-pop flex items-center justify-center gap-3 border-4 border-white/30 relative overflow-hidden group"
           >
-            <BookOpen className="w-6 h-6" />
-            Sobre o Culto
+            <div className="absolute inset-0 gradient-shine"></div>
+            <BookOpen className="w-8 h-8 group-hover:rotate-12 transition-transform" />
+            <span className="relative z-10">📖 Sobre o Culto</span>
           </button>
         </div>
 
         {/* Children Grid */}
         {children.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-lg p-12 text-center border-2 border-dashed border-gray-300">
-            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-400 mb-2">
-              Nenhuma criança cadastrada
+          <div className="bg-white rounded-3xl shadow-2xl p-16 text-center border-4 border-dashed border-purple-300 card-hover backdrop-blur-sm bg-opacity-95">
+            <div className="animate-float mb-6">
+              <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-full p-8 inline-block">
+                <Users className="w-24 h-24 text-purple-400 mx-auto" />
+              </div>
+            </div>
+            <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-3">
+              👶 Nenhuma criança cadastrada ainda
             </h3>
-            <p className="text-gray-500 mb-6">
-              Clique no botão acima para adicionar a primeira criança
+            <p className="text-gray-600 text-lg mb-8 font-medium">
+              🎈 Clique no botão abaixo para adicionar a primeira criança
             </p>
             <button
               onClick={handleAddNewChild}
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg inline-flex items-center gap-2"
+              className="px-10 py-5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-black text-xl rounded-2xl hover:scale-110 transition-all shadow-2xl hover:shadow-purple-500/50 button-pop inline-flex items-center gap-3 border-4 border-white/30 relative overflow-hidden group"
             >
-              <Plus className="w-5 h-5" />
-              Adicionar Criança
+              <div className="absolute inset-0 gradient-shine"></div>
+              <Plus className="w-7 h-7 group-hover:rotate-180 transition-transform" />
+              <span className="relative z-10">Adicionar Primeira Criança</span>
             </button>
           </div>
         ) : (

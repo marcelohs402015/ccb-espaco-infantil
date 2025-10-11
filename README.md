@@ -354,6 +354,6 @@ Este sistema está em constante evolução. Sugestões de melhorias e relatos de
 
 ### ✝️ Que Deus abençoe este trabalho e todos que o utilizam! ✝️
 
-**Desenvolvido com ❤️ para a glória de Deus**
+**Desenvolvido com ❤️ para a glória de Deus ✨ irmão Marcelo Hernandes (15) 99262.5754**
 
 </div>

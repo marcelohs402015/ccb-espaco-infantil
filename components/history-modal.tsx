@@ -37,11 +37,21 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
   );
 
   const formatarData = (data: string): string => {
-    return new Date(data).toLocaleDateString('pt-BR', {
+    const dataObj = new Date(data + 'T00:00:00');
+    return dataObj.toLocaleDateString('pt-BR', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric'
+    });
+  };
+
+  const formatarDataCurta = (data: string): string => {
+    const dataObj = new Date(data + 'T00:00:00');
+    return dataObj.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     });
   };
 
@@ -205,7 +215,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
                     <div className="flex items-center gap-2 mb-2">
                       <Calendar className={`w-4 h-4 ${dia.cultoRealizado ? 'text-green-600' : 'text-blue-600'}`} />
                       <p className="text-xs font-bold text-gray-700">
-                        {new Date(dia.data).toLocaleDateString('pt-BR')}
+                        {formatarDataCurta(dia.data)}
                       </p>
                     </div>
                     <div className="flex items-center justify-between">

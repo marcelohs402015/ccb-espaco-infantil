@@ -1,94 +1,102 @@
 'use client';
 
 import { useState } from 'react';
-import { X, BookOpen } from 'lucide-react';
+import { X, BookOpen, Plus } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
-import type { CultoObservacoes } from '@/types';
 
-interface ObservationsModalProps {
-  observacoes: CultoObservacoes;
-  onUpdate: (observacoes: CultoObservacoes) => void;
+interface CreateCultoModalProps {
   onClose: () => void;
 }
 
-export const ObservationsModal: React.FC<ObservationsModalProps> = ({ 
-  observacoes, 
-  onUpdate, 
-  onClose 
-}) => {
-  // Formatar data para o padrão brasileiro DD/MM/YYYY
+export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) => {
+  const { criarCultoNoHistorico, dadosPorIgreja, igrejaAtiva } = useSpaceStore();
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
+    ? dadosPorIgreja[igrejaAtiva] 
+    : { children: [] };
+
+  // Formatar data para o padrão brasileiro DD/MM/YYYY para exibição
   const formatarDataParaExibicao = (dataISO: string): string => {
-    if (!dataISO) return '';
     const [ano, mes, dia] = dataISO.split('-');
     return `${dia}/${mes}/${ano}`;
   };
 
   // Converter data do formato DD/MM/YYYY para ISO YYYY-MM-DD
   const converterDataParaISO = (dataBR: string): string => {
-    if (!dataBR || dataBR.length !== 10) return '';
     const [dia, mes, ano] = dataBR.split('/');
     return `${ano}-${mes}-${dia}`;
   };
 
-  const [formData, setFormData] = useState<CultoObservacoes>({
-    ...observacoes,
-    data: formatarDataParaExibicao(observacoes.data)
+  const dataHoje = new Date().toISOString().split('T')[0];
+  
+  const [formData, setFormData] = useState({
+    data: formatarDataParaExibicao(dataHoje),
+    palavraLida: '',
+    hinosCantados: '',
+    aprendizado: '',
   });
-  const { salvarCultoNoHistorico } = useSpaceStore();
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
+    setIsLoading(true);
     
-    // Converter data de volta para ISO antes de salvar
-    const dataParaSalvar = {
-      ...formData,
-      data: converterDataParaISO(formData.data)
-    };
-    
-    onUpdate(dataParaSalvar);
-    salvarCultoNoHistorico(); // Salva no histórico ao atualizar
-    onClose();
+    try {
+      // Converter data para formato ISO antes de salvar
+      const dataISO = converterDataParaISO(formData.data);
+      
+      await criarCultoNoHistorico(
+        dataISO,
+        {
+          palavraLida: formData.palavraLida,
+          hinosCantados: formData.hinosCantados,
+          aprendizado: formData.aprendizado,
+        },
+        igrejaData.children.length
+      );
+      onClose();
+    } catch (error) {
+      console.error('Erro ao criar culto:', error);
+      alert('Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ): void => {
     const { name, value } = e.target;
-    
-    // Se mudou a data, limpar os campos de conteúdo
-    if (name === 'data' && value !== formData.data) {
-      setFormData({
-        data: value,
-        palavraLida: '',
-        hinosCantados: '',
-        aprendizado: '',
-      });
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-gradient-to-r from-green-600 to-teal-600 p-4 flex justify-between items-center rounded-t-2xl">
+        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 p-4 flex justify-between items-center rounded-t-2xl">
           <div className="flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-bold text-white">Sobre o Culto</h2>
+            <Plus className="w-6 h-6 text-white" />
+            <h2 className="text-xl font-bold text-white">Criar Novo Registro de Culto</h2>
           </div>
           <button
             onClick={onClose}
             className="text-white hover:bg-white hover:bg-opacity-20 p-1 rounded-lg transition-colors"
-            aria-label="Fechar observações"
+            aria-label="Fechar modal"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-blue-800 font-semibold">
+              ℹ️ Este registro será salvo no histórico de cultos com a data escolhida abaixo.
+            </p>
+          </div>
+
           <div>
             <label htmlFor="data" className="block text-sm font-semibold text-gray-700 mb-1">
-              Data do Culto (DD/MM/AAAA)
+              Data do Culto * (DD/MM/AAAA)
             </label>
             <input
               type="text"
@@ -96,10 +104,11 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
               name="data"
               value={formData.data}
               onChange={handleInputChange}
+              required
               placeholder="DD/MM/AAAA"
               maxLength={10}
               pattern="\d{2}/\d{2}/\d{4}"
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors text-gray-900"
+              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900"
               onKeyPress={(e) => {
                 const char = e.key;
                 const value = e.currentTarget.value;
@@ -136,7 +145,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
               value={formData.palavraLida}
               onChange={handleInputChange}
               rows={6}
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors resize-none text-gray-900"
+              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-none text-gray-900"
               placeholder="Ex: João 3:16 - Porque Deus amou o mundo..."
             />
           </div>
@@ -151,7 +160,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
               value={formData.hinosCantados}
               onChange={handleInputChange}
               rows={5}
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors resize-none text-gray-900"
+              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-none text-gray-900"
               placeholder="Ex: Hino 5, Hino 12, Hino 23"
             />
           </div>
@@ -166,7 +175,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
               value={formData.aprendizado}
               onChange={handleInputChange}
               rows={9}
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors resize-none text-gray-900"
+              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-none text-gray-900"
               placeholder="Ex: As crianças aprenderam sobre o amor de Deus e a importância da oração..."
             />
           </div>
@@ -175,15 +184,27 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+              disabled={isLoading}
+              className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
+              disabled={isLoading}
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Salvar
+              {isLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Criando...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-5 h-5" />
+                  Criar Registro
+                </>
+              )}
             </button>
           </div>
         </form>

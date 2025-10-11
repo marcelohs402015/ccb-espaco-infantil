@@ -12,6 +12,8 @@ import { GlobalAlert } from '@/components/global-alert';
 import { HistoryModal } from '@/components/history-modal';
 import { ChurchesModal } from '@/components/churches-modal';
 import { ChurchSelector } from '@/components/church-selector';
+import { CreateCultoModal } from '@/components/create-culto-modal';
+import { EditLastCultoModal } from '@/components/edit-last-culto-modal';
 import type { Child } from '@/types';
 
 export default function Home() {
@@ -50,6 +52,8 @@ export default function Home() {
   const [isObservationsOpen, setIsObservationsOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isChurchesOpen, setIsChurchesOpen] = useState(false);
+  const [isCreateCultoOpen, setIsCreateCultoOpen] = useState(false);
+  const [isEditLastCultoOpen, setIsEditLastCultoOpen] = useState(false);
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -174,32 +178,50 @@ export default function Home() {
         </div>
 
         {/* Worship Summary */}
-        {cultoObservacoes && (cultoObservacoes.palavraLida || cultoObservacoes.hinosCantados || cultoObservacoes.aprendizado) && (
-          <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-xl shadow-lg p-8 mb-8 border-2 border-green-200">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <BookOpen className="w-7 h-7 text-green-700" />
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Resumo do Culto</h3>
+        <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-xl shadow-lg p-8 mb-8 border-2 border-green-200">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <BookOpen className="w-7 h-7 text-green-700" />
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">Resumo do Culto</h3>
+                {cultoObservacoes && (cultoObservacoes.palavraLida || cultoObservacoes.hinosCantados || cultoObservacoes.aprendizado) ? (
                   <p className="text-sm text-green-600 font-medium">
-                    {new Date(cultoObservacoes.data).toLocaleDateString('pt-BR', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
+                    {new Date(cultoObservacoes.data + 'T00:00:00').toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })} - {new Date(cultoObservacoes.data + 'T00:00:00').toLocaleDateString('pt-BR', {
+                      weekday: 'long'
                     })}
                   </p>
-                </div>
+                ) : (
+                  <p className="text-sm text-gray-600 font-medium">
+                    Gerencie os registros de cultos
+                  </p>
+                )}
               </div>
+            </div>
+            <div className="flex gap-3">
               <button
-                onClick={() => setIsObservationsOpen(true)}
+                onClick={() => setIsCreateCultoOpen(true)}
+                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md"
+                aria-label="Criar novo registro de culto"
+              >
+                <Plus className="w-5 h-5" />
+                Criar
+              </button>
+              <button
+                onClick={() => setIsEditLastCultoOpen(true)}
                 className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md"
+                aria-label="Editar último culto"
               >
                 <Edit className="w-5 h-5" />
                 Alterar
               </button>
             </div>
-            
+          </div>
+          
+          {cultoObservacoes && (cultoObservacoes.palavraLida || cultoObservacoes.hinosCantados || cultoObservacoes.aprendizado) ? (
             <div className="grid md:grid-cols-3 gap-6">
               {cultoObservacoes.palavraLida && (
                 <div>
@@ -226,8 +248,18 @@ export default function Home() {
                 </div>
               )}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="text-center py-8 bg-white bg-opacity-50 rounded-lg">
+              <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+              <p className="text-gray-600 font-medium">
+                Nenhum resumo de culto cadastrado ainda
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                Use o botão "Criar" para adicionar um novo registro
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-6 mb-8">
@@ -393,6 +425,18 @@ export default function Home() {
       {isChurchesOpen && (
         <ChurchesModal
           onClose={() => setIsChurchesOpen(false)}
+        />
+      )}
+
+      {isCreateCultoOpen && (
+        <CreateCultoModal
+          onClose={() => setIsCreateCultoOpen(false)}
+        />
+      )}
+
+      {isEditLastCultoOpen && (
+        <EditLastCultoModal
+          onClose={() => setIsEditLastCultoOpen(false)}
         />
       )}
     </main>

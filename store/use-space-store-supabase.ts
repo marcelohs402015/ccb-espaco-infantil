@@ -27,6 +27,8 @@ interface SpaceStore {
   updateSettings: (settings: Partial<Settings>) => Promise<void>;
   updateCultoObservacoes: (observacoes: Partial<CultoObservacoes>) => Promise<void>;
   salvarCultoNoHistorico: () => Promise<void>;
+  criarCultoNoHistorico: (data: string, observacoes: { palavraLida?: string; hinosCantados?: string; aprendizado?: string }, totalCriancas: number) => Promise<void>;
+  atualizarUltimoCultoHistorico: (observacoes: { palavraLida?: string; hinosCantados?: string; aprendizado?: string }) => Promise<void>;
   registrarDiaDeUso: () => Promise<void>;
   addIgreja: (igreja: Omit<Igreja, 'id'>) => Promise<void>;
   updateIgreja: (id: string, igreja: Partial<Igreja>) => Promise<void>;
@@ -519,6 +521,110 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao salvar culto no histórico:', error);
+    }
+  },
+
+  criarCultoNoHistorico: async (data, observacoes, totalCriancas) => {
+    const { igrejaAtiva } = get();
+    if (!igrejaAtiva) {
+      console.error('❌ Nenhuma igreja ativa');
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+    try {
+      const historicoPayload = {
+        igreja_id: igrejaAtiva,
+        data: data,
+        palavra_lida: observacoes.palavraLida || null,
+        hinos_cantados: observacoes.hinosCantados || null,
+        aprendizado: observacoes.aprendizado || null,
+        total_criancas: totalCriancas,
+      };
+
+      console.log('📤 Criando novo culto no histórico:', historicoPayload);
+
+      const { data: novoHistorico, error } = await supabase
+        .from('historico_cultos')
+        .upsert(historicoPayload, {
+          onConflict: 'igreja_id,data',
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('❌ Erro detalhado:', error);
+        throw error;
+      }
+
+      console.log('✅ Novo culto criado no histórico:', novoHistorico);
+      
+      // Recarregar histórico
+      await get().loadIgrejaData(igrejaAtiva);
+      
+      console.log('✅ Histórico recarregado');
+      set({ isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+      console.error('❌ Erro ao criar culto no histórico:', error);
+      throw error;
+    }
+  },
+
+  atualizarUltimoCultoHistorico: async (observacoes) => {
+    const { igrejaAtiva, dadosPorIgreja } = get();
+    if (!igrejaAtiva) {
+      console.error('❌ Nenhuma igreja ativa');
+      return;
+    }
+
+    const igrejaData = dadosPorIgreja[igrejaAtiva] || createDefaultIgrejaData();
+    
+    // Buscar o último culto do histórico
+    const ultimoCulto = igrejaData.historicoCultos.length > 0
+      ? [...igrejaData.historicoCultos].sort((a, b) => 
+          new Date(b.data).getTime() - new Date(a.data).getTime()
+        )[0]
+      : null;
+
+    if (!ultimoCulto) {
+      console.error('❌ Nenhum culto no histórico para atualizar');
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+    try {
+      const updatePayload = {
+        palavra_lida: observacoes.palavraLida || null,
+        hinos_cantados: observacoes.hinosCantados || null,
+        aprendizado: observacoes.aprendizado || null,
+      };
+
+      console.log('📤 Atualizando último culto do histórico:', updatePayload);
+
+      const { data, error } = await supabase
+        .from('historico_cultos')
+        .update(updatePayload)
+        .eq('id', ultimoCulto.id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('❌ Erro detalhado:', error);
+        throw error;
+      }
+
+      console.log('✅ Último culto atualizado:', data);
+      
+      // Recarregar histórico
+      await get().loadIgrejaData(igrejaAtiva);
+      
+      console.log('✅ Histórico recarregado');
+      set({ isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+      console.error('❌ Erro ao atualizar último culto:', error);
+      throw error;
     }
   },
 

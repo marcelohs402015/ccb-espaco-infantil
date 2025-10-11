@@ -47,9 +47,14 @@ export default function Home() {
   };
 
   const handleAddNewChild = (): void => {
+    if (capacidadeAtual >= capacidadeMaxima) {
+      return; // Não permite adicionar se capacidade estiver cheia
+    }
     setChildToEdit(null);
     setIsAddFormOpen(true);
   };
+
+  const isCapacityFull = capacidadeAtual >= capacidadeMaxima;
 
   return (
     <main className="min-h-screen">
@@ -154,11 +159,19 @@ export default function Home() {
         <div className="flex flex-wrap gap-6 mb-8">
           <button
             onClick={handleAddNewChild}
-            className="flex-1 min-w-[280px] px-8 py-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-black text-xl rounded-2xl hover:scale-105 transition-all shadow-2xl hover:shadow-purple-500/50 button-pop flex items-center justify-center gap-3 border-4 border-white/30 relative overflow-hidden group"
+            disabled={isCapacityFull}
+            className={`flex-1 min-w-[280px] px-8 py-6 font-black text-xl rounded-2xl transition-all shadow-2xl flex items-center justify-center gap-3 border-4 border-white/30 relative overflow-hidden group ${
+              isCapacityFull
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed opacity-60'
+                : 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white hover:scale-105 hover:shadow-purple-500/50 button-pop'
+            }`}
+            title={isCapacityFull ? `Capacidade máxima atingida (${capacidadeAtual}/${capacidadeMaxima})` : 'Adicionar nova criança'}
           >
-            <div className="absolute inset-0 gradient-shine"></div>
-            <Plus className="w-8 h-8 group-hover:rotate-90 transition-transform" />
-            <span className="relative z-10">✨ Nova Criança</span>
+            {!isCapacityFull && <div className="absolute inset-0 gradient-shine"></div>}
+            <Plus className={`w-8 h-8 transition-transform ${!isCapacityFull ? 'group-hover:rotate-90' : ''}`} />
+            <span className="relative z-10">
+              {isCapacityFull ? '🚫 Capacidade Cheia' : '✨ Nova Criança'}
+            </span>
           </button>
           
           <button
@@ -187,11 +200,19 @@ export default function Home() {
             </p>
             <button
               onClick={handleAddNewChild}
-              className="px-10 py-5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-black text-xl rounded-2xl hover:scale-110 transition-all shadow-2xl hover:shadow-purple-500/50 button-pop inline-flex items-center gap-3 border-4 border-white/30 relative overflow-hidden group"
+              disabled={isCapacityFull}
+              className={`px-10 py-5 font-black text-xl rounded-2xl transition-all shadow-2xl inline-flex items-center gap-3 border-4 border-white/30 relative overflow-hidden group ${
+                isCapacityFull
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed opacity-60'
+                  : 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white hover:scale-110 hover:shadow-purple-500/50 button-pop'
+              }`}
+              title={isCapacityFull ? `Capacidade máxima atingida (${capacidadeAtual}/${capacidadeMaxima})` : 'Adicionar primeira criança'}
             >
-              <div className="absolute inset-0 gradient-shine"></div>
-              <Plus className="w-7 h-7 group-hover:rotate-180 transition-transform" />
-              <span className="relative z-10">Adicionar Primeira Criança</span>
+              {!isCapacityFull && <div className="absolute inset-0 gradient-shine"></div>}
+              <Plus className={`w-7 h-7 transition-transform ${!isCapacityFull ? 'group-hover:rotate-180' : ''}`} />
+              <span className="relative z-10">
+                {isCapacityFull ? '🚫 Capacidade Cheia' : 'Adicionar Primeira Criança'}
+              </span>
             </button>
           </div>
         ) : (

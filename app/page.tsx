@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Plus, Settings, Users, BookOpen, Edit } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
 import { Header } from '@/components/header';
-import { ChildCard } from '@/components/child-card';
+import { ChildListItem } from '@/components/child-list-item';
 import { AddChildForm } from '@/components/add-child-form';
 import { SettingsModal } from '@/components/settings-modal';
 import { ObservationsModal } from '@/components/observations-modal';
@@ -100,7 +100,17 @@ export default function Home() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <BookOpen className="w-7 h-7 text-green-700" />
-                <h3 className="text-2xl font-bold text-gray-900">Resumo do Culto</h3>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">Resumo do Culto</h3>
+                  <p className="text-sm text-green-600 font-medium">
+                    {new Date(cultoObservacoes.data).toLocaleDateString('pt-BR', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setIsObservationsOpen(true)}
@@ -185,9 +195,9 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-4">
             {children.map((child) => (
-              <ChildCard
+              <ChildListItem
                 key={child.id}
                 child={child}
                 onRemove={removeChild}

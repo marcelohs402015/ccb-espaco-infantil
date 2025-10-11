@@ -87,6 +87,15 @@ body {
     }
   }
   
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+  
   .animate-fadeIn {
     animation: fadeIn 0.2s ease-out;
   }
@@ -105,6 +114,10 @@ body {
   
   .animate-float {
     animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse-slow 2s ease-in-out infinite;
   }
   
   .gradient-shine {

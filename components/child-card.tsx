@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Phone, Trash2, Clock, User, AlertCircle, Edit } from 'lucide-react';
+import { Phone, Trash2, Clock, User, AlertCircle, Edit, Bell } from 'lucide-react';
 import type { Child } from '@/types';
-import { EmergencyModal } from './emergency-modal';
 import { ConfirmModal } from './confirm-modal';
+import { useSpaceStore } from '@/store/use-space-store';
 
 interface ChildCardProps {
   child: Child;
@@ -13,21 +13,15 @@ interface ChildCardProps {
 }
 
 export const ChildCard: React.FC<ChildCardProps> = ({ child, onRemove, onEdit }) => {
-  const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [isResponsavelChamado, setIsResponsavelChamado] = useState(false);
+  const { updateChild } = useSpaceStore();
 
   const handleEmergencyClick = (): void => {
-    setIsEmergencyModalOpen(true);
-  };
-
-  const handleResponsavelChamado = (): void => {
-    setIsResponsavelChamado(true);
+    updateChild(child.id, { isChamadoAtivo: true });
   };
 
   const handleRechamar = (): void => {
-    setIsResponsavelChamado(false);
-    setIsEmergencyModalOpen(true);
+    updateChild(child.id, { isChamadoAtivo: true });
   };
 
   const handleRemove = (): void => {
@@ -77,24 +71,39 @@ export const ChildCard: React.FC<ChildCardProps> = ({ child, onRemove, onEdit })
             </div>
           )}
 
-          {isResponsavelChamado && (
-            <div className="bg-green-100 border-2 border-green-400 rounded-lg p-3 animate-pulse">
-              <p className="text-sm font-bold text-green-800 text-center flex items-center justify-center gap-2">
-                <AlertCircle className="w-5 h-5" />
-                Responsável a caminho!
-              </p>
+          {child.isChamadoAtivo && (
+            <div className="bg-green-50 border-2 border-green-400 rounded-lg p-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-1">
+                  <AlertCircle className="w-5 h-5 text-green-600 animate-pulse" />
+                  <p className="text-sm font-bold text-green-800">
+                    Responsável chamado!
+                  </p>
+                </div>
+                <button
+                  onClick={handleRechamar}
+                  className="px-3 py-2 bg-red-500 text-white text-xs font-semibold rounded-lg hover:bg-red-600 transition-colors shadow-md hover:shadow-lg flex items-center gap-1.5"
+                  aria-label="Avisar novamente"
+                  title="Avisar novamente - caso não tenha visto"
+                >
+                  <Bell className="w-4 h-4" />
+                  Avisar
+                </button>
+              </div>
             </div>
           )}
           
           <div className="flex gap-2 pt-2">
-            <button
-              onClick={handleEmergencyClick}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-              aria-label={`Emergência para ${child.nome}`}
-            >
-              <Phone className="w-5 h-5" />
-              EMERGÊNCIA
-            </button>
+            {!child.isChamadoAtivo && (
+              <button
+                onClick={handleEmergencyClick}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                aria-label={`Emergência para ${child.nome}`}
+              >
+                <Phone className="w-5 h-5" />
+                EMERGÊNCIA
+              </button>
+            )}
             
             <button
               onClick={() => onEdit(child)}
@@ -112,25 +121,8 @@ export const ChildCard: React.FC<ChildCardProps> = ({ child, onRemove, onEdit })
               <Trash2 className="w-5 h-5" />
             </button>
           </div>
-
-          {isResponsavelChamado && (
-            <button
-              onClick={handleRechamar}
-              className="w-full px-4 py-2 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600 transition-colors shadow-md"
-            >
-              Rechamar
-            </button>
-          )}
         </div>
       </div>
-
-      {isEmergencyModalOpen && (
-        <EmergencyModal
-          child={child}
-          onClose={() => setIsEmergencyModalOpen(false)}
-          onResponsavelChamado={handleResponsavelChamado}
-        />
-      )}
 
       {isConfirmModalOpen && (
         <ConfirmModal

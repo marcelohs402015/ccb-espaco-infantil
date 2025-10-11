@@ -8,6 +8,7 @@ export interface Child {
   celularResponsavel: string;
   observacoes: string;
   horaEntrada: string;
+  isChamadoAtivo?: boolean;
 }
 
 export interface Settings {

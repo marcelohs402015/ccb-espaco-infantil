@@ -8,6 +8,7 @@ import { ChildCard } from '@/components/child-card';
 import { AddChildForm } from '@/components/add-child-form';
 import { SettingsModal } from '@/components/settings-modal';
 import { ObservationsModal } from '@/components/observations-modal';
+import { GlobalAlert } from '@/components/global-alert';
 import type { Child } from '@/types';
 
 export default function Home() {
@@ -53,6 +54,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Header />
+      <GlobalAlert />
       
       <div className="container mx-auto px-4 py-8 relative">
         {/* Capacity Status */}
@@ -94,42 +96,42 @@ export default function Home() {
 
         {/* Worship Summary */}
         {cultoObservacoes && (cultoObservacoes.palavraLida || cultoObservacoes.hinosCantados || cultoObservacoes.aprendizado) && (
-          <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-xl shadow-lg p-6 mb-8 border-2 border-green-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-green-700" />
-                <h3 className="text-xl font-bold text-gray-900">Resumo do Culto</h3>
+          <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-xl shadow-lg p-8 mb-8 border-2 border-green-200">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <BookOpen className="w-7 h-7 text-green-700" />
+                <h3 className="text-2xl font-bold text-gray-900">Resumo do Culto</h3>
               </div>
               <button
                 onClick={() => setIsObservationsOpen(true)}
-                className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+                className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md"
               >
-                <Edit className="w-4 h-4" />
+                <Edit className="w-5 h-5" />
                 Alterar
               </button>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-3 gap-6">
               {cultoObservacoes.palavraLida && (
                 <div>
-                  <p className="text-xs font-bold text-green-700 uppercase mb-1">Palavra Lida</p>
-                  <p className="text-sm text-gray-800 bg-white p-2 rounded border border-green-200">
+                  <p className="text-sm font-bold text-green-700 uppercase mb-2">Palavra Lida</p>
+                  <p className="text-base text-gray-800 bg-white p-4 rounded-lg border border-green-200 min-h-[80px] leading-relaxed">
                     {cultoObservacoes.palavraLida}
                   </p>
                 </div>
               )}
               {cultoObservacoes.hinosCantados && (
                 <div>
-                  <p className="text-xs font-bold text-green-700 uppercase mb-1">Hinos Cantados</p>
-                  <p className="text-sm text-gray-800 bg-white p-2 rounded border border-green-200">
+                  <p className="text-sm font-bold text-green-700 uppercase mb-2">Hinos Cantados</p>
+                  <p className="text-base text-gray-800 bg-white p-4 rounded-lg border border-green-200 min-h-[80px] leading-relaxed">
                     {cultoObservacoes.hinosCantados}
                   </p>
                 </div>
               )}
               {cultoObservacoes.aprendizado && (
                 <div>
-                  <p className="text-xs font-bold text-green-700 uppercase mb-1">Aprendizado</p>
-                  <p className="text-sm text-gray-800 bg-white p-2 rounded border border-green-200">
+                  <p className="text-sm font-bold text-green-700 uppercase mb-2">Aprendizado</p>
+                  <p className="text-base text-gray-800 bg-white p-4 rounded-lg border border-green-200 min-h-[80px] leading-relaxed">
                     {cultoObservacoes.aprendizado}
                   </p>
                 </div>

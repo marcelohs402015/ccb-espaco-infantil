@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Settings, Users, BookOpen, Edit } from 'lucide-react';
+import { Plus, Settings, Users, BookOpen, Edit, Search } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
 import { Header } from '@/components/header';
 import { ChildListItem } from '@/components/child-list-item';
@@ -17,6 +17,7 @@ export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isObservationsOpen, setIsObservationsOpen] = useState(false);
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const capacidadeAtual = children.length;
   const capacidadeMaxima = settings.capacidadeMaxima;
@@ -55,6 +56,11 @@ export default function Home() {
   };
 
   const isCapacityFull = capacidadeAtual >= capacidadeMaxima;
+
+  // Filtrar crianças baseado no termo de pesquisa
+  const filteredChildren = children.filter(child =>
+    child.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <main className="min-h-screen">
@@ -184,7 +190,33 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Children Grid */}
+        {/* Search Field */}
+        {children.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2 border-gray-100">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Pesquisar por nome da criança..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="block w-full pl-10 pr-3 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors text-gray-900 placeholder-gray-500"
+              />
+            </div>
+            {searchTerm && (
+              <p className="text-sm text-gray-600 mt-2">
+                {filteredChildren.length === 0 
+                  ? 'Nenhuma criança encontrada' 
+                  : `${filteredChildren.length} criança${filteredChildren.length !== 1 ? 's' : ''} encontrada${filteredChildren.length !== 1 ? 's' : ''}`
+                }
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Children List */}
         {children.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-2xl p-16 text-center border-4 border-dashed border-purple-300 card-hover backdrop-blur-sm bg-opacity-95">
             <div className="animate-float mb-6">
@@ -217,14 +249,34 @@ export default function Home() {
           </div>
         ) : (
           <div className="space-y-4">
-            {children.map((child) => (
-              <ChildListItem
-                key={child.id}
-                child={child}
-                onRemove={removeChild}
-                onEdit={handleEditChild}
-              />
-            ))}
+            {filteredChildren.length === 0 && searchTerm ? (
+              <div className="bg-white rounded-xl shadow-lg p-8 text-center border-2 border-gray-100">
+                <div className="text-gray-400 mb-4">
+                  <Search className="w-16 h-16 mx-auto" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-700 mb-2">
+                  Nenhuma criança encontrada
+                </h3>
+                <p className="text-gray-500">
+                  Tente pesquisar por outro nome ou limpe a pesquisa para ver todas as crianças.
+                </p>
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Limpar pesquisa
+                </button>
+              </div>
+            ) : (
+              filteredChildren.map((child) => (
+                <ChildListItem
+                  key={child.id}
+                  child={child}
+                  onRemove={removeChild}
+                  onEdit={handleEditChild}
+                />
+              ))
+            )}
           </div>
         )}
       </div>

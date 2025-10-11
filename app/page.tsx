@@ -180,7 +180,7 @@ export default function Home() {
           >
             <div className="absolute inset-0 gradient-shine"></div>
             <BookOpen className="w-8 h-8 group-hover:rotate-12 transition-transform" />
-            <span className="relative z-10">📖 Sobre o Culto</span>
+            <span className="relative z-10">📖 Sobre o Culto - para ver detalhes</span>
           </button>
         </div>
 

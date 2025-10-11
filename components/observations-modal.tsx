@@ -71,7 +71,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
               name="palavraLida"
               value={formData.palavraLida}
               onChange={handleInputChange}
-              rows={3}
+              rows={6}
               className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors resize-none text-gray-900"
               placeholder="Ex: João 3:16 - Porque Deus amou o mundo..."
             />
@@ -86,7 +86,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
               name="hinosCantados"
               value={formData.hinosCantados}
               onChange={handleInputChange}
-              rows={3}
+              rows={5}
               className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors resize-none text-gray-900"
               placeholder="Ex: Hino 5, Hino 12, Hino 23"
             />
@@ -101,7 +101,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
               name="aprendizado"
               value={formData.aprendizado}
               onChange={handleInputChange}
-              rows={4}
+              rows={9}
               className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors resize-none text-gray-900"
               placeholder="Ex: As crianças aprenderam sobre o amor de Deus e a importância da oração..."
             />

@@ -1,0 +1,68 @@
+'use client';
+
+import { Church, ChevronDown } from 'lucide-react';
+import { useSpaceStore } from '@/store/use-space-store';
+
+export const ChurchSelector: React.FC = () => {
+  const { igrejas, igrejaAtiva, setIgrejaAtiva } = useSpaceStore();
+
+  const igrejaAtualNome = igrejas.find(i => i.id === igrejaAtiva)?.nome || 'Selecione uma igreja';
+
+  if (igrejas.length === 0) {
+    return (
+      <div className="bg-yellow-100 border-2 border-yellow-400 rounded-xl p-4 mb-6">
+        <div className="flex items-center gap-3">
+          <Church className="w-6 h-6 text-yellow-700" />
+          <div>
+            <p className="font-bold text-yellow-800">Nenhuma igreja cadastrada</p>
+            <p className="text-sm text-yellow-700">
+              Clique em "Igrejas" no topo da página para cadastrar a primeira igreja.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 mb-6 border-2 border-blue-200 shadow-lg">
+      <label htmlFor="igreja-select" className="block text-sm font-bold text-gray-700 mb-3">
+        <div className="flex items-center gap-2">
+          <Church className="w-5 h-5 text-blue-600" />
+          Selecione a Igreja para Gerenciar:
+        </div>
+      </label>
+      
+      <div className="relative">
+        <select
+          id="igreja-select"
+          value={igrejaAtiva || ''}
+          onChange={(e) => setIgrejaAtiva(e.target.value || null)}
+          className="w-full px-4 py-3 pr-10 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900 font-semibold bg-white appearance-none cursor-pointer"
+        >
+          <option value="">Selecione uma igreja...</option>
+          {igrejas.map((igreja) => (
+            <option key={igreja.id} value={igreja.id}>
+              {igreja.nome}
+            </option>
+          ))}
+        </select>
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+          <ChevronDown className="w-5 h-5 text-gray-500" />
+        </div>
+      </div>
+
+      {igrejaAtiva && (
+        <div className="mt-3 p-3 bg-green-100 border border-green-300 rounded-lg">
+          <p className="text-sm text-green-800">
+            ✅ <span className="font-bold">Igreja ativa:</span> {igrejaAtualNome}
+          </p>
+          <p className="text-xs text-green-700 mt-1">
+            Todos os dados (crianças, cultos, histórico) serão específicos desta igreja.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+

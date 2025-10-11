@@ -6,7 +6,7 @@ import type { Child, ResponsavelType } from '@/types';
 import { AlertModal } from './alert-modal';
 
 interface AddChildFormProps {
-  onAdd: (child: Child) => void;
+  onAdd: (child: Child) => Promise<void>;
   onClose: () => void;
   childToEdit?: Child | null;
 }
@@ -41,7 +41,7 @@ export const AddChildForm: React.FC<AddChildFormProps> = ({ onAdd, onClose, chil
     setCelularResponsavel(valorFormatado);
   };
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     
     if (!nome.trim()) {

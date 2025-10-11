@@ -86,7 +86,7 @@ export const GlobalAlert: React.FC = () => {
 
                   <div className="bg-white border-2 border-red-200 rounded-lg p-4 mt-4">
                     <p className={`text-center font-bold text-red-800 ${childrenComChamado.length === 1 ? 'text-lg' : 'text-sm'}`}>
-                      🚨 Compareça ao Espaço Infantil imediatamente
+                      🚨 Compareça ao Espaço Infantil Bíblico imediatamente
                     </p>
                   </div>
                 </div>
@@ -97,7 +97,7 @@ export const GlobalAlert: React.FC = () => {
           <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
             <p className="text-center text-sm text-yellow-800">
               <strong>💡 Atenção:</strong> Este alerta é visível para todos os presentes.
-              Clique no <strong>X</strong> para dispensar após comparecer ao espaço infantil.
+              Clique no <strong>X</strong> para dispensar após comparecer ao espaço infantil bíblico.
             </p>
           </div>
         </div>

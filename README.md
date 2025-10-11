@@ -1,10 +1,10 @@
-# 🙏 Sistema de Gerenciamento do Espaço Infantil - CCB
+# 🙏 Sistema de Gerenciamento do Espaço Infantil Bíblico - CCB
 
 ![CCB Logo](./public/ccb-logo.png)
 
 ## 📖 Para o Senhor Jesus e Deus
 
-Este sistema foi criado com amor e dedicação para servir à obra do Senhor no Espaço Infantil da Congregação Cristã no Brasil. Que este projeto possa auxiliar as irmãs auxiliadoras no cuidado das crianças durante os cultos, proporcionando segurança, organização e paz para os responsáveis e pequeninos.
+Este sistema foi criado com amor e dedicação para servir à obra do Senhor no Espaço Infantil Bíblico da Congregação Cristã no Brasil. Que este projeto possa auxiliar as irmãs auxiliadoras no cuidado das crianças durante os cultos, proporcionando segurança, organização e paz para os responsáveis e pequeninos.
 
 > *"E disse: Deixai vir os pequeninos a mim, e não os impeçais; porque dos tais é o reino de Deus."*  
 > **Lucas 18:16**
@@ -37,7 +37,7 @@ Design moderno com glassmorphism, animações suaves e experiência de usuário 
 
 ## 🎯 Propósito do Sistema
 
-O **Sistema de Gerenciamento do Espaço Infantil** foi desenvolvido para auxiliar as irmãs auxiliadoras da Congregação Cristã no Brasil no gerenciamento e cuidado das crianças durante os cultos religiosos.
+O **Sistema de Gerenciamento do Espaço Infantil Bíblico** foi desenvolvido para auxiliar as irmãs auxiliadoras da Congregação Cristã no Brasil no gerenciamento e cuidado das crianças durante os cultos religiosos.
 
 ### Principais Objetivos:
 

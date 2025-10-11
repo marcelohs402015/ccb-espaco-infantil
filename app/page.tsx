@@ -25,7 +25,11 @@ export default function Home() {
     igrejaAtiva, 
     dadosPorIgreja,
     igrejas,
-    setIgrejaAtiva
+    setIgrejaAtiva,
+    loadIgrejas,
+    loadIgrejaData,
+    isLoading,
+    error
   } = useSpaceStore();
   
   // Dados reativos da igreja ativa
@@ -49,10 +53,20 @@ export default function Home() {
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Registrar dia de uso quando o componente monta
+  // Carregar igrejas quando o componente monta
   useEffect(() => {
-    registrarDiaDeUso();
-  }, [registrarDiaDeUso]);
+    loadIgrejas();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Carregar dados da igreja ativa e registrar dia de uso
+  useEffect(() => {
+    if (igrejaAtiva) {
+      loadIgrejaData(igrejaAtiva);
+      registrarDiaDeUso();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [igrejaAtiva]);
 
   // Listener para abrir modal de igrejas via evento
   useEffect(() => {
@@ -67,8 +81,8 @@ export default function Home() {
   }, []);
 
   const capacidadeAtual = children.length;
-  const capacidadeMaxima = settings.capacidadeMaxima;
-  const percentualOcupacao = (capacidadeAtual / capacidadeMaxima) * 100;
+  const capacidadeMaxima = settings?.capacidadeMaxima || 30;
+  const percentualOcupacao = capacidadeMaxima > 0 ? (capacidadeAtual / capacidadeMaxima) * 100 : 0;
 
   const getCapacidadeColor = (): string => {
     if (percentualOcupacao >= 90) return 'text-red-600';
@@ -81,11 +95,13 @@ export default function Home() {
     setIsAddFormOpen(true);
   };
 
-  const handleSaveChild = (child: Child): void => {
+  const handleSaveChild = async (child: Child): Promise<void> => {
     if (childToEdit) {
-      updateChild(child.id, child);
+      await updateChild(child.id, child);
     } else {
-      addChild(child);
+      // Remove o id para que o Supabase gere automaticamente
+      const { id, ...childData } = child;
+      await addChild(childData);
     }
   };
 

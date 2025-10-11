@@ -127,7 +127,7 @@ export const ChildCard: React.FC<ChildCardProps> = ({ child, onRemove, onEdit })
       {isConfirmModalOpen && (
         <ConfirmModal
           title="Remover Criança"
-          message={`Deseja realmente remover ${child.nome} do espaço infantil?`}
+          message={`Deseja realmente remover ${child.nome} do espaço infantil bíblico?`}
           confirmText="Remover"
           cancelText="Cancelar"
           type="error"

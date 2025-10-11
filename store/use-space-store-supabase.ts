@@ -97,7 +97,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         .from('settings')
         .select('*')
         .eq('igreja_id', igrejaId)
-        .single();
+        .maybeSingle();
 
       // Carregar observações do culto de hoje
       const { data: cultoObs } = await supabase
@@ -125,10 +125,28 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
       const igrejaData: IgrejaData = {
         children: children || [],
-        settings: settings || defaultSettings,
-        cultoObservacoes: cultoObs || defaultCultoObservacoes,
-        historicoCultos: historico || [],
-        diasDeUso: diasUso || [],
+        settings: settings ? {
+          capacidadeMaxima: settings.capacidade_maxima || 30
+        } : defaultSettings,
+        cultoObservacoes: cultoObs ? {
+          data: cultoObs.data,
+          palavraLida: cultoObs.palavra_lida || '',
+          hinosCantados: cultoObs.hinos_cantados || '',
+          aprendizado: cultoObs.aprendizado || '',
+        } : defaultCultoObservacoes,
+        historicoCultos: (historico || []).map(h => ({
+          id: h.id,
+          data: h.data,
+          palavraLida: h.palavra_lida || '',
+          hinosCantados: h.hinos_cantados || '',
+          aprendizado: h.aprendizado || '',
+          totalCriancas: h.total_criancas || 0,
+        })),
+        diasDeUso: (diasUso || []).map(d => ({
+          data: d.data,
+          totalCriancas: d.total_criancas || 0,
+          cultoRealizado: d.culto_realizado || false,
+        })),
       };
 
       set((state) => ({
@@ -164,18 +182,45 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
+      // Converter camelCase para snake_case
+      const childPayload = {
+        igreja_id: igrejaAtiva,
+        nome: childData.nome,
+        nome_responsavel: childData.nomeResponsavel,
+        tipo_responsavel: childData.tipoResponsavel,
+        celular_responsavel: childData.celularResponsavel,
+        observacoes: childData.observacoes || '',
+        hora_entrada: childData.horaEntrada,
+        is_chamado_ativo: false,
+        data_cadastro: new Date().toISOString().split('T')[0],
+      };
+
+      console.log('📤 Enviando criança para Supabase:', childPayload);
+
       const { data, error } = await supabase
         .from('children')
-        .insert({
-          ...childData,
-          igreja_id: igrejaAtiva,
-          data_cadastro: new Date().toISOString().split('T')[0],
-          is_chamado_ativo: false,
-        })
+        .insert(childPayload)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro detalhado:', error);
+        throw error;
+      }
+
+      console.log('✅ Criança cadastrada no Supabase:', data);
+
+      // Converter de volta para camelCase para o estado local
+      const childLocal: Child = {
+        id: data.id,
+        nome: data.nome,
+        nomeResponsavel: data.nome_responsavel,
+        tipoResponsavel: data.tipo_responsavel as any,
+        celularResponsavel: data.celular_responsavel,
+        observacoes: data.observacoes || '',
+        horaEntrada: data.hora_entrada,
+        isChamadoAtivo: data.is_chamado_ativo,
+      };
 
       // Atualizar estado local
       set((state) => {
@@ -185,14 +230,14 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
             ...state.dadosPorIgreja,
             [igrejaAtiva]: {
               ...igrejaData,
-              children: [...igrejaData.children, data],
+              children: [...igrejaData.children, childLocal],
             },
           },
           isLoading: false,
         };
       });
 
-      console.log('✅ Criança cadastrada no Supabase:', data);
+      console.log('✅ Estado local atualizado');
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao cadastrar criança:', error);
@@ -205,14 +250,44 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
+      // Converter camelCase para snake_case
+      const updatePayload: any = {};
+      
+      if (childData.nome !== undefined) updatePayload.nome = childData.nome;
+      if (childData.nomeResponsavel !== undefined) updatePayload.nome_responsavel = childData.nomeResponsavel;
+      if (childData.tipoResponsavel !== undefined) updatePayload.tipo_responsavel = childData.tipoResponsavel;
+      if (childData.celularResponsavel !== undefined) updatePayload.celular_responsavel = childData.celularResponsavel;
+      if (childData.observacoes !== undefined) updatePayload.observacoes = childData.observacoes;
+      if (childData.horaEntrada !== undefined) updatePayload.hora_entrada = childData.horaEntrada;
+      if (childData.isChamadoAtivo !== undefined) updatePayload.is_chamado_ativo = childData.isChamadoAtivo;
+
+      console.log('📤 Atualizando criança no Supabase:', updatePayload);
+
       const { data, error } = await supabase
         .from('children')
-        .update(childData)
+        .update(updatePayload)
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro detalhado:', error);
+        throw error;
+      }
+
+      console.log('✅ Criança atualizada no Supabase:', data);
+
+      // Converter de volta para camelCase
+      const childLocal: Child = {
+        id: data.id,
+        nome: data.nome,
+        nomeResponsavel: data.nome_responsavel,
+        tipoResponsavel: data.tipo_responsavel as any,
+        celularResponsavel: data.celular_responsavel,
+        observacoes: data.observacoes || '',
+        horaEntrada: data.hora_entrada,
+        isChamadoAtivo: data.is_chamado_ativo,
+      };
 
       // Atualizar estado local
       set((state) => {
@@ -223,7 +298,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
             [igrejaAtiva]: {
               ...igrejaData,
               children: igrejaData.children.map((child) =>
-                child.id === id ? { ...child, ...data } : child
+                child.id === id ? childLocal : child
               ),
             },
           },
@@ -231,7 +306,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         };
       });
 
-      console.log('✅ Criança atualizada no Supabase:', data);
+      console.log('✅ Estado local atualizado');
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao atualizar criança:', error);
@@ -279,18 +354,30 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
+      // Converter camelCase para snake_case para o Supabase
+      const settingsPayload = {
+        igreja_id: igrejaAtiva,
+        capacidade_maxima: settingsData.capacidadeMaxima,
+      };
+
+      console.log('📤 Enviando settings para Supabase:', settingsPayload);
+
       const { data, error } = await supabase
         .from('settings')
-        .upsert({
-          igreja_id: igrejaAtiva,
-          ...settingsData,
+        .upsert(settingsPayload, {
+          onConflict: 'igreja_id', // Chave única para merge
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro detalhado:', error);
+        throw error;
+      }
 
-      // Atualizar estado local
+      console.log('✅ Settings salvos no Supabase:', data);
+
+      // Atualizar estado local (converter de volta para camelCase)
       set((state) => {
         const igrejaData = state.dadosPorIgreja[igrejaAtiva] || createDefaultIgrejaData();
         return {
@@ -298,14 +385,16 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
             ...state.dadosPorIgreja,
             [igrejaAtiva]: {
               ...igrejaData,
-              settings: { ...igrejaData.settings, ...data },
+              settings: {
+                capacidadeMaxima: data.capacidade_maxima,
+              },
             },
           },
           isLoading: false,
         };
       });
 
-      console.log('✅ Settings atualizados no Supabase');
+      console.log('✅ Settings atualizados localmente');
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao atualizar settings:', error);
@@ -321,19 +410,30 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
+      const observacoesPayload = {
+        igreja_id: igrejaAtiva,
+        data: novasObservacoes.data,
+        palavra_lida: novasObservacoes.palavraLida || null,
+        hinos_cantados: novasObservacoes.hinosCantados || null,
+        aprendizado: novasObservacoes.aprendizado || null,
+      };
+
+      console.log('📤 Salvando observações do culto:', observacoesPayload);
+
       const { data, error } = await supabase
         .from('culto_observacoes')
-        .upsert({
-          igreja_id: igrejaAtiva,
-          data: novasObservacoes.data,
-          palavra_lida: novasObservacoes.palavraLida,
-          hinos_cantados: novasObservacoes.hinosCantados,
-          aprendizado: novasObservacoes.aprendizado,
+        .upsert(observacoesPayload, {
+          onConflict: 'igreja_id,data', // Chave única composta
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro detalhado:', error);
+        throw error;
+      }
+
+      console.log('✅ Observações do culto salvas no Supabase:', data);
 
       // Atualizar estado local
       set((state) => {
@@ -350,7 +450,10 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         };
       });
 
-      console.log('✅ Observações do culto salvas no Supabase');
+      console.log('✅ Estado local atualizado');
+      
+      // Registrar dia de uso automaticamente
+      await get().registrarDiaDeUso();
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao salvar observações:', error);
@@ -365,30 +468,54 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     const { cultoObservacoes, children } = igrejaData;
 
     if (!cultoObservacoes.palavraLida && !cultoObservacoes.hinosCantados && !cultoObservacoes.aprendizado) {
+      console.log('⚠️ Nenhuma observação de culto para salvar');
       return;
     }
 
     set({ isLoading: true, error: null });
     try {
+      // Buscar as observações atualizadas do banco para ter a data correta
+      const { data: obsAtual } = await supabase
+        .from('culto_observacoes')
+        .select('*')
+        .eq('igreja_id', igrejaAtiva)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      // Usar a data das observações salvas, não a data atual
+      const dataParaHistorico = obsAtual?.data || cultoObservacoes.data;
+
+      const historicoPayload = {
+        igreja_id: igrejaAtiva,
+        data: dataParaHistorico,
+        palavra_lida: obsAtual?.palavra_lida || cultoObservacoes.palavraLida || null,
+        hinos_cantados: obsAtual?.hinos_cantados || cultoObservacoes.hinosCantados || null,
+        aprendizado: obsAtual?.aprendizado || cultoObservacoes.aprendizado || null,
+        total_criancas: children.length,
+      };
+
+      console.log('📤 Salvando culto no histórico (data:', dataParaHistorico + '):', historicoPayload);
+
       const { data, error } = await supabase
         .from('historico_cultos')
-        .upsert({
-          igreja_id: igrejaAtiva,
-          data: cultoObservacoes.data,
-          palavra_lida: cultoObservacoes.palavraLida,
-          hinos_cantados: cultoObservacoes.hinosCantados,
-          aprendizado: cultoObservacoes.aprendizado,
-          total_criancas: children.length,
+        .upsert(historicoPayload, {
+          onConflict: 'igreja_id,data', // Chave única composta
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro detalhado:', error);
+        throw error;
+      }
 
-      console.log('✅ Culto salvo no histórico do Supabase');
+      console.log('✅ Culto salvo no histórico do Supabase (data ' + data.data + '):', data);
       
       // Recarregar histórico
       await get().loadIgrejaData(igrejaAtiva);
+      
+      console.log('✅ Histórico recarregado');
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao salvar culto no histórico:', error);
@@ -404,20 +531,29 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
+      const diaUsoPayload = {
+        igreja_id: igrejaAtiva,
+        data: dataAtual,
+        total_criancas: igrejaData.children.length,
+        culto_realizado: !!(
+          igrejaData.cultoObservacoes.palavraLida ||
+          igrejaData.cultoObservacoes.hinosCantados ||
+          igrejaData.cultoObservacoes.aprendizado
+        ),
+      };
+
+      console.log('📤 Registrando dia de uso:', diaUsoPayload);
+
       const { error } = await supabase
         .from('dias_uso')
-        .upsert({
-          igreja_id: igrejaAtiva,
-          data: dataAtual,
-          total_criancas: igrejaData.children.length,
-          culto_realizado: !!(
-            igrejaData.cultoObservacoes.palavraLida ||
-            igrejaData.cultoObservacoes.hinosCantados ||
-            igrejaData.cultoObservacoes.aprendizado
-          ),
+        .upsert(diaUsoPayload, {
+          onConflict: 'igreja_id,data', // Chave única composta
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro detalhado:', error);
+        throw error;
+      }
 
       console.log('✅ Dia de uso registrado no Supabase');
       set({ isLoading: false });
@@ -430,32 +566,48 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
   addIgreja: async (igrejaData) => {
     set({ isLoading: true, error: null });
     try {
+      // Inserir apenas o nome (id e datas são gerados automaticamente)
       const { data, error } = await supabase
         .from('igrejas')
         .insert({
-          ...igrejaData,
-          data_cadastro: new Date().toISOString(),
+          nome: igrejaData.nome,
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro detalhado ao cadastrar igreja:', error);
+        throw error;
+      }
+
+      console.log('✅ Igreja cadastrada no Supabase:', data);
 
       // Criar settings padrão
-      await supabase.from('settings').insert({
-        igreja_id: data.id,
-        capacidade_maxima: 30,
-      });
+      const { error: settingsError } = await supabase
+        .from('settings')
+        .insert({
+          igreja_id: data.id,
+          capacidade_maxima: 30,
+        });
+
+      if (settingsError) {
+        console.error('❌ Erro ao criar settings:', settingsError);
+      } else {
+        console.log('✅ Settings criados automaticamente');
+      }
 
       set((state) => ({
         igrejas: [...state.igrejas, data],
         isLoading: false,
       }));
 
-      console.log('✅ Igreja cadastrada no Supabase:', data);
+      // Atualizar dados da igreja
+      await get().loadIgrejaData(data.id);
+      
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao cadastrar igreja:', error);
+      throw error; // Re-throw para o componente tratar
     }
   },
 

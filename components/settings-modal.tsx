@@ -49,7 +49,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label htmlFor="capacidadeMaxima" className="block text-sm font-semibold text-gray-700 mb-2">
-              Capacidade Máxima do Espaço Infantil
+              Capacidade Máxima do Espaço Infantil Bíblico
             </label>
             <input
               type="number"

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CCB - Espaço Infantil",
-  description: "Sistema de gerenciamento do espaço infantil da Congregação Cristã no Brasil",
+  title: "CCB - Espaço Infantil Bíblico",
+  description: "Sistema de gerenciamento do espaço infantil bíblico da Congregação Cristã no Brasil",
 };
 
 export default function RootLayout({

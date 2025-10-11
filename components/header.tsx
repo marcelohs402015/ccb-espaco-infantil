@@ -27,7 +27,7 @@ export const Header: React.FC = () => {
               <Sparkles className="w-8 h-8 fill-yellow-300 text-yellow-300 animate-pulse" />
               <Heart className="w-7 h-7 fill-pink-300 text-pink-300 animate-bounce-soft" />
               <h1 className="text-4xl md:text-5xl font-black drop-shadow-lg">
-                ✨ Espaço Infantil ✨
+                ✨ Espaço Infantil Bíblico ✨
               </h1>
               <Heart className="w-7 h-7 fill-pink-300 text-pink-300 animate-bounce-soft" />
               <Sparkles className="w-8 h-8 fill-yellow-300 text-yellow-300 animate-pulse" />

@@ -141,7 +141,7 @@ export const ChildListItem: React.FC<ChildListItemProps> = ({ child, onRemove, o
       {isConfirmModalOpen && (
         <ConfirmModal
           title="Remover Criança"
-          message={`Deseja realmente remover ${child.nome} do espaço infantil?`}
+          message={`Deseja realmente remover ${child.nome} do espaço infantil bíblico?`}
           confirmText="Remover"
           cancelText="Cancelar"
           type="error"

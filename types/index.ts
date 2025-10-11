@@ -37,3 +37,9 @@ export interface DiaUso {
   cultoRealizado: boolean;
 }
 
+export interface Igreja {
+  id: string;
+  nome: string;
+  dataCadastro: string;
+}
+

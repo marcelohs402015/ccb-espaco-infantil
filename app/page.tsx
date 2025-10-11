@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Settings, Users, BookOpen, Edit, Search, History } from 'lucide-react';
+import { Plus, Settings, Users, BookOpen, Edit, Search, History, Church } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
 import { Header } from '@/components/header';
 import { ChildListItem } from '@/components/child-list-item';
@@ -10,6 +10,7 @@ import { SettingsModal } from '@/components/settings-modal';
 import { ObservationsModal } from '@/components/observations-modal';
 import { GlobalAlert } from '@/components/global-alert';
 import { HistoryModal } from '@/components/history-modal';
+import { ChurchesModal } from '@/components/churches-modal';
 import type { Child } from '@/types';
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isObservationsOpen, setIsObservationsOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isChurchesOpen, setIsChurchesOpen] = useState(false);
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -101,14 +103,25 @@ export default function Home() {
               </p>
             </div>
 
-            <button
-              onClick={() => setIsSettingsOpen(true)}
-              className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-2xl button-pop flex items-center gap-2"
-              aria-label="Configurações"
-            >
-              <Settings className="w-6 h-6" />
-              Configurar
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsChurchesOpen(true)}
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-2xl button-pop flex items-center gap-2"
+                aria-label="Gerenciar Igrejas"
+              >
+                <Church className="w-6 h-6" />
+                Igrejas
+              </button>
+              
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-2xl button-pop flex items-center gap-2"
+                aria-label="Configurações"
+              >
+                <Settings className="w-6 h-6" />
+                Configurar
+              </button>
+            </div>
           </div>
         </div>
 
@@ -324,6 +337,12 @@ export default function Home() {
       {isHistoryOpen && (
         <HistoryModal
           onClose={() => setIsHistoryOpen(false)}
+        />
+      )}
+
+      {isChurchesOpen && (
+        <ChurchesModal
+          onClose={() => setIsChurchesOpen(false)}
         />
       )}
     </main>

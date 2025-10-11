@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Child, Settings, CultoObservacoes, HistoricoCulto, DiaUso } from '@/types';
+import type { Child, Settings, CultoObservacoes, HistoricoCulto, DiaUso, Igreja } from '@/types';
 
 interface SpaceStore {
   children: Child[];
@@ -8,6 +8,7 @@ interface SpaceStore {
   cultoObservacoes: CultoObservacoes;
   historicoCultos: HistoricoCulto[];
   diasDeUso: DiaUso[];
+  igrejas: Igreja[];
   addChild: (child: Child) => void;
   updateChild: (id: string, child: Partial<Child>) => void;
   removeChild: (id: string) => void;
@@ -15,6 +16,9 @@ interface SpaceStore {
   updateCultoObservacoes: (observacoes: Partial<CultoObservacoes>) => void;
   salvarCultoNoHistorico: () => void;
   registrarDiaDeUso: () => void;
+  addIgreja: (igreja: Igreja) => void;
+  updateIgreja: (id: string, igreja: Partial<Igreja>) => void;
+  removeIgreja: (id: string) => void;
   clearAllData: () => void;
 }
 
@@ -37,6 +41,7 @@ export const useSpaceStore = create<SpaceStore>()(
       cultoObservacoes: defaultCultoObservacoes,
       historicoCultos: [],
       diasDeUso: [],
+      igrejas: [],
       
       addChild: (child) => 
         set((state) => ({ 
@@ -137,6 +142,23 @@ export const useSpaceStore = create<SpaceStore>()(
             diasDeUso: [...state.diasDeUso, novoDia],
           };
         }),
+      
+      addIgreja: (igreja) => 
+        set((state) => ({ 
+          igrejas: [...state.igrejas, igreja] 
+        })),
+      
+      updateIgreja: (id, igrejaData) => 
+        set((state) => ({
+          igrejas: state.igrejas.map((igreja) =>
+            igreja.id === id ? { ...igreja, ...igrejaData } : igreja
+          ),
+        })),
+      
+      removeIgreja: (id) => 
+        set((state) => ({
+          igrejas: state.igrejas.filter((igreja) => igreja.id !== id),
+        })),
       
       clearAllData: () => 
         set(() => ({

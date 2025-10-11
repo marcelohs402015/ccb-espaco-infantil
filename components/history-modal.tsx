@@ -10,8 +10,21 @@ interface HistoryModalProps {
 }
 
 export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
-  const { historicoCultos, diasDeUso } = useSpaceStore();
+  const { igrejaAtiva, dadosPorIgreja } = useSpaceStore();
   const [cultoDetalhado, setCultoDetalhado] = useState<HistoricoCulto | null>(null);
+
+  // Dados da igreja ativa
+  const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
+    ? dadosPorIgreja[igrejaAtiva] 
+    : { 
+        historicoCultos: [], 
+        diasDeUso: [],
+        children: [],
+        settings: { capacidadeMaxima: 30 },
+        cultoObservacoes: { data: '', palavraLida: '', hinosCantados: '', aprendizado: '' }
+      };
+  
+  const { historicoCultos, diasDeUso } = igrejaData;
 
   // Ordenar histórico por data (mais recente primeiro)
   const historicosOrdenados = [...historicoCultos].sort((a, b) => 

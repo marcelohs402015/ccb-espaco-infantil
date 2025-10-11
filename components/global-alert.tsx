@@ -6,9 +6,15 @@ import { useEffect } from 'react';
 import { playAlertSound } from '@/utils/alert-sound';
 
 export const GlobalAlert: React.FC = () => {
-  const { children, updateChild } = useSpaceStore();
+  const { igrejaAtiva, dadosPorIgreja, updateChild } = useSpaceStore();
   
-  const childrenComChamado = children.filter(child => child.isChamadoAtivo);
+  // Dados da igreja ativa
+  const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
+    ? dadosPorIgreja[igrejaAtiva] 
+    : { children: [] };
+  
+  const { children } = igrejaData;
+  const childrenComChamado = children.filter((child) => child.isChamadoAtivo);
 
   useEffect(() => {
     if (childrenComChamado.length > 0) {

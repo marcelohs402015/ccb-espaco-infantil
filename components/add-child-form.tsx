@@ -19,6 +19,28 @@ export const AddChildForm: React.FC<AddChildFormProps> = ({ onAdd, onClose, chil
   const [observacoes, setObservacoes] = useState(childToEdit?.observacoes || '');
   const [alertModal, setAlertModal] = useState<{ title: string; message: string; type: 'success' | 'error' | 'warning' } | null>(null);
 
+  const formatarCelular = (valor: string): string => {
+    // Remove tudo que não é número
+    const apenasNumeros = valor.replace(/\D/g, '');
+    
+    // Limita a 11 dígitos
+    const limitado = apenasNumeros.slice(0, 11);
+    
+    // Aplica a máscara (XX) XXXXX-XXXX
+    if (limitado.length <= 2) {
+      return limitado;
+    } else if (limitado.length <= 7) {
+      return `(${limitado.slice(0, 2)}) ${limitado.slice(2)}`;
+    } else {
+      return `(${limitado.slice(0, 2)}) ${limitado.slice(2, 7)}-${limitado.slice(7)}`;
+    }
+  };
+
+  const handleCelularChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const valorFormatado = formatarCelular(e.target.value);
+    setCelularResponsavel(valorFormatado);
+  };
+
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     
@@ -165,11 +187,15 @@ export const AddChildForm: React.FC<AddChildFormProps> = ({ onAdd, onClose, chil
                 type="tel"
                 id="celularResponsavel"
                 value={celularResponsavel}
-                onChange={(e) => setCelularResponsavel(e.target.value)}
+                onChange={handleCelularChange}
                 className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900"
                 placeholder="(00) 00000-0000"
+                maxLength={15}
                 required
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Digite apenas os números. Formatação automática.
+              </p>
             </div>
 
             <div>

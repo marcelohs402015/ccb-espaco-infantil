@@ -14,12 +14,6 @@ interface SpaceStore {
   igrejas: Igreja[];
   igrejaAtiva: string | null;
   dadosPorIgreja: Record<string, IgrejaData>;
-  // Getters para dados da igreja ativa
-  children: Child[];
-  settings: Settings;
-  cultoObservacoes: CultoObservacoes;
-  historicoCultos: HistoricoCulto[];
-  diasDeUso: DiaUso[];
   // Ações
   setIgrejaAtiva: (igrejaId: string | null) => void;
   addChild: (child: Child) => void;
@@ -70,23 +64,6 @@ export const useSpaceStore = create<SpaceStore>()(
       igrejas: [],
       igrejaAtiva: null,
       dadosPorIgreja: {},
-      
-      // Getters computados
-      get children() {
-        return getIgrejaData(get()).children;
-      },
-      get settings() {
-        return getIgrejaData(get()).settings;
-      },
-      get cultoObservacoes() {
-        return getIgrejaData(get()).cultoObservacoes;
-      },
-      get historicoCultos() {
-        return getIgrejaData(get()).historicoCultos;
-      },
-      get diasDeUso() {
-        return getIgrejaData(get()).diasDeUso;
-      },
       
       setIgrejaAtiva: (igrejaId) =>
         set((state) => {

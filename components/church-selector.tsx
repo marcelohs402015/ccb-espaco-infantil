@@ -8,17 +8,31 @@ export const ChurchSelector: React.FC = () => {
 
   const igrejaAtualNome = igrejas.find(i => i.id === igrejaAtiva)?.nome || 'Selecione uma igreja';
 
+  const handleOpenChurches = (): void => {
+    // Disparar evento para abrir modal de igrejas
+    window.dispatchEvent(new CustomEvent('openChurchesModal'));
+  };
+
   if (igrejas.length === 0) {
     return (
-      <div className="bg-yellow-100 border-2 border-yellow-400 rounded-xl p-4 mb-6">
-        <div className="flex items-center gap-3">
-          <Church className="w-6 h-6 text-yellow-700" />
-          <div>
-            <p className="font-bold text-yellow-800">Nenhuma igreja cadastrada</p>
-            <p className="text-sm text-yellow-700">
-              Clique em "Igrejas" no topo da página para cadastrar a primeira igreja.
-            </p>
+      <div className="bg-yellow-100 border-2 border-yellow-400 rounded-xl p-6 mb-6">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Church className="w-6 h-6 text-yellow-700" />
+            <div>
+              <p className="font-bold text-yellow-800">Nenhuma igreja cadastrada</p>
+              <p className="text-sm text-yellow-700">
+                Clique no botão ao lado para cadastrar a primeira igreja.
+              </p>
+            </div>
           </div>
+          <button
+            onClick={handleOpenChurches}
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center gap-2 whitespace-nowrap"
+          >
+            <Church className="w-5 h-5" />
+            Cadastrar Igreja
+          </button>
         </div>
       </div>
     );
@@ -26,12 +40,21 @@ export const ChurchSelector: React.FC = () => {
 
   return (
     <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 mb-6 border-2 border-blue-200 shadow-lg">
-      <label htmlFor="igreja-select" className="block text-sm font-bold text-gray-700 mb-3">
-        <div className="flex items-center gap-2">
-          <Church className="w-5 h-5 text-blue-600" />
-          Selecione a Igreja para Gerenciar:
-        </div>
-      </label>
+      <div className="flex items-center justify-between mb-3">
+        <label htmlFor="igreja-select" className="block text-sm font-bold text-gray-700">
+          <div className="flex items-center gap-2">
+            <Church className="w-5 h-5 text-blue-600" />
+            Selecione a Igreja para Gerenciar:
+          </div>
+        </label>
+        <button
+          onClick={handleOpenChurches}
+          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-semibold rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+        >
+          <Church className="w-4 h-4" />
+          Gerenciar Igrejas
+        </button>
+      </div>
       
       <div className="relative">
         <select

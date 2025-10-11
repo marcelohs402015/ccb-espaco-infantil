@@ -30,7 +30,18 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ): void => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Se mudou a data, limpar os campos de conteúdo
+    if (name === 'data' && value !== formData.data) {
+      setFormData({
+        data: value,
+        palavraLida: '',
+        hinosCantados: '',
+        aprendizado: '',
+      });
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   return (

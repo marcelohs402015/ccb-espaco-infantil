@@ -15,7 +15,32 @@ import { ChurchSelector } from '@/components/church-selector';
 import type { Child } from '@/types';
 
 export default function Home() {
-  const { children, settings, cultoObservacoes, addChild, updateChild, removeChild, updateSettings, updateCultoObservacoes, registrarDiaDeUso, igrejaAtiva } = useSpaceStore();
+  const { 
+    addChild, 
+    updateChild, 
+    removeChild, 
+    updateSettings, 
+    updateCultoObservacoes, 
+    registrarDiaDeUso, 
+    igrejaAtiva, 
+    dadosPorIgreja,
+    igrejas,
+    setIgrejaAtiva
+  } = useSpaceStore();
+  
+  // Dados reativos da igreja ativa
+  const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
+    ? dadosPorIgreja[igrejaAtiva] 
+    : {
+        children: [],
+        settings: { capacidadeMaxima: 30 },
+        cultoObservacoes: { data: new Date().toISOString().split('T')[0], palavraLida: '', hinosCantados: '', aprendizado: '' },
+        historicoCultos: [],
+        diasDeUso: []
+      };
+  
+  const { children, settings, cultoObservacoes } = igrejaData;
+  
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isObservationsOpen, setIsObservationsOpen] = useState(false);
@@ -28,6 +53,18 @@ export default function Home() {
   useEffect(() => {
     registrarDiaDeUso();
   }, [registrarDiaDeUso]);
+
+  // Listener para abrir modal de igrejas via evento
+  useEffect(() => {
+    const handleOpenChurches = (): void => {
+      setIsChurchesOpen(true);
+    };
+
+    window.addEventListener('openChurchesModal', handleOpenChurches);
+    return () => {
+      window.removeEventListener('openChurchesModal', handleOpenChurches);
+    };
+  }, []);
 
   const capacidadeAtual = children.length;
   const capacidadeMaxima = settings.capacidadeMaxima;
@@ -81,24 +118,9 @@ export default function Home() {
         {/* Church Selector */}
         <ChurchSelector />
 
-        {/* Bloquear acesso se não tiver igreja selecionada */}
-        {!igrejaAtiva ? (
-          <div className="bg-white rounded-3xl shadow-2xl p-16 text-center border-4 border-dashed border-blue-300">
-            <div className="animate-float mb-6">
-              <div className="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full p-8 inline-block">
-                <Church className="w-24 h-24 text-blue-400 mx-auto" />
-              </div>
-            </div>
-            <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 mb-3">
-              ⛪ Selecione uma Igreja
-            </h3>
-            <p className="text-gray-600 text-lg mb-8 font-medium">
-              Para começar a gerenciar o espaço infantil, selecione uma igreja acima ou cadastre uma nova clicando em "Igrejas".
-            </p>
-          </div>
-        ) : (
-          <>
         {/* Capacity Status */}
+        {igrejaAtiva ? (
+          <>
         <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border-4 border-purple-200 card-hover backdrop-blur-sm bg-opacity-95">
           <div className="flex items-center justify-between flex-wrap gap-6">
             <div className="flex items-center gap-4">
@@ -124,25 +146,14 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsChurchesOpen(true)}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-2xl button-pop flex items-center gap-2"
-                aria-label="Gerenciar Igrejas"
-              >
-                <Church className="w-6 h-6" />
-                Igrejas
-              </button>
-              
-              <button
-                onClick={() => setIsSettingsOpen(true)}
-                className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-2xl button-pop flex items-center gap-2"
-                aria-label="Configurações"
-              >
-                <Settings className="w-6 h-6" />
-                Configurar
-              </button>
-            </div>
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-2xl button-pop flex items-center gap-2"
+              aria-label="Configurações"
+            >
+              <Settings className="w-6 h-6" />
+              Configurar
+            </button>
           </div>
         </div>
 
@@ -330,7 +341,7 @@ export default function Home() {
           </div>
         )}
           </>
-        )}
+        ) : null}
       </div>
 
       {isAddFormOpen && (

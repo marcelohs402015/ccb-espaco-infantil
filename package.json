@@ -6,13 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "setup:supabase": "bash scripts/setup-supabase.sh",
+    "test:supabase": "node scripts/test-supabase-connection.js",
+    "db:types": "npx supabase gen types typescript --project-id ccbdadosdb > types/database.types.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.75.0",
+    "lucide-react": "^0.424.0",
     "next": "14.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "lucide-react": "^0.424.0",
     "zustand": "^4.5.4"
   },
   "devDependencies": {
@@ -27,4 +31,3 @@
     "typescript": "^5.5.4"
   }
 }
-

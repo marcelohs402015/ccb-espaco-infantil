@@ -1,6 +1,8 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { Child, Settings, CultoObservacoes, HistoricoCulto, DiaUso, Igreja } from '@/types';
+/**
+ * Store Principal - Agora usando Supabase + localStorage como backup
+ * CCB Espaço Infantil
+ */
+export * from './use-space-store-supabase';
 
 interface IgrejaData {
   children: Child[];

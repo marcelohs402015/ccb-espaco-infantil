@@ -228,7 +228,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
       {/* Modal de Detalhes do Culto */}
       {cultoDetalhado && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-gradient-to-r from-green-600 to-teal-600 p-4 flex justify-between items-center rounded-t-2xl">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-6 h-6 text-white" />
@@ -245,9 +245,9 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="p-6 space-y-6">
               {/* Data e Crianças */}
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 mb-6 border-2 border-green-200">
+              <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border-2 border-green-200">
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div>
                     <p className="text-sm font-semibold text-green-700 uppercase mb-1">Data do Culto</p>
@@ -271,12 +271,12 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
 
               {/* Palavra Lida */}
               {cultoDetalhado.palavraLida && (
-                <div className="mb-6">
-                  <label className="block text-sm font-bold text-green-700 uppercase mb-2">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Palavra Lida
                   </label>
-                  <div className="bg-white border-2 border-green-200 rounded-lg p-4">
-                    <p className="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap">
+                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                    <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
                       {cultoDetalhado.palavraLida}
                     </p>
                   </div>
@@ -285,12 +285,12 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
 
               {/* Hinos Cantados */}
               {cultoDetalhado.hinosCantados && (
-                <div className="mb-6">
-                  <label className="block text-sm font-bold text-green-700 uppercase mb-2">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Hinos Cantados
                   </label>
-                  <div className="bg-white border-2 border-green-200 rounded-lg p-4">
-                    <p className="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap">
+                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                    <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
                       {cultoDetalhado.hinosCantados}
                     </p>
                   </div>
@@ -299,12 +299,12 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
 
               {/* Aprendizado */}
               {cultoDetalhado.aprendizado && (
-                <div className="mb-6">
-                  <label className="block text-sm font-bold text-green-700 uppercase mb-2">
-                    Aprendizado/Ensinamento
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    O que as Crianças Aprenderam
                   </label>
-                  <div className="bg-white border-2 border-green-200 rounded-lg p-4">
-                    <p className="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap">
+                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                    <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
                       {cultoDetalhado.aprendizado}
                     </p>
                   </div>
@@ -318,15 +318,17 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
                   <p className="text-gray-500 font-medium">Nenhuma informação adicional registrada para este culto</p>
                 </div>
               )}
-            </div>
 
-            <div className="p-4 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
-              <button
-                onClick={() => setCultoDetalhado(null)}
-                className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
-              >
-                Fechar Detalhes
-              </button>
+              {/* Botão Fechar */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setCultoDetalhado(null)}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
+                >
+                  Fechar Detalhes
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -22,3 +22,18 @@ export interface CultoObservacoes {
   aprendizado: string;
 }
 
+export interface HistoricoCulto {
+  id: string;
+  data: string;
+  palavraLida: string;
+  hinosCantados: string;
+  aprendizado: string;
+  totalCriancas: number;
+}
+
+export interface DiaUso {
+  data: string;
+  totalCriancas: number;
+  cultoRealizado: boolean;
+}
+

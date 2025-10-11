@@ -1,0 +1,217 @@
+'use client';
+
+import { X, BookOpen, Calendar, Users, TrendingUp } from 'lucide-react';
+import { useSpaceStore } from '@/store/use-space-store';
+
+interface HistoryModalProps {
+  onClose: () => void;
+}
+
+export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
+  const { historicoCultos, diasDeUso } = useSpaceStore();
+
+  // Ordenar histórico por data (mais recente primeiro)
+  const historicosOrdenados = [...historicoCultos].sort((a, b) => 
+    new Date(b.data).getTime() - new Date(a.data).getTime()
+  );
+
+  // Ordenar dias de uso por data (mais recente primeiro)
+  const diasOrdenados = [...diasDeUso].sort((a, b) => 
+    new Date(b.data).getTime() - new Date(a.data).getTime()
+  );
+
+  const formatarData = (data: string): string => {
+    return new Date(data).toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const totalCultosRealizados = historicoCultos.length;
+  const totalDiasDeUso = diasDeUso.length;
+  const mediaCriancasPorCulto = historicoCultos.length > 0
+    ? Math.round(historicoCultos.reduce((sum, h) => sum + h.totalCriancas, 0) / historicoCultos.length)
+    : 0;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 p-4 flex justify-between items-center rounded-t-2xl">
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-6 h-6 text-white" />
+            <h2 className="text-xl font-bold text-white">
+              Histórico de Cultos e Uso do Sistema
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-white hover:bg-white hover:bg-opacity-20 p-1 rounded-lg transition-colors"
+            aria-label="Fechar histórico"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Estatísticas Resumidas */}
+        <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white rounded-xl p-4 shadow-md">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <BookOpen className="w-5 h-5 text-green-600" />
+                </div>
+                <p className="text-sm font-semibold text-gray-600">Cultos Realizados</p>
+              </div>
+              <p className="text-3xl font-black text-green-600">{totalCultosRealizados}</p>
+            </div>
+
+            <div className="bg-white rounded-xl p-4 shadow-md">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Calendar className="w-5 h-5 text-blue-600" />
+                </div>
+                <p className="text-sm font-semibold text-gray-600">Dias de Uso</p>
+              </div>
+              <p className="text-3xl font-black text-blue-600">{totalDiasDeUso}</p>
+            </div>
+
+            <div className="bg-white rounded-xl p-4 shadow-md">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Users className="w-5 h-5 text-purple-600" />
+                </div>
+                <p className="text-sm font-semibold text-gray-600">Média de Crianças</p>
+              </div>
+              <p className="text-3xl font-black text-purple-600">{mediaCriancasPorCulto}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6">
+          {/* Histórico de Cultos */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpen className="w-5 h-5 text-purple-600" />
+              <h3 className="text-xl font-bold text-gray-800">Histórico de Cultos</h3>
+            </div>
+
+            {historicosOrdenados.length === 0 ? (
+              <div className="text-center py-8 bg-gray-50 rounded-xl">
+                <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500 font-medium">Nenhum culto registrado ainda</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {historicosOrdenados.map((culto) => (
+                  <div
+                    key={culto.id}
+                    className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-5 border-2 border-green-200 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-bold text-green-700">
+                        {formatarData(culto.data)}
+                      </p>
+                      <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full">
+                        <Users className="w-4 h-4 text-purple-600" />
+                        <span className="text-sm font-bold text-purple-600">
+                          {culto.totalCriancas} {culto.totalCriancas === 1 ? 'criança' : 'crianças'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-4">
+                      {culto.palavraLida && (
+                        <div>
+                          <p className="text-xs font-bold text-green-700 uppercase mb-1">Palavra Lida</p>
+                          <p className="text-sm text-gray-800 bg-white p-3 rounded-lg border border-green-200">
+                            {culto.palavraLida}
+                          </p>
+                        </div>
+                      )}
+                      {culto.hinosCantados && (
+                        <div>
+                          <p className="text-xs font-bold text-green-700 uppercase mb-1">Hinos Cantados</p>
+                          <p className="text-sm text-gray-800 bg-white p-3 rounded-lg border border-green-200">
+                            {culto.hinosCantados}
+                          </p>
+                        </div>
+                      )}
+                      {culto.aprendizado && (
+                        <div>
+                          <p className="text-xs font-bold text-green-700 uppercase mb-1">Aprendizado</p>
+                          <p className="text-sm text-gray-800 bg-white p-3 rounded-lg border border-green-200">
+                            {culto.aprendizado}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Histórico de Dias de Uso */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Calendar className="w-5 h-5 text-blue-600" />
+              <h3 className="text-xl font-bold text-gray-800">Dias de Uso do Sistema</h3>
+            </div>
+
+            {diasOrdenados.length === 0 ? (
+              <div className="text-center py-8 bg-gray-50 rounded-xl">
+                <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500 font-medium">Nenhum dia registrado ainda</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {diasOrdenados.map((dia, index) => (
+                  <div
+                    key={index}
+                    className={`rounded-lg p-4 border-2 ${
+                      dia.cultoRealizado
+                        ? 'bg-green-50 border-green-300'
+                        : 'bg-blue-50 border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className={`w-4 h-4 ${dia.cultoRealizado ? 'text-green-600' : 'text-blue-600'}`} />
+                      <p className="text-xs font-bold text-gray-700">
+                        {new Date(dia.data).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-gray-600" />
+                        <span className="text-sm font-semibold text-gray-700">
+                          {dia.totalCriancas} {dia.totalCriancas === 1 ? 'criança' : 'crianças'}
+                        </span>
+                      </div>
+                      {dia.cultoRealizado && (
+                        <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full font-bold">
+                          Culto
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="p-4 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
+          <button
+            onClick={onClose}
+            className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+

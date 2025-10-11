@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, Settings, Users, BookOpen, Edit, Search } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Settings, Users, BookOpen, Edit, Search, History } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
 import { Header } from '@/components/header';
 import { ChildListItem } from '@/components/child-list-item';
@@ -9,15 +9,22 @@ import { AddChildForm } from '@/components/add-child-form';
 import { SettingsModal } from '@/components/settings-modal';
 import { ObservationsModal } from '@/components/observations-modal';
 import { GlobalAlert } from '@/components/global-alert';
+import { HistoryModal } from '@/components/history-modal';
 import type { Child } from '@/types';
 
 export default function Home() {
-  const { children, settings, cultoObservacoes, addChild, updateChild, removeChild, updateSettings, updateCultoObservacoes } = useSpaceStore();
+  const { children, settings, cultoObservacoes, addChild, updateChild, removeChild, updateSettings, updateCultoObservacoes, registrarDiaDeUso } = useSpaceStore();
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isObservationsOpen, setIsObservationsOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Registrar dia de uso quando o componente monta
+  useEffect(() => {
+    registrarDiaDeUso();
+  }, [registrarDiaDeUso]);
 
   const capacidadeAtual = children.length;
   const capacidadeMaxima = settings.capacidadeMaxima;
@@ -186,7 +193,16 @@ export default function Home() {
           >
             <div className="absolute inset-0 gradient-shine"></div>
             <BookOpen className="w-8 h-8 group-hover:rotate-12 transition-transform" />
-            <span className="relative z-10">📖 Sobre o Culto - para ver detalhes</span>
+            <span className="relative z-10">📖 Sobre o Culto</span>
+          </button>
+
+          <button
+            onClick={() => setIsHistoryOpen(true)}
+            className="flex-1 min-w-[280px] px-8 py-6 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white font-black text-xl rounded-2xl hover:scale-105 transition-all shadow-2xl hover:shadow-orange-500/50 button-pop flex items-center justify-center gap-3 border-4 border-white/30 relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 gradient-shine"></div>
+            <History className="w-8 h-8 group-hover:rotate-12 transition-transform" />
+            <span className="relative z-10">📚 Ver Histórico</span>
           </button>
         </div>
 
@@ -302,6 +318,12 @@ export default function Home() {
           observacoes={cultoObservacoes}
           onUpdate={updateCultoObservacoes}
           onClose={() => setIsObservationsOpen(false)}
+        />
+      )}
+
+      {isHistoryOpen && (
+        <HistoryModal
+          onClose={() => setIsHistoryOpen(false)}
         />
       )}
     </main>

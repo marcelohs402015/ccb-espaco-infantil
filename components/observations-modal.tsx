@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, BookOpen } from 'lucide-react';
+import { useSpaceStore } from '@/store/use-space-store';
 import type { CultoObservacoes } from '@/types';
 
 interface ObservationsModalProps {
@@ -16,10 +17,12 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
   onClose 
 }) => {
   const [formData, setFormData] = useState<CultoObservacoes>(observacoes);
+  const { salvarCultoNoHistorico } = useSpaceStore();
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     onUpdate(formData);
+    salvarCultoNoHistorico(); // Salva no histórico ao atualizar
     onClose();
   };
 

@@ -275,7 +275,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
                   <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Palavra Lida
                   </label>
-                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 h-[4rem] overflow-y-auto">
                     <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
                       {cultoDetalhado.palavraLida}
                     </p>
@@ -289,7 +289,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
                   <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Hinos Cantados
                   </label>
-                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 h-[6rem] overflow-y-auto">
                     <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
                       {cultoDetalhado.hinosCantados}
                     </p>
@@ -303,7 +303,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
                   <label className="block text-sm font-semibold text-gray-700 mb-1">
                     O que as Crianças Aprenderam
                   </label>
-                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 h-[9rem] overflow-y-auto">
                     <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
                       {cultoDetalhado.aprendizado}
                     </p>

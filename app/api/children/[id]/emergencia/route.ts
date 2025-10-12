@@ -6,6 +6,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, handleSupabaseError } from '@/lib/supabase';
 
+// Configuração para o runtime do Vercel
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/children/[id]/emergencia
  * Ativar chamado de emergência
@@ -16,6 +20,17 @@ export const POST = async (
   { params }: { params: { id: string } }
 ) => {
   try {
+    // Verificação robusta dos parâmetros
+    if (!params || !params.id) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'ID da criança é obrigatório',
+        },
+        { status: 400 }
+      );
+    }
+
     const { id } = params;
     const { ativar } = await request.json();
 

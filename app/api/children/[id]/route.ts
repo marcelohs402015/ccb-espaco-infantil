@@ -7,6 +7,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase, handleSupabaseError } from '@/lib/supabase';
 import type { TablesUpdate } from '@/types/database.types';
 
+// Configuração para o runtime do Vercel
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 type ChildUpdate = TablesUpdate<'children'>;
 
 /**

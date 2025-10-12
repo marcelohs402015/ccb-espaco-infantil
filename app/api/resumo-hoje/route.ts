@@ -6,6 +6,10 @@
 import { NextResponse } from 'next/server';
 import { supabase, handleSupabaseError } from '@/lib/supabase';
 
+// Configuração para o runtime do Vercel
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/resumo-hoje
  * Buscar resumo de todas as igrejas hoje (usando View)

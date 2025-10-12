@@ -89,8 +89,8 @@ export const CallModal: React.FC<CallModalProps> = ({
 
           <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3">
             <p className="text-xs text-yellow-800 text-center">
-              💡 <strong>Dica:</strong> Se estiver no celular, clique em "Ligar". 
-              No computador, use "Copiar" para copiar o número.
+              💡 <strong>Dica:</strong> Se estiver no celular, clique em &quot;Ligar&quot;. 
+              No computador, use &quot;Copiar&quot; para copiar o número.
             </p>
           </div>
         </div>

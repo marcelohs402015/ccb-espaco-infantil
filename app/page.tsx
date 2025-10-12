@@ -255,7 +255,7 @@ export default function Home() {
                 Nenhum resumo de culto cadastrado ainda
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                Use o botão "Criar" para adicionar um novo registro
+                Use o botão &quot;Criar&quot; para adicionar um novo registro
               </p>
             </div>
           )}

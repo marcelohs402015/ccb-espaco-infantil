@@ -1,19 +1,43 @@
-# 🙏 Sistema de Gerenciamento do Espaço Infantil - CCB
+# 🙏 Sistema de Gerenciamento do Espaço Infantil Bíblico - CCB
 
 ![CCB Logo](./public/ccb-logo.png)
 
 ## 📖 Para o Senhor Jesus e Deus
 
-Este sistema foi criado com amor e dedicação para servir à obra do Senhor no Espaço Infantil da Congregação Cristã no Brasil. Que este projeto possa auxiliar as irmãs auxiliadoras no cuidado das crianças durante os cultos, proporcionando segurança, organização e paz para os responsáveis e pequeninos.
+Este sistema foi criado com amor e dedicação para servir à obra do Senhor no Espaço Infantil Bíblico da Congregação Cristã no Brasil. Que este projeto possa auxiliar as irmãs auxiliadoras no cuidado das crianças durante os cultos, proporcionando segurança, organização e paz para os responsáveis e pequeninos.
 
 > *"E disse: Deixai vir os pequeninos a mim, e não os impeçais; porque dos tais é o reino de Deus."*  
 > **Lucas 18:16**
 
 ---
 
+## 🆕 Novidades da Versão 2.0 (Branch: developing)
+
+### 🚀 Novas Funcionalidades Implementadas:
+
+#### 🏛️ **Sistema Multi-Igreja**
+Agora você pode gerenciar **múltiplas igrejas** no mesmo sistema! Cada igreja tem seus dados completamente isolados no localStorage, permitindo uso por diferentes congregações sem risco de misturar informações.
+
+#### 📚 **Histórico Completo de Cultos**
+Sistema automático que registra todos os cultos realizados com palavras lidas, hinos cantados e aprendizados. Inclui estatísticas e visualização detalhada.
+
+#### 📅 **Registro de Dias de Uso**
+O sistema registra automaticamente todos os dias em que foi utilizado, permitindo acompanhamento de frequência e uso.
+
+#### 📱 **Máscara de Celular Automática**
+Formatação automática do telefone no padrão brasileiro (XX) XXXXX-XXXX enquanto você digita.
+
+#### 🔄 **Limpeza Automática de Campos**
+Ao mudar a data do culto, os campos são automaticamente limpos para evitar duplicação de dados.
+
+#### 🎨 **Interface Aprimorada**
+Design moderno com glassmorphism, animações suaves e experiência de usuário otimizada.
+
+---
+
 ## 🎯 Propósito do Sistema
 
-O **Sistema de Gerenciamento do Espaço Infantil** foi desenvolvido para auxiliar as irmãs auxiliadoras da Congregação Cristã no Brasil no gerenciamento e cuidado das crianças durante os cultos religiosos.
+O **Sistema de Gerenciamento do Espaço Infantil Bíblico** foi desenvolvido para auxiliar as irmãs auxiliadoras da Congregação Cristã no Brasil no gerenciamento e cuidado das crianças durante os cultos religiosos.
 
 ### Principais Objetivos:
 
@@ -26,16 +50,48 @@ O **Sistema de Gerenciamento do Espaço Infantil** foi desenvolvido para auxilia
 
 ## ✨ Funcionalidades
 
+### 🏛️ **NOVO!** Gerenciamento Multi-Igreja
+- **Cadastro de múltiplas igrejas** com ID único e nome
+- **Isolamento total de dados** por igreja no localStorage
+- **Seletor de igreja** intuitivo no topo da página
+- **Troca rápida** entre igrejas via dropdown
+- Cada igreja mantém:
+  - ✅ Suas próprias crianças cadastradas
+  - ✅ Seus próprios cultos e observações
+  - ✅ Seu próprio histórico completo
+  - ✅ Suas próprias configurações
+  - ✅ Seus próprios dias de uso
+- **Gestão completa**: Adicionar, editar e remover igrejas
+- **Preparado para Supabase**: Estrutura pronta para migração futura
+
+### 📚 **NOVO!** Sistema de Histórico Completo
+- **Histórico de todos os cultos** já realizados
+- **Registro automático de dias de uso** do sistema
+- **Estatísticas detalhadas**:
+  - Total de cultos realizados
+  - Total de dias que o sistema foi usado
+  - Média de crianças por culto
+- **Visualização organizada** por data (mais recente primeiro)
+- **Botão "Ver Detalhes"** em cada culto para visualização completa
+- **Campos com alturas definidas** para melhor leitura:
+  - Palavra Lida: 2 linhas
+  - Hinos Cantados: 4 linhas
+  - O que Aprenderam: 6 linhas
+- **Calendário visual** de dias de uso com indicadores coloridos
+- **Isolado por igreja**: Cada igreja tem seu próprio histórico
+
 ### 1️⃣ Cadastro de Crianças
 - Registro completo com nome da criança
 - Informações do responsável (pai, mãe ou outro)
-- Telefone para contato de emergência
+- **Telefone com máscara automática** (XX) XXXXX-XXXX
 - Campo de observações para informações importantes (alergias, cuidados especiais, etc.)
 - Horário de entrada automático
+- **Pesquisa por nome** da criança
 
 ### 2️⃣ Sistema de Emergência
 - Botão de **EMERGÊNCIA** em cada card de criança
 - **Alerta sonoro** automático ao acionar a emergência
+- **Alerta global** visível em toda a tela
 - Modal elegante com informações do responsável
 - Opções para:
   - Copiar número de telefone
@@ -44,12 +100,13 @@ O **Sistema de Gerenciamento do Espaço Infantil** foi desenvolvido para auxilia
 - Indicador visual quando o responsável foi chamado
 
 ### 3️⃣ Controle de Capacidade
-- Configuração de capacidade máxima do espaço
+- Configuração de capacidade máxima do espaço **por igreja**
 - Contador em tempo real de crianças presentes
 - Indicadores visuais de ocupação:
   - 🟢 Verde: até 70% da capacidade
   - 🟡 Amarelo: 70% a 90% da capacidade
   - 🔴 Vermelho: acima de 90% da capacidade
+- **Bloqueio automático** de novos cadastros quando capacidade cheia
 
 ### 4️⃣ Registrando Informações Sobre o Culto
 - Data do culto
@@ -57,12 +114,16 @@ O **Sistema de Gerenciamento do Espaço Infantil** foi desenvolvido para auxilia
 - Hinos cantados durante o culto
 - O que as crianças aprenderam
 - Exibição de resumo na tela principal
+- **Limpeza automática de campos** ao mudar a data
+- **Salvamento automático no histórico**
+- Total de crianças presentes registrado automaticamente
 
 ### 5️⃣ Gestão de Crianças
 - Visualização em cards organizados
 - Edição de informações das crianças
 - Remoção com confirmação de segurança
 - Layout responsivo para diferentes dispositivos
+- **Pesquisa em tempo real** por nome
 
 ---
 
@@ -88,52 +149,76 @@ O **Sistema de Gerenciamento do Espaço Infantil** foi desenvolvido para auxilia
 
 ## 🚀 Como Usar
 
-### 1. Iniciando o Sistema
+### 1. Iniciando o Sistema pela Primeira Vez
 
 Acesse a URL do sistema no navegador (pode ser em celular, tablet ou computador).
 
-### 2. Configurando a Capacidade
+### 2. Cadastrando sua Igreja
+
+**Primeira vez usando o sistema:**
+
+1. Você verá um **alerta amarelo** no topo: "Nenhuma igreja cadastrada"
+2. Clique no botão azul **"Cadastrar Igreja"**
+3. Preencha:
+   - **ID da Igreja**: identificador único (ex: `ccb-bras`, `ccb-mooca-01`)
+   - **Nome da Igreja**: nome completo (ex: `CCB Brás`, `CCB São Paulo - Centro`)
+4. Clique em **"Cadastrar"**
+5. A igreja aparecerá no **dropdown** do seletor
+6. Selecione a igreja no dropdown
+7. Pronto! Agora você pode começar a usar o sistema
+
+**Se você gerencia múltiplas igrejas:**
+
+- Clique em **"Gerenciar Igrejas"** (botão azul no seletor do topo)
+- Adicione quantas igrejas precisar
+- Use o **dropdown** para alternar entre elas
+- Cada igreja terá seus dados completamente isolados
+
+### 3. Configurando a Capacidade
 
 1. Clique no botão **"Configurar"** na seção de capacidade
 2. Defina o número máximo de crianças permitidas no espaço
 3. Clique em **"Salvar"**
+4. ⚠️ **Importante**: Cada igreja pode ter sua própria capacidade máxima
 
-### 3. Cadastrando uma Criança
+### 4. Cadastrando uma Criança
 
-1. Clique no botão **"Nova Criança"**
+1. Clique no botão **"✨ Nova Criança"**
 2. Preencha as informações:
    - Nome da criança
    - Nome do responsável
    - Tipo (Pai, Mãe ou Outro)
-   - Telefone para contato
+   - **Telefone para contato** (digite só números: `11999999999` → formata automaticamente para `(11) 99999-9999`)
    - Observações importantes (opcional)
 3. Clique em **"Cadastrar"**
+4. A criança será cadastrada **apenas na igreja selecionada**
 
-### 4. Em Caso de Emergência
+### 5. Em Caso de Emergência
 
 1. Localize o card da criança
 2. Clique no botão vermelho **"EMERGÊNCIA"**
 3. Um alerta sonoro será tocado
-4. Modal aparecerá com opções para:
+4. **Alerta global** aparece na tela com destaque
+5. Modal com opções para:
    - **Copiar** o número do responsável
    - **Ligar** diretamente (em celulares)
-5. Se necessário, use o botão **"Rechamar"** para repetir o processo
+6. Se necessário, use o botão **"Rechamar"** para repetir o processo
 
-### 5. Editando Informações de uma Criança
+### 6. Editando Informações de uma Criança
 
 1. No card da criança, clique no ícone de **lápis** (editar)
 2. Modifique as informações necessárias
 3. Clique em **"Salvar"**
 
-### 6. Removendo uma Criança
+### 7. Removendo uma Criança
 
 1. No card da criança, clique no ícone de **lixeira**
 2. Confirme a remoção no modal que aparecer
-3. A criança será removida da lista
+3. A criança será removida da lista **da igreja atual**
 
-### 7. Registrando Informações do Culto
+### 8. Registrando Informações do Culto
 
-1. Clique no botão **"Sobre o Culto"**
+1. Clique no botão **"📖 Sobre o Culto"**
 2. Preencha:
    - Data do culto
    - Palavra lida (versículos e mensagem)
@@ -141,6 +226,32 @@ Acesse a URL do sistema no navegador (pode ser em celular, tablet ou computador)
    - O que as crianças aprenderam
 3. Clique em **"Salvar"**
 4. As informações aparecerão no resumo na tela principal
+5. **Automático**: Culto é salvo no histórico da igreja
+
+### 9. **NOVO!** Visualizando o Histórico
+
+1. Clique no botão **"📚 Ver Histórico"**
+2. Veja as estatísticas:
+   - Total de cultos realizados
+   - Total de dias de uso
+   - Média de crianças por culto
+3. **Histórico de Cultos**: Lista completa de todos os cultos
+4. **Botão "Ver Detalhes"**: Clique para ver informações completas
+5. **Dias de Uso**: Calendário visual de todos os dias que o sistema foi usado
+
+### 10. **NOVO!** Alternando Entre Igrejas
+
+1. Use o **dropdown** no seletor azul do topo
+2. Selecione a igreja desejada
+3. Todos os dados mudam instantaneamente para a igreja selecionada
+4. Para adicionar mais igrejas: clique em **"Gerenciar Igrejas"**
+
+### 11. Pesquisando Crianças
+
+1. Quando houver crianças cadastradas, um **campo de busca** aparece
+2. Digite o nome da criança
+3. A lista filtra em tempo real
+4. Mostra quantas crianças foram encontradas
 
 ---
 
@@ -223,29 +334,70 @@ O sistema utiliza uma biblioteca moderna chamada **Zustand** que gerencia todos 
 
 ### 📊 Estrutura dos Dados Salvos
 
-Os dados são organizados de forma inteligente no localStorage:
+Os dados são organizados de forma inteligente no localStorage com **isolamento completo por igreja**:
 
 ```json
 {
-  "children": [
+  "igrejas": [
     {
-      "id": "1697123456789",
-      "nome": "Maria da Silva",
-      "nomeResponsavel": "João da Silva",
-      "tipoResponsavel": "pai",
-      "celularResponsavel": "(11) 99999-9999",
-      "observacoes": "Alérgica a amendoim",
-      "horaEntrada": "09:30"
+      "id": "ccb-bras",
+      "nome": "CCB Brás",
+      "dataCadastro": "2025-10-13T10:30:00.000Z"
+    },
+    {
+      "id": "ccb-mooca",
+      "nome": "CCB Mooca",
+      "dataCadastro": "2025-10-13T11:00:00.000Z"
     }
   ],
-  "settings": {
-    "capacidadeMaxima": 30
-  },
-  "cultoObservacoes": {
-    "data": "2025-10-11",
-    "palavraLida": "João 3:16",
-    "hinosCantados": "Hino 5, 12, 23",
-    "aprendizado": "O amor de Deus"
+  "igrejaAtiva": "ccb-bras",
+  "dadosPorIgreja": {
+    "ccb-bras": {
+      "children": [
+        {
+          "id": "1697123456789",
+          "nome": "Maria da Silva",
+          "nomeResponsavel": "João da Silva",
+          "tipoResponsavel": "pai",
+          "celularResponsavel": "(11) 99999-9999",
+          "observacoes": "Alérgica a amendoim",
+          "horaEntrada": "09:30"
+        }
+      ],
+      "settings": {
+        "capacidadeMaxima": 30
+      },
+      "cultoObservacoes": {
+        "data": "2025-10-13",
+        "palavraLida": "João 3:16 - Porque Deus amou o mundo...",
+        "hinosCantados": "Hino 5, Hino 12, Hino 23",
+        "aprendizado": "As crianças aprenderam sobre o amor de Deus"
+      },
+      "historicoCultos": [
+        {
+          "id": "1697123456789",
+          "data": "2025-10-13",
+          "palavraLida": "João 3:16",
+          "hinosCantados": "Hino 5, 12, 23",
+          "aprendizado": "O amor de Deus",
+          "totalCriancas": 15
+        }
+      ],
+      "diasDeUso": [
+        {
+          "data": "2025-10-13",
+          "totalCriancas": 15,
+          "cultoRealizado": true
+        }
+      ]
+    },
+    "ccb-mooca": {
+      "children": [...],
+      "settings": {...},
+      "cultoObservacoes": {...},
+      "historicoCultos": [...],
+      "diasDeUso": [...]
+    }
   }
 }
 ```
@@ -324,6 +476,31 @@ Para detalhes técnicos completos sobre o armazenamento, consulte o arquivo **CO
 - 📱 Mantenha o celular com som ligado para ouvir os alertas
 - 🔋 Mantenha o dispositivo carregado durante o culto
 - 📶 Não é necessária conexão com internet após carregar a página
+- 🏛️ Cadastre todas as suas igrejas e alterne facilmente entre elas
+
+---
+
+## 🛠️ Ferramentas de Debug e Manutenção
+
+### Verificar/Limpar localStorage
+
+Acesse a ferramenta de debug em:
+```
+http://localhost:3000/limpar-storage.html
+```
+
+**Funcionalidades da Ferramenta:**
+- 📊 Visualizar toda estrutura de dados do localStorage
+- 🔍 Ver quantas igrejas estão cadastradas
+- 📋 Verificar qual igreja está ativa
+- 🗑️ Limpar TODO o localStorage (reset completo)
+- ⚠️ Útil para debug e resolução de problemas
+
+**Quando usar:**
+- Se o sistema apresentar comportamento estranho
+- Se precisar começar do zero
+- Para verificar a integridade dos dados
+- Para debug em desenvolvimento
 
 ---
 
@@ -344,9 +521,30 @@ Este projeto é dedicado ao **Senhor Jesus Cristo** e a **Deus Pai**, que nos de
 
 ---
 
+## 📚 Documentação Adicional
+
+### Arquivos de Documentação:
+
+- **COMO-FUNCIONA.md**: Explicação detalhada de como o sistema funciona tecnicamente
+- **HISTORICO.md**: Documentação completa do sistema de histórico de cultos
+- **README.md**: Este arquivo (visão geral do sistema)
+
+### Links Úteis:
+
+- **Repositório**: [GitHub - ccb-espaco-infantil](https://github.com/marcelohs402015/ccb-espaco-infantil)
+- **Branch Stable**: `main` (versão estável)
+- **Branch Development**: `developing` (novas funcionalidades)
+- **Ferramenta Debug**: `/limpar-storage.html` (em localhost)
+
+---
+
 ## 📞 Suporte e Melhorias
 
 Este sistema está em constante evolução. Sugestões de melhorias e relatos de problemas são bem-vindos para que possamos servir cada vez melhor à obra do Senhor.
+
+### Contato:
+- **Desenvolvedor**: Marcelo Hernandes
+- **GitHub**: [@marcelohs402015](https://github.com/marcelohs402015)
 
 ---
 

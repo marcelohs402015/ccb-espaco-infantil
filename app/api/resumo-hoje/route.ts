@@ -12,10 +12,8 @@ import { supabase, handleSupabaseError } from '@/lib/supabase';
  */
 export const GET = async () => {
   try {
-    const { data, error } = await supabase
-      .from('v_criancas_hoje')
-      .select('*')
-      .order('igreja_nome');
+    // @ts-ignore - v_criancas_hoje é uma VIEW que não está nos tipos gerados
+    const { data, error } = await supabase.from('v_criancas_hoje').select('*').order('igreja_nome');
 
     if (error) {
       throw error;
@@ -24,7 +22,9 @@ export const GET = async () => {
     // Calcular totais
     const totais = {
       total_igrejas: data?.length || 0,
+      // @ts-ignore - VIEW tem estrutura diferente das tabelas
       total_criancas: data?.reduce((sum, item) => sum + (item.total_criancas || 0), 0) || 0,
+      // @ts-ignore - VIEW tem estrutura diferente das tabelas
       total_chamados_ativos: data?.reduce((sum, item) => sum + (item.chamados_ativos || 0), 0) || 0,
     };
 

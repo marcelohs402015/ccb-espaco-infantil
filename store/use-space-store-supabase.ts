@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import type { Child, Settings, CultoObservacoes, HistoricoCulto, DiaUso, Igreja } from '@/types';
+import type { Child, Settings, CultoObservacoes, HistoricoCulto, DiaUso, Igreja, ResponsavelType } from '@/types';
 
 interface IgrejaData {
   children: Child[];
@@ -72,9 +72,16 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
       if (error) throw error;
 
-      set({ igrejas: data || [], isLoading: false });
+      // Mapear snake_case para camelCase
+      const igrejasMapeadas: Igreja[] = (data || []).map(igreja => ({
+        id: igreja.id,
+        nome: igreja.nome,
+        dataCadastro: igreja.data_cadastro,
+      }));
+
+      set({ igrejas: igrejasMapeadas, isLoading: false });
       
-      console.log('✅ Igrejas carregadas:', data?.length);
+      console.log('✅ Igrejas carregadas:', igrejasMapeadas.length);
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao carregar igrejas:', error);
@@ -87,7 +94,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
       const hoje = new Date().toISOString().split('T')[0];
 
       // Carregar children do dia
-      const { data: children } = await supabase
+      const { data: childrenData } = await supabase
         .from('children')
         .select('*')
         .eq('igreja_id', igrejaId)
@@ -125,8 +132,20 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         .order('data', { ascending: false })
         .limit(30);
 
+      // Mapear children de snake_case para camelCase
+      const children: Child[] = (childrenData || []).map(child => ({
+        id: child.id,
+        nome: child.nome,
+        nomeResponsavel: child.nome_responsavel,
+        tipoResponsavel: child.tipo_responsavel as ResponsavelType,
+        celularResponsavel: child.celular_responsavel,
+        observacoes: child.observacoes || '',
+        horaEntrada: child.hora_entrada,
+        isChamadoAtivo: child.is_chamado_ativo || false,
+      }));
+
       const igrejaData: IgrejaData = {
-        children: children || [],
+        children,
         settings: settings ? {
           capacidadeMaxima: settings.capacidade_maxima || 30
         } : defaultSettings,
@@ -217,11 +236,11 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         id: data.id,
         nome: data.nome,
         nomeResponsavel: data.nome_responsavel,
-        tipoResponsavel: data.tipo_responsavel as any,
+        tipoResponsavel: data.tipo_responsavel as ResponsavelType,
         celularResponsavel: data.celular_responsavel,
         observacoes: data.observacoes || '',
         horaEntrada: data.hora_entrada,
-        isChamadoAtivo: data.is_chamado_ativo,
+        isChamadoAtivo: data.is_chamado_ativo || false,
       };
 
       // Atualizar estado local
@@ -284,11 +303,11 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         id: data.id,
         nome: data.nome,
         nomeResponsavel: data.nome_responsavel,
-        tipoResponsavel: data.tipo_responsavel as any,
+        tipoResponsavel: data.tipo_responsavel as ResponsavelType,
         celularResponsavel: data.celular_responsavel,
         observacoes: data.observacoes || '',
         horaEntrada: data.hora_entrada,
-        isChamadoAtivo: data.is_chamado_ativo,
+        isChamadoAtivo: data.is_chamado_ativo || false,
       };
 
       // Atualizar estado local
@@ -702,8 +721,15 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         console.log('✅ Settings criados automaticamente');
       }
 
+      // Mapear snake_case para camelCase
+      const igrejaLocal: Igreja = {
+        id: data.id,
+        nome: data.nome,
+        dataCadastro: data.data_cadastro,
+      };
+
       set((state) => ({
-        igrejas: [...state.igrejas, data],
+        igrejas: [...state.igrejas, igrejaLocal],
         isLoading: false,
       }));
 
@@ -729,9 +755,16 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
       if (error) throw error;
 
+      // Mapear snake_case para camelCase
+      const igrejaAtualizada: Igreja = {
+        id: data.id,
+        nome: data.nome,
+        dataCadastro: data.data_cadastro,
+      };
+
       set((state) => ({
         igrejas: state.igrejas.map((igreja) =>
-          igreja.id === id ? { ...igreja, ...data } : igreja
+          igreja.id === id ? igrejaAtualizada : igreja
         ),
         isLoading: false,
       }));

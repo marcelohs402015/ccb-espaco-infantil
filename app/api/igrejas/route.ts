@@ -5,7 +5,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, handleSupabaseError } from '@/lib/supabase';
-import type { IgrejaInsert } from '@/types/database.types';
+import type { TablesInsert } from '@/types/database.types';
+
+type IgrejaInsert = TablesInsert<'igrejas'>;
 
 /**
  * GET /api/igrejas

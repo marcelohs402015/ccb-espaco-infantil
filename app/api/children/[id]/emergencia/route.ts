@@ -29,14 +29,10 @@ export const POST = async (
       );
     }
 
-    // Criar objeto de update com tipo explícito
-    const updateData: Record<string, any> = {
-      is_chamado_ativo: ativar
-    };
-
+    // @ts-ignore - Supabase types not generated yet
     const { data, error } = await supabase
       .from('children')
-      .update(updateData)
+      .update({ is_chamado_ativo: ativar })
       .eq('id', id)
       .select()
       .single();

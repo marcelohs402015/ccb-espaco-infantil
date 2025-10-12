@@ -36,6 +36,7 @@ interface SpaceStore {
   clearAllData: () => Promise<void>;
   clearHistoricoCultos: () => Promise<void>;
   removeCultoFromHistorico: (cultoId: string) => Promise<void>;
+  limparDadosMockados: () => Promise<void>;
 }
 
 const defaultSettings: Settings = {
@@ -110,13 +111,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         .eq('igreja_id', igrejaId)
         .maybeSingle();
 
-      // Carregar observações do culto de hoje
-      const { data: cultoObs } = await supabase
-        .from('culto_observacoes')
-        .select('*')
-        .eq('igreja_id', igrejaId)
-        .eq('data', hoje)
-        .single();
+      // Remover uso de culto_observacoes - usar apenas historico_cultos
 
       // Carregar histórico de cultos
       const { data: historico } = await supabase
@@ -151,11 +146,12 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         settings: settings ? {
           capacidadeMaxima: settings.capacidade_maxima || 30
         } : defaultSettings,
-        cultoObservacoes: cultoObs ? {
-          data: cultoObs.data,
-          palavraLida: cultoObs.palavra_lida || '',
-          hinosCantados: cultoObs.hinos_cantados || '',
-          aprendizado: cultoObs.aprendizado || '',
+        // Usar o registro mais recente do histórico como "observações atuais"
+        cultoObservacoes: historico && historico.length > 0 ? {
+          data: historico[0].data,
+          palavraLida: historico[0].palavra_lida || '',
+          hinosCantados: historico[0].hinos_cantados || '',
+          aprendizado: historico[0].aprendizado || '',
         } : defaultCultoObservacoes,
         historicoCultos: (historico || []).map(h => ({
           id: h.id,
@@ -425,62 +421,8 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
   },
 
   updateCultoObservacoes: async (observacoes) => {
-    const { igrejaAtiva, dadosPorIgreja } = get();
-    if (!igrejaAtiva) return;
-
-    const igrejaData = dadosPorIgreja[igrejaAtiva] || createDefaultIgrejaData();
-    const novasObservacoes = { ...igrejaData.cultoObservacoes, ...observacoes };
-
-    set({ isLoading: true, error: null });
-    try {
-      const observacoesPayload = {
-        igreja_id: igrejaAtiva,
-        data: novasObservacoes.data,
-        palavra_lida: novasObservacoes.palavraLida || null,
-        hinos_cantados: novasObservacoes.hinosCantados || null,
-        aprendizado: novasObservacoes.aprendizado || null,
-      };
-
-      console.log('📤 Salvando observações do culto:', observacoesPayload);
-
-      const { data, error } = await supabase
-        .from('culto_observacoes')
-        .upsert(observacoesPayload, {
-          onConflict: 'igreja_id,data', // Chave única composta
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('❌ Erro detalhado:', error);
-        throw error;
-      }
-
-      console.log('✅ Observações do culto salvas no Supabase:', data);
-
-      // Atualizar estado local
-      set((state) => {
-        const igrejaData = state.dadosPorIgreja[igrejaAtiva] || createDefaultIgrejaData();
-        return {
-          dadosPorIgreja: {
-            ...state.dadosPorIgreja,
-            [igrejaAtiva]: {
-              ...igrejaData,
-              cultoObservacoes: novasObservacoes,
-            },
-          },
-          isLoading: false,
-        };
-      });
-
-      console.log('✅ Estado local atualizado');
-      
-      // Registrar dia de uso automaticamente
-      await get().registrarDiaDeUso();
-    } catch (error: any) {
-      set({ error: error.message, isLoading: false });
-      console.error('❌ Erro ao salvar observações:', error);
-    }
+    // Redirecionar para atualizarUltimoCultoHistorico para usar apenas historico_cultos
+    return await get().atualizarUltimoCultoHistorico(observacoes);
   },
 
   salvarCultoNoHistorico: async () => {
@@ -907,6 +849,43 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao remover culto do histórico:', error);
+    }
+  },
+
+  limparDadosMockados: async () => {
+    const { igrejaAtiva } = get();
+    if (!igrejaAtiva) {
+      console.error('❌ Nenhuma igreja ativa');
+      return;
+    }
+
+    set({ isLoading: true, error: null });
+    try {
+      console.log('🧹 Limpando dados mockados...');
+
+      // Não precisa mais limpar culto_observacoes, apenas historico_cultos
+
+      // Limpar registros com dados mockados da tabela historico_cultos
+      const { error: errorHist } = await supabase
+        .from('historico_cultos')
+        .delete()
+        .eq('igreja_id', igrejaAtiva)
+        .or('palavra_lida.eq.eerrr,hinos_cantados.eq.rrrr,aprendizado.eq.rrrr');
+
+      if (errorHist && errorHist.code !== 'PGRST116') {
+        console.error('❌ Erro ao limpar historico_cultos:', errorHist);
+      }
+
+      console.log('✅ Dados mockados removidos');
+      
+      // Recarregar dados
+      await get().loadIgrejaData(igrejaAtiva);
+      
+      set({ isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+      console.error('❌ Erro ao limpar dados mockados:', error);
+      throw error;
     }
   },
 }));

@@ -47,6 +47,9 @@ export default function Home() {
   
   const { children, settings, cultoObservacoes, historicoCultos } = igrejaData;
   
+  // Simplificado: usar sempre o registro mais recente do histórico
+  const dadosParaExibir = historicoCultos && historicoCultos.length > 0 ? historicoCultos[0] : null;
+  
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isObservationsOpen, setIsObservationsOpen] = useState(false);
@@ -196,13 +199,13 @@ export default function Home() {
               <BookOpen className="w-7 h-7 text-green-700" />
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">Resumo do Culto</h3>
-                {cultoObservacoes && (cultoObservacoes.palavraLida || cultoObservacoes.hinosCantados || cultoObservacoes.aprendizado) ? (
+                {dadosParaExibir && (dadosParaExibir.palavraLida || dadosParaExibir.hinosCantados || dadosParaExibir.aprendizado) ? (
                   <p className="text-sm text-green-600 font-medium">
-                    {new Date(cultoObservacoes.data + 'T00:00:00').toLocaleDateString('pt-BR', {
+                    {new Date(dadosParaExibir.data + 'T00:00:00').toLocaleDateString('pt-BR', {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric'
-                    })} - {new Date(cultoObservacoes.data + 'T00:00:00').toLocaleDateString('pt-BR', {
+                    })} - {new Date(dadosParaExibir.data + 'T00:00:00').toLocaleDateString('pt-BR', {
                       weekday: 'long'
                     })}
                   </p>
@@ -233,29 +236,29 @@ export default function Home() {
             </div>
           </div>
           
-          {cultoObservacoes && (cultoObservacoes.palavraLida || cultoObservacoes.hinosCantados || cultoObservacoes.aprendizado) && (
+          {historicoCultos && historicoCultos.length > 0 && (
             <div className="grid md:grid-cols-3 gap-6">
-              {cultoObservacoes.palavraLida && (
+              {dadosParaExibir?.palavraLida && (
                 <div>
                   <p className="text-sm font-bold text-green-700 uppercase mb-2">Palavra Lida</p>
                   <p className="text-base text-gray-800 bg-white p-4 rounded-lg border border-green-200 min-h-[80px] leading-relaxed">
-                    {cultoObservacoes.palavraLida}
+                    {dadosParaExibir.palavraLida}
                   </p>
                 </div>
               )}
-              {cultoObservacoes.hinosCantados && (
+              {dadosParaExibir?.hinosCantados && (
                 <div>
                   <p className="text-sm font-bold text-green-700 uppercase mb-2">Hinos Cantados</p>
                   <p className="text-base text-gray-800 bg-white p-4 rounded-lg border border-green-200 min-h-[80px] leading-relaxed">
-                    {cultoObservacoes.hinosCantados}
+                    {dadosParaExibir.hinosCantados}
                   </p>
                 </div>
               )}
-              {cultoObservacoes.aprendizado && (
+              {dadosParaExibir?.aprendizado && (
                 <div>
                   <p className="text-sm font-bold text-green-700 uppercase mb-2">Aprendizado</p>
                   <p className="text-base text-gray-800 bg-white p-4 rounded-lg border border-green-200 min-h-[80px] leading-relaxed">
-                    {cultoObservacoes.aprendizado}
+                    {dadosParaExibir.aprendizado}
                   </p>
                 </div>
               )}
@@ -390,7 +393,7 @@ export default function Home() {
             )}
           </div>
         )}
-          </>
+        </>
         ) : null}
       </div>
 

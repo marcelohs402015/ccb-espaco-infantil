@@ -12,7 +12,6 @@ import { GlobalAlert } from '@/components/global-alert';
 import { HistoryModal } from '@/components/history-modal';
 import { ChurchesModal } from '@/components/churches-modal';
 import { ChurchSelector } from '@/components/church-selector';
-import { CreateCultoModal } from '@/components/create-culto-modal';
 import { EditLastCultoModal } from '@/components/edit-last-culto-modal';
 import type { Child } from '@/types';
 
@@ -47,15 +46,20 @@ export default function Home() {
   
   const { children, settings, cultoObservacoes, historicoCultos } = igrejaData;
   
-  // Simplificado: usar sempre o registro mais recente do histórico
-  const dadosParaExibir = historicoCultos && historicoCultos.length > 0 ? historicoCultos[0] : null;
+  // Usar sempre o registro mais recente (ordenar por data se necessário)
+  const dadosParaExibir = historicoCultos && historicoCultos.length > 0 
+    ? [...historicoCultos].sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())[0]
+    : null;
+  
+  // Debug: mostrar qual registro está sendo usado
+  console.log('🔍 Todos os históricos:', historicoCultos);
+  console.log('🎯 Dados para exibir (mais recente):', dadosParaExibir);
   
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isObservationsOpen, setIsObservationsOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isChurchesOpen, setIsChurchesOpen] = useState(false);
-  const [isCreateCultoOpen, setIsCreateCultoOpen] = useState(false);
   const [isEditLastCultoOpen, setIsEditLastCultoOpen] = useState(false);
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -217,14 +221,6 @@ export default function Home() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={() => setIsCreateCultoOpen(true)}
-                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md"
-                aria-label="Criar novo registro de culto"
-              >
-                <Plus className="w-5 h-5" />
-                Criar
-              </button>
               <button
                 onClick={() => setIsEditLastCultoOpen(true)}
                 className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md"
@@ -413,14 +409,6 @@ export default function Home() {
         />
       )}
 
-      {isObservationsOpen && (
-        <ObservationsModal
-          observacoes={cultoObservacoes}
-          onUpdate={updateCultoObservacoes}
-          onClose={() => setIsObservationsOpen(false)}
-        />
-      )}
-
       {isHistoryOpen && (
         <HistoryModal
           onClose={() => setIsHistoryOpen(false)}
@@ -433,9 +421,11 @@ export default function Home() {
         />
       )}
 
-      {isCreateCultoOpen && (
-        <CreateCultoModal
-          onClose={() => setIsCreateCultoOpen(false)}
+      {isObservationsOpen && (
+        <ObservationsModal
+          observacoes={cultoObservacoes}
+          onUpdate={updateCultoObservacoes}
+          onClose={() => setIsObservationsOpen(false)}
         />
       )}
 

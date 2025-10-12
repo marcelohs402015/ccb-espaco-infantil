@@ -30,24 +30,53 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
     return `${ano}-${mes}-${dia}`;
   };
 
+  // Sempre usar a data atual do sistema operacional
+  const obterDataAtual = (): string => {
+    const hoje = new Date();
+    const dia = hoje.getDate().toString().padStart(2, '0');
+    const mes = (hoje.getMonth() + 1).toString().padStart(2, '0');
+    const ano = hoje.getFullYear().toString();
+    return `${dia}/${mes}/${ano}`;
+  };
+  
   const [formData, setFormData] = useState<CultoObservacoes>({
     ...observacoes,
-    data: formatarDataParaExibicao(observacoes.data)
+    data: obterDataAtual()
   });
-  const { salvarCultoNoHistorico } = useSpaceStore();
+  const { criarCultoNoHistorico, dadosPorIgreja, igrejaAtiva } = useSpaceStore();
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     
-    // Converter data de volta para ISO antes de salvar
-    const dataParaSalvar = {
-      ...formData,
-      data: converterDataParaISO(formData.data)
-    };
-    
-    onUpdate(dataParaSalvar);
-    salvarCultoNoHistorico(); // Salva no histórico ao atualizar
-    onClose();
+    try {
+      // Converter data de volta para ISO antes de salvar
+      const dataISO = converterDataParaISO(formData.data);
+      
+      console.log('🔍 Data do formulário (DD/MM/YYYY):', formData.data);
+      console.log('🔍 Data convertida para ISO (YYYY-MM-DD):', dataISO);
+      
+      // Obter total de crianças
+      const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
+        ? dadosPorIgreja[igrejaAtiva] 
+        : { children: [] };
+      
+      // Usar criarCultoNoHistorico para salvar APENAS no historico_cultos
+      await criarCultoNoHistorico(
+        dataISO,
+        {
+          palavraLida: formData.palavraLida,
+          hinosCantados: formData.hinosCantados,
+          aprendizado: formData.aprendizado,
+        },
+        igrejaData.children.length
+      );
+      
+      console.log('✅ Culto criado APENAS no historico_cultos');
+      onClose();
+    } catch (error) {
+      console.error('❌ Erro ao criar culto:', error);
+      alert('Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).');
+    }
   };
 
   const handleInputChange = (
@@ -74,7 +103,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
         <div className="sticky top-0 bg-gradient-to-r from-green-600 to-teal-600 p-4 flex justify-between items-center rounded-t-2xl">
           <div className="flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-bold text-white">Sobre o Culto</h2>
+            <h2 className="text-xl font-bold text-white">Criar Registro de Culto</h2>
           </div>
           <button
             onClick={onClose}
@@ -183,7 +212,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
               type="submit"
               className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
             >
-              Salvar
+              Criar Registro
             </button>
           </div>
         </form>

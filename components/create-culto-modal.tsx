@@ -16,12 +16,6 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
     ? dadosPorIgreja[igrejaAtiva] 
     : { children: [] };
 
-  // Formatar data para o padrão brasileiro DD/MM/YYYY para exibição
-  const formatarDataParaExibicao = (dataISO: string): string => {
-    const [ano, mes, dia] = dataISO.split('-');
-    return `${dia}/${mes}/${ano}`;
-  };
-
   // Converter data do formato DD/MM/YYYY para ISO YYYY-MM-DD
   const converterDataParaISO = (dataBR: string): string => {
     const [dia, mes, ano] = dataBR.split('/');
@@ -33,10 +27,17 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
     return result;
   };
 
-  const dataHoje = new Date().toISOString().split('T')[0];
+  // Sempre usar a data atual do sistema operacional
+  const obterDataAtual = (): string => {
+    const hoje = new Date();
+    const dia = hoje.getDate().toString().padStart(2, '0');
+    const mes = (hoje.getMonth() + 1).toString().padStart(2, '0');
+    const ano = hoje.getFullYear().toString();
+    return `${dia}/${mes}/${ano}`;
+  };
   
   const [formData, setFormData] = useState({
-    data: formatarDataParaExibicao(dataHoje),
+    data: obterDataAtual(),
     palavraLida: '',
     hinosCantados: '',
     aprendizado: '',

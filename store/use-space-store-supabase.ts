@@ -26,7 +26,7 @@ interface SpaceStore {
   removeChild: (id: string) => Promise<void>;
   updateSettings: (settings: Partial<Settings>) => Promise<void>;
   updateCultoObservacoes: (observacoes: Partial<CultoObservacoes>) => Promise<void>;
-  salvarCultoNoHistorico: () => Promise<void>;
+  // salvarCultoNoHistorico: REMOVIDA - usar criarCultoNoHistorico ou atualizarUltimoCultoHistorico
   criarCultoNoHistorico: (data: string, observacoes: { palavraLida?: string; hinosCantados?: string; aprendizado?: string }, totalCriancas: number) => Promise<void>;
   atualizarUltimoCultoHistorico: (observacoes: { palavraLida?: string; hinosCantados?: string; aprendizado?: string }) => Promise<void>;
   registrarDiaDeUso: () => Promise<void>;
@@ -120,6 +120,8 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         .eq('igreja_id', igrejaId)
         .order('data', { ascending: false })
         .limit(10);
+        
+      console.log('📜 Histórico carregado do banco (ordenado por data DESC):', historico);
 
       // Carregar dias de uso
       const { data: diasUso } = await supabase
@@ -421,78 +423,49 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
   },
 
   updateCultoObservacoes: async (observacoes) => {
-    // Redirecionar para atualizarUltimoCultoHistorico para usar apenas historico_cultos
+    console.log('🔄 updateCultoObservacoes: Redirecionando para historico_cultos');
+    // SEMPRE usar apenas historico_cultos, nunca mais culto_observacoes
     return await get().atualizarUltimoCultoHistorico(observacoes);
   },
 
-  salvarCultoNoHistorico: async () => {
-    const { igrejaAtiva, dadosPorIgreja } = get();
-    if (!igrejaAtiva) return;
-
-    const igrejaData = dadosPorIgreja[igrejaAtiva] || createDefaultIgrejaData();
-    const { cultoObservacoes, children } = igrejaData;
-
-    if (!cultoObservacoes.palavraLida && !cultoObservacoes.hinosCantados && !cultoObservacoes.aprendizado) {
-      console.log('⚠️ Nenhuma observação de culto para salvar');
-      return;
-    }
-
-    set({ isLoading: true, error: null });
-    try {
-      // Buscar as observações atualizadas do banco para ter a data correta
-      const { data: obsAtual } = await supabase
-        .from('culto_observacoes')
-        .select('*')
-        .eq('igreja_id', igrejaAtiva)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      // Usar a data das observações salvas, não a data atual
-      const dataParaHistorico = obsAtual?.data || cultoObservacoes.data;
-
-      const historicoPayload = {
-        igreja_id: igrejaAtiva,
-        data: dataParaHistorico,
-        palavra_lida: obsAtual?.palavra_lida || cultoObservacoes.palavraLida || null,
-        hinos_cantados: obsAtual?.hinos_cantados || cultoObservacoes.hinosCantados || null,
-        aprendizado: obsAtual?.aprendizado || cultoObservacoes.aprendizado || null,
-        total_criancas: children.length,
-      };
-
-      console.log('📤 Salvando culto no histórico (data:', dataParaHistorico + '):', historicoPayload);
-
-      const { data, error } = await supabase
-        .from('historico_cultos')
-        .upsert(historicoPayload, {
-          onConflict: 'igreja_id,data', // Chave única composta
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('❌ Erro detalhado:', error);
-        throw error;
-      }
-
-      console.log('✅ Culto salvo no histórico do Supabase (data ' + data.data + '):', data);
-      
-      // Recarregar histórico
-      await get().loadIgrejaData(igrejaAtiva);
-      
-      console.log('✅ Histórico recarregado');
-    } catch (error: any) {
-      set({ error: error.message, isLoading: false });
-      console.error('❌ Erro ao salvar culto no histórico:', error);
-    }
-  },
+  // salvarCultoNoHistorico: FUNÇÃO REMOVIDA
+  // Use criarCultoNoHistorico() ou atualizarUltimoCultoHistorico()
+  // NUNCA MAIS usar culto_observacoes!
 
   criarCultoNoHistorico: async (data, observacoes, totalCriancas) => {
-    const { igrejaAtiva } = get();
+    const { igrejaAtiva, igrejas } = get();
     if (!igrejaAtiva) {
       console.error('❌ Nenhuma igreja ativa');
       return;
     }
+
+    // Debug: Verificar se a igreja existe
+    const igrejaExiste = igrejas.find(i => i.id === igrejaAtiva);
+    console.log('🔍 DEBUG - Igreja ativa:', igrejaAtiva);
+    console.log('🔍 DEBUG - Igreja existe?', igrejaExiste ? 'SIM' : 'NÃO');
+    console.log('🔍 DEBUG - Todas as igrejas:', igrejas.map(i => ({ id: i.id, nome: i.nome })));
+
+    if (!igrejaExiste) {
+      console.error('❌ Igreja ativa não encontrada na lista de igrejas');
+      alert('Erro: Igreja não encontrada. Recarregue a página e tente novamente.');
+      return;
+    }
+
+    // Verificar se a igreja existe no banco de dados
+    console.log('🔍 Verificando se igreja existe no banco...');
+    const { data: igrejaDB, error: igrejaError } = await supabase
+      .from('igrejas')
+      .select('id, nome')
+      .eq('id', igrejaAtiva)
+      .single();
+
+    if (igrejaError || !igrejaDB) {
+      console.error('❌ Igreja não encontrada no banco:', igrejaError);
+      alert('Erro: Igreja não existe no banco de dados. Recarregue a página.');
+      return;
+    }
+
+    console.log('✅ Igreja encontrada no banco:', igrejaDB);
 
     set({ isLoading: true, error: null });
     try {
@@ -505,22 +478,55 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         total_criancas: totalCriancas,
       };
 
+      // Validar formato da data (deve ser YYYY-MM-DD)
+      const dataRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dataRegex.test(data)) {
+        console.error('❌ Formato de data inválido:', data);
+        alert('Erro: Formato de data inválido. Use DD/MM/YYYY no formulário.');
+        return;
+      }
+
       console.log('📤 Criando novo culto no histórico:', historicoPayload);
 
-      const { data: novoHistorico, error } = await supabase
+      // Tentar inserção simples primeiro para debug
+      console.log('🔍 DEBUG - Tentando INSERT simples...');
+      const { data: insertResult, error: insertError } = await supabase
         .from('historico_cultos')
-        .upsert(historicoPayload, {
-          onConflict: 'igreja_id,data',
-        })
+        .insert(historicoPayload)
         .select()
         .single();
 
-      if (error) {
-        console.error('❌ Erro detalhado:', error);
-        throw error;
-      }
+      if (insertError) {
+        console.error('❌ Erro no INSERT:', insertError);
+        
+        // Se for erro de duplicata, tentar UPDATE
+        if (insertError.code === '23505') {
+          console.log('🔄 Registro já existe, tentando UPDATE...');
+          const { data: updateResult, error: updateError } = await supabase
+            .from('historico_cultos')
+            .update({
+              palavra_lida: historicoPayload.palavra_lida,
+              hinos_cantados: historicoPayload.hinos_cantados,
+              aprendizado: historicoPayload.aprendizado,
+              total_criancas: historicoPayload.total_criancas,
+            })
+            .eq('igreja_id', historicoPayload.igreja_id)
+            .eq('data', historicoPayload.data)
+            .select()
+            .single();
 
-      console.log('✅ Novo culto criado no histórico:', novoHistorico);
+          if (updateError) {
+            console.error('❌ Erro no UPDATE:', updateError);
+            throw updateError;
+          }
+          
+          console.log('✅ Culto atualizado:', updateResult);
+        } else {
+          throw insertError;
+        }
+      } else {
+        console.log('✅ Novo culto inserido:', insertResult);
+      }
       
       // Recarregar histórico
       await get().loadIgrejaData(igrejaAtiva);

@@ -31,7 +31,7 @@ export const POST = async (
 
     const { data, error } = await supabase
       .from('children')
-      .update({ is_chamado_ativo: ativar })
+      .update({ is_chamado_ativo: ativar } as any)
       .eq('id', id)
       .select()
       .single();

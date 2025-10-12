@@ -29,6 +29,7 @@ export const POST = async (
       );
     }
 
+    // @ts-ignore - Tipos do Supabase não reconhecem update corretamente
     const { data, error } = await supabase
       .from('children')
       .update({ is_chamado_ativo: ativar })

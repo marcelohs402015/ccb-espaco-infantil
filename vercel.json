@@ -1,5 +1,12 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "regions": ["gru1"]
+  "regions": ["gru1"],
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  }
 }

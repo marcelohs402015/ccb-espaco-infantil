@@ -1,333 +1,386 @@
-/**
- * Database Types - Gerados a partir do schema do Supabase
- * CCB Espaço Infantil
- * 
- * Estes tipos são sincronizados com o banco de dados PostgreSQL
- */
-
 export type Json =
   | string
   | number
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
-export interface Database {
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
+  }
   public: {
     Tables: {
-      igrejas: {
-        Row: {
-          id: string;
-          nome: string;
-          data_cadastro: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          nome: string;
-          data_cadastro?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          nome?: string;
-          data_cadastro?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      settings: {
-        Row: {
-          id: string;
-          igreja_id: string;
-          capacidade_maxima: number;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          igreja_id: string;
-          capacidade_maxima?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          igreja_id?: string;
-          capacidade_maxima?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'fk_settings_igreja';
-            columns: ['igreja_id'];
-            referencedRelation: 'igrejas';
-            referencedColumns: ['id'];
-          }
-        ];
-      };
       children: {
         Row: {
-          id: string;
-          igreja_id: string;
-          nome: string;
-          nome_responsavel: string;
-          tipo_responsavel: 'pai' | 'mae' | 'outro';
-          celular_responsavel: string;
-          observacoes: string | null;
-          hora_entrada: string;
-          is_chamado_ativo: boolean;
-          data_cadastro: string;
-          created_at: string;
-          updated_at: string;
-        };
+          celular_responsavel: string
+          created_at: string | null
+          data_cadastro: string
+          hora_entrada: string
+          id: string
+          igreja_id: string
+          is_chamado_ativo: boolean | null
+          nome: string
+          nome_responsavel: string
+          observacoes: string | null
+          tipo_responsavel: string
+          updated_at: string | null
+        }
         Insert: {
-          id?: string;
-          igreja_id: string;
-          nome: string;
-          nome_responsavel: string;
-          tipo_responsavel: 'pai' | 'mae' | 'outro';
-          celular_responsavel: string;
-          observacoes?: string | null;
-          hora_entrada: string;
-          is_chamado_ativo?: boolean;
-          data_cadastro?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
+          celular_responsavel: string
+          created_at?: string | null
+          data_cadastro?: string
+          hora_entrada: string
+          id?: string
+          igreja_id: string
+          is_chamado_ativo?: boolean | null
+          nome: string
+          nome_responsavel: string
+          observacoes?: string | null
+          tipo_responsavel: string
+          updated_at?: string | null
+        }
         Update: {
-          id?: string;
-          igreja_id?: string;
-          nome?: string;
-          nome_responsavel?: string;
-          tipo_responsavel?: 'pai' | 'mae' | 'outro';
-          celular_responsavel?: string;
-          observacoes?: string | null;
-          hora_entrada?: string;
-          is_chamado_ativo?: boolean;
-          data_cadastro?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
+          celular_responsavel?: string
+          created_at?: string | null
+          data_cadastro?: string
+          hora_entrada?: string
+          id?: string
+          igreja_id?: string
+          is_chamado_ativo?: boolean | null
+          nome?: string
+          nome_responsavel?: string
+          observacoes?: string | null
+          tipo_responsavel?: string
+          updated_at?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'fk_children_igreja';
-            columns: ['igreja_id'];
-            referencedRelation: 'igrejas';
-            referencedColumns: ['id'];
-          }
-        ];
-      };
+            foreignKeyName: "fk_children_igreja"
+            columns: ["igreja_id"]
+            isOneToOne: false
+            referencedRelation: "igrejas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       culto_observacoes: {
         Row: {
-          id: string;
-          igreja_id: string;
-          data: string;
-          palavra_lida: string | null;
-          hinos_cantados: string | null;
-          aprendizado: string | null;
-          created_at: string;
-          updated_at: string;
-        };
+          aprendizado: string | null
+          created_at: string | null
+          data: string
+          hinos_cantados: string | null
+          id: string
+          igreja_id: string
+          palavra_lida: string | null
+          updated_at: string | null
+        }
         Insert: {
-          id?: string;
-          igreja_id: string;
-          data?: string;
-          palavra_lida?: string | null;
-          hinos_cantados?: string | null;
-          aprendizado?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
+          aprendizado?: string | null
+          created_at?: string | null
+          data?: string
+          hinos_cantados?: string | null
+          id?: string
+          igreja_id: string
+          palavra_lida?: string | null
+          updated_at?: string | null
+        }
         Update: {
-          id?: string;
-          igreja_id?: string;
-          data?: string;
-          palavra_lida?: string | null;
-          hinos_cantados?: string | null;
-          aprendizado?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
+          aprendizado?: string | null
+          created_at?: string | null
+          data?: string
+          hinos_cantados?: string | null
+          id?: string
+          igreja_id?: string
+          palavra_lida?: string | null
+          updated_at?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'fk_culto_observacoes_igreja';
-            columns: ['igreja_id'];
-            referencedRelation: 'igrejas';
-            referencedColumns: ['id'];
-          }
-        ];
-      };
-      historico_cultos: {
-        Row: {
-          id: string;
-          igreja_id: string;
-          data: string;
-          palavra_lida: string | null;
-          hinos_cantados: string | null;
-          aprendizado: string | null;
-          total_criancas: number;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          igreja_id: string;
-          data: string;
-          palavra_lida?: string | null;
-          hinos_cantados?: string | null;
-          aprendizado?: string | null;
-          total_criancas?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          igreja_id?: string;
-          data?: string;
-          palavra_lida?: string | null;
-          hinos_cantados?: string | null;
-          aprendizado?: string | null;
-          total_criancas?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'fk_historico_cultos_igreja';
-            columns: ['igreja_id'];
-            referencedRelation: 'igrejas';
-            referencedColumns: ['id'];
-          }
-        ];
-      };
+            foreignKeyName: "fk_culto_observacoes_igreja"
+            columns: ["igreja_id"]
+            isOneToOne: false
+            referencedRelation: "igrejas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dias_uso: {
         Row: {
-          id: string;
-          igreja_id: string;
-          data: string;
-          total_criancas: number;
-          culto_realizado: boolean;
-          created_at: string;
-          updated_at: string;
-        };
+          created_at: string | null
+          culto_realizado: boolean | null
+          data: string
+          id: string
+          igreja_id: string
+          total_criancas: number
+          updated_at: string | null
+        }
         Insert: {
-          id?: string;
-          igreja_id: string;
-          data: string;
-          total_criancas?: number;
-          culto_realizado?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
+          created_at?: string | null
+          culto_realizado?: boolean | null
+          data: string
+          id?: string
+          igreja_id: string
+          total_criancas?: number
+          updated_at?: string | null
+        }
         Update: {
-          id?: string;
-          igreja_id?: string;
-          data?: string;
-          total_criancas?: number;
-          culto_realizado?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
+          created_at?: string | null
+          culto_realizado?: boolean | null
+          data?: string
+          id?: string
+          igreja_id?: string
+          total_criancas?: number
+          updated_at?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'fk_dias_uso_igreja';
-            columns: ['igreja_id'];
-            referencedRelation: 'igrejas';
-            referencedColumns: ['id'];
-          }
-        ];
-      };
-    };
+            foreignKeyName: "fk_dias_uso_igreja"
+            columns: ["igreja_id"]
+            isOneToOne: false
+            referencedRelation: "igrejas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      historico_cultos: {
+        Row: {
+          aprendizado: string | null
+          created_at: string | null
+          data: string
+          hinos_cantados: string | null
+          id: string
+          igreja_id: string
+          palavra_lida: string | null
+          total_criancas: number
+          updated_at: string | null
+        }
+        Insert: {
+          aprendizado?: string | null
+          created_at?: string | null
+          data: string
+          hinos_cantados?: string | null
+          id?: string
+          igreja_id: string
+          palavra_lida?: string | null
+          total_criancas?: number
+          updated_at?: string | null
+        }
+        Update: {
+          aprendizado?: string | null
+          created_at?: string | null
+          data?: string
+          hinos_cantados?: string | null
+          id?: string
+          igreja_id?: string
+          palavra_lida?: string | null
+          total_criancas?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_historico_cultos_igreja"
+            columns: ["igreja_id"]
+            isOneToOne: false
+            referencedRelation: "igrejas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      igrejas: {
+        Row: {
+          created_at: string | null
+          data_cadastro: string
+          id: string
+          nome: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_cadastro?: string
+          id?: string
+          nome: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data_cadastro?: string
+          id?: string
+          nome?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          capacidade_maxima: number
+          created_at: string | null
+          id: string
+          igreja_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          capacidade_maxima?: number
+          created_at?: string | null
+          id?: string
+          igreja_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          capacidade_maxima?: number
+          created_at?: string | null
+          id?: string
+          igreja_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_settings_igreja"
+            columns: ["igreja_id"]
+            isOneToOne: true
+            referencedRelation: "igrejas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
     Views: {
-      v_criancas_hoje: {
-        Row: {
-          igreja_id: string | null;
-          igreja_nome: string | null;
-          total_criancas: number | null;
-          capacidade_maxima: number | null;
-          percentual_ocupacao: number | null;
-          chamados_ativos: number | null;
-        };
-      };
-      v_estatisticas_igreja: {
-        Row: {
-          igreja_id: string | null;
-          igreja_nome: string | null;
-          total_cultos_realizados: number | null;
-          total_dias_uso: number | null;
-          media_criancas_por_culto: number | null;
-          max_criancas_culto: number | null;
-        };
-      };
-    };
+      [_ in never]: never
+    }
     Functions: {
-      get_criancas_por_data: {
-        Args: {
-          p_igreja_id: string;
-          p_data: string;
-        };
-        Returns: {
-          nome: string;
-          nome_responsavel: string;
-          celular_responsavel: string;
-          hora_entrada: string;
-          is_chamado_ativo: boolean;
-        }[];
-      };
-      get_estatisticas_igreja: {
-        Args: {
-          p_igreja_id: string;
-        };
-        Returns: {
-          total_cultos: number;
-          total_dias_uso: number;
-          media_criancas: number;
-          max_criancas: number;
-          ultimo_culto: string;
-        }[];
-      };
-    };
+      [_ in never]: never
+    }
     Enums: {
-      tipo_responsavel_enum: 'pai' | 'mae' | 'outro';
-    };
-  };
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
 }
 
-// Tipos auxiliares para facilitar o uso
-export type Igreja = Database['public']['Tables']['igrejas']['Row'];
-export type IgrejaInsert = Database['public']['Tables']['igrejas']['Insert'];
-export type IgrejaUpdate = Database['public']['Tables']['igrejas']['Update'];
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-export type Settings = Database['public']['Tables']['settings']['Row'];
-export type SettingsInsert = Database['public']['Tables']['settings']['Insert'];
-export type SettingsUpdate = Database['public']['Tables']['settings']['Update'];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-export type Child = Database['public']['Tables']['children']['Row'];
-export type ChildInsert = Database['public']['Tables']['children']['Insert'];
-export type ChildUpdate = Database['public']['Tables']['children']['Update'];
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-export type CultoObservacoes = Database['public']['Tables']['culto_observacoes']['Row'];
-export type CultoObservacoesInsert = Database['public']['Tables']['culto_observacoes']['Insert'];
-export type CultoObservacoesUpdate = Database['public']['Tables']['culto_observacoes']['Update'];
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
-export type HistoricoCulto = Database['public']['Tables']['historico_cultos']['Row'];
-export type HistoricoCultoInsert = Database['public']['Tables']['historico_cultos']['Insert'];
-export type HistoricoCultoUpdate = Database['public']['Tables']['historico_cultos']['Update'];
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
-export type DiaUso = Database['public']['Tables']['dias_uso']['Row'];
-export type DiaUsoInsert = Database['public']['Tables']['dias_uso']['Insert'];
-export type DiaUsoUpdate = Database['public']['Tables']['dias_uso']['Update'];
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
-// Tipos das Views
-export type CriancasHoje = Database['public']['Views']['v_criancas_hoje']['Row'];
-export type EstatisticasIgreja = Database['public']['Views']['v_estatisticas_igreja']['Row'];
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
-// Tipo para responsável
-export type TipoResponsavel = Database['public']['Enums']['tipo_responsavel_enum'];
-
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const

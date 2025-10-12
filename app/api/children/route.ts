@@ -5,7 +5,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, handleSupabaseError } from '@/lib/supabase';
-import type { ChildInsert } from '@/types/database.types';
+import type { TablesInsert } from '@/types/database.types';
+
+type ChildInsert = TablesInsert<'children'>;
 
 /**
  * GET /api/children

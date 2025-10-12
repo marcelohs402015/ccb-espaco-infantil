@@ -29,7 +29,6 @@ export const POST = async (
       );
     }
 
-    // @ts-ignore - Supabase types not generated yet
     const { data, error } = await supabase
       .from('children')
       .update({ is_chamado_ativo: ativar })

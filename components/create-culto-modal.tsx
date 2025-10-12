@@ -25,7 +25,12 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
   // Converter data do formato DD/MM/YYYY para ISO YYYY-MM-DD
   const converterDataParaISO = (dataBR: string): string => {
     const [dia, mes, ano] = dataBR.split('/');
-    return `${ano}-${mes}-${dia}`;
+    // Garantir que dia e mês tenham 2 dígitos
+    const diaFormatado = dia.padStart(2, '0');
+    const mesFormatado = mes.padStart(2, '0');
+    const result = `${ano}-${mesFormatado}-${diaFormatado}`;
+    console.log(`🔄 Convertendo ${dataBR} → ${result}`);
+    return result;
   };
 
   const dataHoje = new Date().toISOString().split('T')[0];
@@ -44,6 +49,9 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
     try {
       // Converter data para formato ISO antes de salvar
       const dataISO = converterDataParaISO(formData.data);
+      
+      console.log('🔍 Data do formulário (DD/MM/YYYY):', formData.data);
+      console.log('🔍 Data convertida para ISO (YYYY-MM-DD):', dataISO);
       
       await criarCultoNoHistorico(
         dataISO,

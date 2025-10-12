@@ -22,17 +22,6 @@ export const GET = async (
   { params }: { params: { id: string } }
 ) => {
   try {
-    // Validação robusta dos parâmetros
-    if (!params || !params.id || params.id === '[id]' || params.id === 'undefined') {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'ID da criança é obrigatório',
-        },
-        { status: 400 }
-      );
-    }
-
     const { id } = params;
 
     const { data, error } = await supabase
@@ -80,17 +69,6 @@ export const PATCH = async (
   { params }: { params: { id: string } }
 ) => {
   try {
-    // Validação robusta dos parâmetros
-    if (!params || !params.id || params.id === '[id]' || params.id === 'undefined') {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'ID da criança é obrigatório',
-        },
-        { status: 400 }
-      );
-    }
-
     const { id } = params;
     const body: ChildUpdate = await request.json();
 
@@ -143,17 +121,6 @@ export const DELETE = async (
   { params }: { params: { id: string } }
 ) => {
   try {
-    // Validação robusta dos parâmetros
-    if (!params || !params.id || params.id === '[id]' || params.id === 'undefined') {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'ID da criança é obrigatório',
-        },
-        { status: 400 }
-      );
-    }
-
     const { id } = params;
 
     const { error } = await supabase

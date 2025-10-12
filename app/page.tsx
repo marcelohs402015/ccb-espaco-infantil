@@ -45,7 +45,7 @@ export default function Home() {
         diasDeUso: []
       };
   
-  const { children, settings, cultoObservacoes } = igrejaData;
+  const { children, settings, cultoObservacoes, historicoCultos } = igrejaData;
   
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -69,6 +69,18 @@ export default function Home() {
       loadIgrejaData(igrejaAtiva);
       registrarDiaDeUso();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [igrejaAtiva]);
+
+  // Refresh automático dos dados a cada 30 segundos para manter sincronizado
+  useEffect(() => {
+    if (!igrejaAtiva) return;
+
+    const interval = setInterval(() => {
+      loadIgrejaData(igrejaAtiva);
+    }, 30000); // 30 segundos
+
+    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [igrejaAtiva]);
 
@@ -221,7 +233,7 @@ export default function Home() {
             </div>
           </div>
           
-          {cultoObservacoes && (cultoObservacoes.palavraLida || cultoObservacoes.hinosCantados || cultoObservacoes.aprendizado) ? (
+          {cultoObservacoes && (cultoObservacoes.palavraLida || cultoObservacoes.hinosCantados || cultoObservacoes.aprendizado) && (
             <div className="grid md:grid-cols-3 gap-6">
               {cultoObservacoes.palavraLida && (
                 <div>
@@ -247,16 +259,6 @@ export default function Home() {
                   </p>
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="text-center py-8 bg-white bg-opacity-50 rounded-lg">
-              <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600 font-medium">
-                Nenhum resumo de culto cadastrado ainda
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                Use o botão &quot;Criar&quot; para adicionar um novo registro
-              </p>
             </div>
           )}
         </div>

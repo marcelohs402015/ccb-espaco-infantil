@@ -34,6 +34,8 @@ interface SpaceStore {
   updateIgreja: (id: string, igreja: Partial<Igreja>) => Promise<void>;
   removeIgreja: (id: string) => Promise<void>;
   clearAllData: () => Promise<void>;
+  clearHistoricoCultos: () => Promise<void>;
+  removeCultoFromHistorico: (cultoId: string) => Promise<void>;
 }
 
 const defaultSettings: Settings = {
@@ -832,6 +834,79 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao limpar dados:', error);
+    }
+  },
+
+  clearHistoricoCultos: async () => {
+    const { igrejaAtiva } = get();
+    if (!igrejaAtiva) return;
+
+    set({ isLoading: true, error: null });
+    try {
+      // Remover todo o histórico de cultos da igreja
+      const { error } = await supabase
+        .from('historico_cultos')
+        .delete()
+        .eq('igreja_id', igrejaAtiva);
+
+      if (error) throw error;
+
+      // Atualizar estado local
+      set((state) => {
+        const igrejaData = state.dadosPorIgreja[igrejaAtiva] || createDefaultIgrejaData();
+        return {
+          dadosPorIgreja: {
+            ...state.dadosPorIgreja,
+            [igrejaAtiva]: {
+              ...igrejaData,
+              historicoCultos: [],
+            },
+          },
+          isLoading: false,
+        };
+      });
+
+      console.log('✅ Histórico de cultos limpo no Supabase');
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+      console.error('❌ Erro ao limpar histórico de cultos:', error);
+    }
+  },
+
+  removeCultoFromHistorico: async (cultoId) => {
+    const { igrejaAtiva } = get();
+    if (!igrejaAtiva) return;
+
+    set({ isLoading: true, error: null });
+    try {
+      // Remover culto específico do histórico
+      const { error } = await supabase
+        .from('historico_cultos')
+        .delete()
+        .eq('id', cultoId)
+        .eq('igreja_id', igrejaAtiva);
+
+      if (error) throw error;
+
+      // Atualizar estado local
+      set((state) => {
+        const igrejaData = state.dadosPorIgreja[igrejaAtiva] || createDefaultIgrejaData();
+        return {
+          dadosPorIgreja: {
+            ...state.dadosPorIgreja,
+            [igrejaAtiva]: {
+              ...igrejaData,
+              historicoCultos: igrejaData.historicoCultos.filter(culto => culto.id !== cultoId),
+            },
+          },
+          isLoading: false,
+        };
+      });
+
+      console.log('✅ Culto removido do histórico no Supabase');
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+      console.error('❌ Erro ao remover culto do histórico:', error);
     }
   },
 }));

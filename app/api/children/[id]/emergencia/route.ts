@@ -11,6 +11,23 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
+ * GET /api/children/[id]/emergencia
+ * Método não suportado - retorna erro 405
+ */
+export const GET = async (
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) => {
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'Método GET não suportado. Use POST para gerenciar emergências.',
+    },
+    { status: 405 }
+  );
+};
+
+/**
  * POST /api/children/[id]/emergencia
  * Ativar chamado de emergência
  * Body: { ativar: boolean }

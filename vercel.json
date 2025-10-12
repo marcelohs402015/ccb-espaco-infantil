@@ -1,5 +1,11 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "regions": ["gru1"]
+  "regions": ["gru1"],
+  "functions": {
+    "app/api/children/[id]/emergencia/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "buildCommand": "npm run build"
 }

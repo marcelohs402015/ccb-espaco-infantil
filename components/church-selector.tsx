@@ -145,7 +145,7 @@ export const ChurchSelector: React.FC = () => {
       {searchTerm && igrejasFiltradas.length === 0 && (
         <div className="mt-2 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
           <p className="text-sm text-yellow-800">
-            Nenhuma igreja encontrada para "{searchTerm}". 
+            Nenhuma igreja encontrada para &quot;{searchTerm}&quot;. 
             <button
               onClick={handleClearSearch}
               className="ml-1 text-yellow-700 underline hover:text-yellow-900"

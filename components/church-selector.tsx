@@ -73,55 +73,55 @@ export const ChurchSelector: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 mb-6 border-2 border-blue-200 shadow-lg">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-4 flex-1">
-          <label htmlFor="igreja-select" className="block text-sm font-bold text-gray-700">
-            <div className="flex items-center gap-2">
-              <Church className="w-5 h-5 text-blue-600" />
-              Selecione a Igreja para Gerenciar:
-            </div>
-          </label>
-          
-          {/* Campo de busca */}
-          <div className="relative flex-1 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Buscar igreja..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-sm text-gray-900"
-              />
-              {searchTerm && (
-                <button
-                  onClick={handleClearSearch}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  aria-label="Limpar busca"
-                >
-                  ×
-                </button>
-              )}
-            </div>
+    <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 md:p-6 mb-6 border-2 border-blue-200 shadow-lg">
+      {/* Header - Título e Botão */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+        <label htmlFor="igreja-select" className="block text-sm font-bold text-gray-700">
+          <div className="flex items-center gap-2">
+            <Church className="w-5 h-5 text-blue-600" />
+            Selecione a Igreja para Gerenciar:
           </div>
-        </div>
+        </label>
         
         <button
           onClick={handleOpenChurches}
-          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-semibold rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2 whitespace-nowrap"
+          className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-semibold rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 whitespace-nowrap"
         >
           <Church className="w-4 h-4" />
           Cadastrar nova Igreja
         </button>
       </div>
+
+      {/* Campo de busca */}
+      <div className="mb-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Buscar igreja..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-sm text-gray-900"
+          />
+          {searchTerm && (
+            <button
+              onClick={handleClearSearch}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Limpar busca"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </div>
       
+      {/* Select de Igrejas */}
       <div className="relative">
         <select
           id="igreja-select"
           value={igrejaAtiva || ''}
           onChange={(e) => setIgrejaAtiva(e.target.value || null)}
-          className="w-full px-4 py-3 pr-10 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900 font-semibold bg-white appearance-none cursor-pointer"
+          className="w-full px-4 py-3 pr-10 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900 font-semibold bg-white appearance-none cursor-pointer text-base"
         >
           <option value="">Selecione uma igreja...</option>
           {igrejasFiltradas.map((igreja) => (

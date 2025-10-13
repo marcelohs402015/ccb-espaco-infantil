@@ -1,3 +1,4 @@
+
 <div align="center">
 
 ![CCB Logo](./public/ccb-logo.png)
@@ -17,6 +18,29 @@
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/)
 
 </div>
+
+---
+
+## 🙌 Agradecimento
+
+> "Dou graças a Deus por ter me dado a graça, sabedoria e saúde para criar este aplicativo. Que Ele abençoe cada irmã e responsável que irá usar esta ferramenta para cuidar, proteger e ensinar as crianças no espaço bíblico infantil. Que tudo seja feito para a glória de Deus!"
+
+---
+
+## 🚀 O que este app faz
+
+Este sistema foi criado para ajudar as **irmãs auxiliadoras** e responsáveis pelo espaço infantil bíblico da Congregação Cristã no Brasil a:
+
+- Gerenciar o cadastro de crianças presentes em cada culto
+- Controlar a capacidade máxima do espaço infantil
+- Registrar e consultar o histórico de cultos, observações e aprendizados
+- Chamar rapidamente os responsáveis em caso de emergência
+- Visualizar e editar informações de cada criança
+- Gerenciar múltiplas igrejas/congregações de forma independente
+- Garantir segurança, organização e tranquilidade para todos
+- Utilizar uma interface simples, intuitiva e acessível em qualquer dispositivo
+
+Tudo foi pensado para facilitar o trabalho das irmãs e trazer mais paz e segurança para as famílias durante os cultos.
 
 ---
 

@@ -296,7 +296,7 @@ export default function Home() {
           >
             <div className="absolute inset-0 gradient-shine"></div>
             <History className="w-8 h-8 group-hover:rotate-12 transition-transform" />
-            <span className="relative z-10">📚 Ver Histórico</span>
+            <span className="relative z-10">📚 Ver Histórico de Cultos</span>
           </button>
         </div>
 

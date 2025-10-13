@@ -92,8 +92,11 @@ export const EditLastCultoModal: React.FC<EditLastCultoModalProps> = ({ onClose 
             <h3 className="text-xl font-bold text-gray-800 mb-2">
               Nenhum culto registrado
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-4">
               Não há nenhum registro de culto no histórico para editar. Crie um novo registro primeiro.
+            </p>
+            <p className="text-gray-600 mb-6">
+              Clique no botão sobre o culto para gerar os registros.
             </p>
             <button
               onClick={onClose}

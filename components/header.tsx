@@ -33,7 +33,7 @@ export const Header: React.FC = () => {
               <Sparkles className="w-8 h-8 fill-yellow-300 text-yellow-300 animate-pulse" />
             </div>
             <p className="text-lg md:text-xl text-white/90 font-semibold drop-shadow">
-              🙏 Sistema de Gerenciamento CCB 🙏
+              🙏 Aplicação para auxílio das irmãs no espaço bíblico infantil 🙏
             </p>
           </div>
         </div>

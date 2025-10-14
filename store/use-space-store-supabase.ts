@@ -96,12 +96,12 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     try {
       const hoje = new Date().toISOString().split('T')[0];
 
-      // Carregar children do dia
+      // Carregar todas as children da igreja (persistência permanente)
       const { data: childrenData } = await supabase
         .from('children')
         .select('*')
         .eq('igreja_id', igrejaId)
-        .eq('data_cadastro', hoje)
+        .order('data_cadastro', { ascending: false })
         .order('hora_entrada');
 
       // Carregar settings
@@ -761,24 +761,17 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
-      const hoje = new Date().toISOString().split('T')[0];
+      // ATENÇÃO: Esta função foi modificada para NÃO remover crianças permanentemente
+      // As crianças agora são mantidas no banco de dados para persistência
+      // Esta função apenas limpa o estado local se necessário
+      
+      console.log('⚠️ Função clearAllData foi desabilitada para preservar dados das crianças');
+      console.log('💡 As crianças agora são mantidas permanentemente no banco de dados');
+      
+      set({ isLoading: false });
 
-      // Remover apenas crianças de hoje
-      await supabase
-        .from('children')
-        .delete()
-        .eq('igreja_id', igrejaAtiva)
-        .eq('data_cadastro', hoje);
-
-      set((state) => ({
-        dadosPorIgreja: {
-          ...state.dadosPorIgreja,
-          [igrejaAtiva]: createDefaultIgrejaData(),
-        },
-        isLoading: false,
-      }));
-
-      console.log('✅ Dados do dia limpos no Supabase');
+      // Se você realmente precisar limpar dados, use removeChild individualmente
+      // ou implemente uma lógica específica para suas necessidades
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao limpar dados:', error);

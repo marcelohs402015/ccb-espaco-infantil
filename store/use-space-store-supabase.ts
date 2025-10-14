@@ -27,7 +27,7 @@ interface SpaceStore {
   updateSettings: (settings: Partial<Settings>) => Promise<void>;
   updateCultoObservacoes: (observacoes: Partial<CultoObservacoes>) => Promise<void>;
   // salvarCultoNoHistorico: REMOVIDA - usar criarCultoNoHistorico ou atualizarUltimoCultoHistorico
-  criarCultoNoHistorico: (data: string, observacoes: { palavraLida?: string; hinosCantados?: string; aprendizado?: string }, totalCriancas: number) => Promise<void>;
+  criarCultoNoHistorico: (data: string, observacoes: { palavraLida?: string; hinosCantados?: string; aprendizado?: string }, totalCriancas?: number) => Promise<void>;
   atualizarUltimoCultoHistorico: (observacoes: { palavraLida?: string; hinosCantados?: string; aprendizado?: string }) => Promise<void>;
   registrarDiaDeUso: () => Promise<void>;
   addIgreja: (igreja: Omit<Igreja, 'id'>) => Promise<void>;

@@ -445,6 +445,28 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
       return;
     }
 
+    // Se totalCriancas não foi fornecido, calcular automaticamente
+    // Contar TODAS as crianças da igreja que estiveram presentes no culto
+    // (incluindo as que já estavam cadastradas e as novas do dia)
+    let contagemCriancas = totalCriancas;
+    if (totalCriancas === undefined || totalCriancas === null) {
+      try {
+        // Contar todas as crianças da igreja (não apenas as do dia)
+        // Isso inclui crianças antigas que estiveram no culto + crianças novas do dia
+        const { data: childrenData } = await supabase
+          .from('children')
+          .select('id')
+          .eq('igreja_id', igrejaAtiva);
+        
+        contagemCriancas = childrenData?.length || 0;
+        console.log(`📊 Total de crianças da igreja (presentes no culto): ${contagemCriancas}`);
+        console.log(`📅 Data do culto: ${data}`);
+      } catch (error) {
+        console.error('❌ Erro ao contar crianças da igreja:', error);
+        contagemCriancas = 0;
+      }
+    }
+
     // Debug: Verificar se a igreja existe
     const igrejaExiste = igrejas.find(i => i.id === igrejaAtiva);
     console.log('🔍 DEBUG - Igreja ativa:', igrejaAtiva);
@@ -481,7 +503,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
         palavra_lida: observacoes.palavraLida || null,
         hinos_cantados: observacoes.hinosCantados || null,
         aprendizado: observacoes.aprendizado || null,
-        total_criancas: totalCriancas,
+        total_criancas: contagemCriancas,
       };
 
       // Validar formato da data (deve ser YYYY-MM-DD)

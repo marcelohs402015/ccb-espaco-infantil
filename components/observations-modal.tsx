@@ -55,20 +55,16 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
       console.log('🔍 Data do formulário (DD/MM/YYYY):', formData.data);
       console.log('🔍 Data convertida para ISO (YYYY-MM-DD):', dataISO);
       
-      // Obter total de crianças
-      const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
-        ? dadosPorIgreja[igrejaAtiva] 
-        : { children: [] };
-      
       // Usar criarCultoNoHistorico para salvar APENAS no historico_cultos
+      // A função irá calcular automaticamente o total de crianças presentes no dia específico
       await criarCultoNoHistorico(
         dataISO,
         {
           palavraLida: formData.palavraLida,
           hinosCantados: formData.hinosCantados,
           aprendizado: formData.aprendizado,
-        },
-        igrejaData.children.length
+        }
+        // Não passar totalCriancas - deixar a função calcular automaticamente
       );
       
       console.log('✅ Culto criado APENAS no historico_cultos');

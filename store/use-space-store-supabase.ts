@@ -643,6 +643,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
       
       const totalCriancas = childrenData?.length || 0;
       
+      // Registrar para o dia atual
       const diaUsoPayload = {
         igreja_id: igrejaAtiva,
         data: dataAtual,

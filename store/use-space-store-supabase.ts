@@ -634,10 +634,19 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
+      // Buscar total de crianças diretamente do banco de dados
+      // para garantir contagem correta independente do estado local
+      const { data: childrenData } = await supabase
+        .from('children')
+        .select('id')
+        .eq('igreja_id', igrejaAtiva);
+      
+      const totalCriancas = childrenData?.length || 0;
+      
       const diaUsoPayload = {
         igreja_id: igrejaAtiva,
         data: dataAtual,
-        total_criancas: igrejaData.children.length,
+        total_criancas: totalCriancas,
         culto_realizado: !!(
           igrejaData.cultoObservacoes.palavraLida ||
           igrejaData.cultoObservacoes.hinosCantados ||

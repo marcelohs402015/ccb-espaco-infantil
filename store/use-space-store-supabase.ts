@@ -259,6 +259,9 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
       });
 
       console.log('✅ Estado local atualizado');
+      
+      // Atualizar registro do dia de uso com o novo total de crianças
+      await get().registrarDiaDeUso();
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao cadastrar criança:', error);
@@ -363,6 +366,9 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
       });
 
       console.log('✅ Criança removida do Supabase');
+      
+      // Atualizar registro do dia de uso com o novo total de crianças
+      await get().registrarDiaDeUso();
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao remover criança:', error);

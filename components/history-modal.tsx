@@ -147,33 +147,36 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
                     key={culto.id}
                     className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-5 border-2 border-green-200 hover:shadow-lg transition-shadow"
                   >
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-bold text-green-700">
-                        {formatarData(culto.data)}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full">
-                          <Users className="w-4 h-4 text-purple-600" />
-                          <span className="text-sm font-bold text-purple-600">
-                            {culto.totalCriancas} {culto.totalCriancas === 1 ? 'criança' : 'crianças'}
-                          </span>
+                    <div className="mb-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <p className="text-sm font-bold text-green-700">
+                          {formatarData(culto.data)}
+                        </p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full">
+                            <Users className="w-4 h-4 text-purple-600" />
+                            <span className="text-sm font-bold text-purple-600">
+                              {culto.totalCriancas} {culto.totalCriancas === 1 ? 'criança' : 'crianças'}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setCultoToDelete(culto)}
+                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            aria-label="Apagar este culto"
+                            title="Apagar este culto"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setCultoDetalhado(culto)}
+                            className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg whitespace-nowrap"
+                            aria-label="Ver detalhes do culto"
+                          >
+                            <Eye className="w-4 h-4" />
+                            <span className="hidden sm:inline">Ver Detalhes</span>
+                            <span className="sm:hidden">Ver</span>
+                          </button>
                         </div>
-                        <button
-                          onClick={() => setCultoToDelete(culto)}
-                          className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                          aria-label="Apagar este culto"
-                          title="Apagar este culto"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setCultoDetalhado(culto)}
-                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg"
-                          aria-label="Ver detalhes do culto"
-                        >
-                          <Eye className="w-4 h-4" />
-                          Ver Detalhes
-                        </button>
                       </div>
                     </div>
 

@@ -37,6 +37,8 @@ interface SpaceStore {
   clearHistoricoCultos: () => Promise<void>;
   removeCultoFromHistorico: (cultoId: string) => Promise<void>;
   limparDadosMockados: () => Promise<void>;
+  limparDadosIgreja: () => Promise<boolean>;
+  verificarSeExistemDados: (igrejaId: string) => Promise<boolean>;
 }
 
 const defaultSettings: Settings = {
@@ -922,6 +924,124 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao limpar dados mockados:', error);
+      throw error;
+    }
+  },
+
+  limparDadosIgreja: async () => {
+    const { igrejaAtiva } = get();
+    if (!igrejaAtiva) {
+      console.error('❌ Nenhuma igreja ativa');
+      throw new Error('Nenhuma igreja selecionada');
+    }
+
+    set({ isLoading: true, error: null });
+    try {
+      console.log('🔍 Verificando dados da igreja:', igrejaAtiva);
+
+      // Verificar se existem dados para apagar
+      const [childrenResult, historicoResult, diasUsoResult] = await Promise.all([
+        supabase.from('children').select('id').eq('igreja_id', igrejaAtiva),
+        supabase.from('historico_cultos').select('id').eq('igreja_id', igrejaAtiva),
+        supabase.from('dias_uso').select('id').eq('igreja_id', igrejaAtiva)
+      ]);
+
+      const temChildren = childrenResult.data && childrenResult.data.length > 0;
+      const temHistorico = historicoResult.data && historicoResult.data.length > 0;
+      const temDiasUso = diasUsoResult.data && diasUsoResult.data.length > 0;
+
+      // Se não há dados para apagar
+      if (!temChildren && !temHistorico && !temDiasUso) {
+        set({ isLoading: false });
+        return false; // Retorna false indicando que não havia dados para limpar
+      }
+
+      console.log('🧹 Limpando dados da igreja:', igrejaAtiva);
+
+      // Limpar children
+      if (temChildren) {
+        const { error: errorChildren } = await supabase
+          .from('children')
+          .delete()
+          .eq('igreja_id', igrejaAtiva);
+
+        if (errorChildren) {
+          console.error('❌ Erro ao limpar children:', errorChildren);
+          throw errorChildren;
+        }
+      }
+
+      // Limpar historico_cultos
+      if (temHistorico) {
+        const { error: errorHistorico } = await supabase
+          .from('historico_cultos')
+          .delete()
+          .eq('igreja_id', igrejaAtiva);
+
+        if (errorHistorico) {
+          console.error('❌ Erro ao limpar histórico:', errorHistorico);
+          throw errorHistorico;
+        }
+      }
+
+      // Limpar dias_uso
+      if (temDiasUso) {
+        const { error: errorDiasUso } = await supabase
+          .from('dias_uso')
+          .delete()
+          .eq('igreja_id', igrejaAtiva);
+
+        if (errorDiasUso) {
+          console.error('❌ Erro ao limpar dias de uso:', errorDiasUso);
+          throw errorDiasUso;
+        }
+      }
+
+      // Atualizar estado local
+      set((state) => ({
+        dadosPorIgreja: {
+          ...state.dadosPorIgreja,
+          [igrejaAtiva]: createDefaultIgrejaData(),
+        },
+        isLoading: false,
+      }));
+
+      console.log('✅ Dados da igreja limpos com sucesso');
+      return true; // Retorna true indicando que os dados foram limpos com sucesso
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+      console.error('❌ Erro ao limpar dados da igreja:', error);
+      throw error;
+    }
+  },
+
+  verificarSeExistemDados: async (igrejaId: string): Promise<boolean> => {
+    try {
+      console.log('🔍 Verificando se existem dados na igreja:', igrejaId);
+
+      // Verificar se existem dados para apagar
+      const [childrenResult, historicoResult, diasUsoResult] = await Promise.all([
+        supabase.from('children').select('id').eq('igreja_id', igrejaId),
+        supabase.from('historico_cultos').select('id').eq('igreja_id', igrejaId),
+        supabase.from('dias_uso').select('id').eq('igreja_id', igrejaId)
+      ]);
+
+      const temChildren = !!(childrenResult.data && childrenResult.data.length > 0);
+      const temHistorico = !!(historicoResult.data && historicoResult.data.length > 0);
+      const temDiasUso = !!(diasUsoResult.data && diasUsoResult.data.length > 0);
+
+      const existemDados = temChildren || temHistorico || temDiasUso;
+      
+      console.log('📊 Resultado da verificação:', {
+        temChildren,
+        temHistorico,
+        temDiasUso,
+        existemDados
+      });
+
+      return existemDados;
+    } catch (error: any) {
+      console.error('❌ Erro ao verificar dados da igreja:', error);
       throw error;
     }
   },

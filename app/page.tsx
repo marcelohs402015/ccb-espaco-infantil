@@ -13,6 +13,7 @@ import { HistoryModal } from '@/components/history-modal';
 import { ChurchesModal } from '@/components/churches-modal';
 import { ChurchSelector } from '@/components/church-selector';
 import { EditLastCultoModal } from '@/components/edit-last-culto-modal';
+import { ManagementButtons } from '@/components/management-buttons';
 import type { Child } from '@/types';
 
 export default function Home() {
@@ -156,6 +157,9 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8 relative">
         {/* Church Selector */}
         <ChurchSelector />
+
+        {/* Management Buttons */}
+        {igrejaAtiva && <ManagementButtons />}
 
         {/* Capacity Status */}
         {igrejaAtiva ? (

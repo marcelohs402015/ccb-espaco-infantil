@@ -102,7 +102,7 @@ export const ManagementButtons: React.FC = () => {
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6 mt-8">
         <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5 text-orange-600" />
           Gerenciamento de Dados

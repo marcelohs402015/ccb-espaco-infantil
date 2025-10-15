@@ -158,9 +158,6 @@ export default function Home() {
         {/* Church Selector */}
         <ChurchSelector />
 
-        {/* Management Buttons */}
-        {igrejaAtiva && <ManagementButtons />}
-
         {/* Capacity Status */}
         {igrejaAtiva ? (
           <>
@@ -393,6 +390,9 @@ export default function Home() {
             )}
           </div>
         )}
+
+        {/* Management Buttons - No final, após a lista de crianças */}
+        {igrejaAtiva && <ManagementButtons />}
         </>
         ) : null}
       </div>

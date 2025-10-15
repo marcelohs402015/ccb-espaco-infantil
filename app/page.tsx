@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Settings, Users, BookOpen, Edit, Search, History, Church } from 'lucide-react';
+import { Plus, Settings, Users, BookOpen, Edit, Search, History, Church, FileText } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
 import { Header } from '@/components/header';
 import { ChildListItem } from '@/components/child-list-item';
@@ -14,6 +14,8 @@ import { ChurchesModal } from '@/components/churches-modal';
 import { ChurchSelector } from '@/components/church-selector';
 import { EditLastCultoModal } from '@/components/edit-last-culto-modal';
 import { ManagementButtons } from '@/components/management-buttons';
+import { SummaryModal } from '@/components/summary-modal';
+import { useModal } from '@/hooks/use-modal';
 import type { Child } from '@/types';
 
 export default function Home() {
@@ -62,8 +64,10 @@ export default function Home() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isChurchesOpen, setIsChurchesOpen] = useState(false);
   const [isEditLastCultoOpen, setIsEditLastCultoOpen] = useState(false);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const { showError } = useModal();
 
   // Carregar igrejas quando o componente monta
   useEffect(() => {
@@ -140,6 +144,14 @@ export default function Home() {
     }
     setChildToEdit(null);
     setIsAddFormOpen(true);
+  };
+
+  const handleShowSummary = (): void => {
+    if (!dadosParaExibir) {
+      showError('Nenhum culto encontrado para exibir o resumo.');
+      return;
+    }
+    setIsSummaryOpen(true);
   };
 
   const isCapacityFull = capacidadeAtual >= capacidadeMaxima;
@@ -223,8 +235,17 @@ export default function Home() {
             </div>
             <div className="flex gap-3">
               <button
+                onClick={handleShowSummary}
+                disabled={!dadosParaExibir}
+                className="px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md disabled:cursor-not-allowed"
+                aria-label="Ver resumo do culto"
+              >
+                <FileText className="w-5 h-5" />
+                Resumo do Culto
+              </button>
+              <button
                 onClick={() => setIsEditLastCultoOpen(true)}
-                className="px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md"
+                className="px-4 py-3 bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md"
                 aria-label="Editar último culto"
               >
                 <Edit className="w-5 h-5" />
@@ -436,6 +457,14 @@ export default function Home() {
       {isEditLastCultoOpen && (
         <EditLastCultoModal
           onClose={() => setIsEditLastCultoOpen(false)}
+        />
+      )}
+
+      {isSummaryOpen && dadosParaExibir && (
+        <SummaryModal
+          culto={dadosParaExibir}
+          totalCriancas={children.length}
+          onClose={() => setIsSummaryOpen(false)}
         />
       )}
     </main>

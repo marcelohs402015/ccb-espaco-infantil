@@ -103,41 +103,51 @@ export const ManagementButtons: React.FC = () => {
   return (
     <>
       <div className="bg-white rounded-xl shadow-lg p-6 mb-6 mt-8">
-        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5 text-orange-600" />
           Gerenciamento de Dados
         </h3>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Botão Limpar Dados */}
-          <button
-            onClick={handleClearData}
-            disabled={isLoading}
-            className="flex items-center justify-center gap-3 px-6 py-4 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg disabled:cursor-not-allowed"
-          >
-            <Trash2 className="w-5 h-5" />
-            <span>Limpar Dados</span>
-          </button>
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          {/* Botão Limpar Dados - Lado Esquerdo */}
+          <div className="flex-shrink-0">
+            <button
+              onClick={handleClearData}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-3 px-6 py-4 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg disabled:cursor-not-allowed"
+            >
+              <Trash2 className="w-5 h-5" />
+              <span>Limpar Dados</span>
+            </button>
+          </div>
 
-          {/* Botão Resumo */}
-          <button
-            onClick={handleShowSummary}
-            disabled={isLoading || !cultoMaisRecente}
-            className="flex items-center justify-center gap-3 px-6 py-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg disabled:cursor-not-allowed"
-          >
-            <FileText className="w-5 h-5" />
-            <span>Resumo</span>
-          </button>
-        </div>
-
-        {/* Informações adicionais */}
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600">
-            <strong>Limpar Dados:</strong> Remove todas as crianças, histórico de cultos e registros de uso da igreja selecionada.
-          </p>
-          <p className="text-sm text-gray-600 mt-1">
-            <strong>Resumo:</strong> Exibe o resumo do culto mais recente com todas as informações registradas.
-          </p>
+          {/* Informações sobre LGPD - Lado Direito */}
+          <div className="flex-1">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-blue-800 mb-2">
+                    Proteção de Dados (LGPD)
+                  </h4>
+                  <p className="text-sm text-blue-700 leading-relaxed">
+                    Em conformidade com a <strong>Lei Geral de Proteção de Dados (LGPD)</strong>, 
+                    este aplicativo foi desenvolvido com foco total na sua segurança. A 
+                    <strong> Congregação Cristã no Brasil (CCB)</strong> prioriza a privacidade 
+                    dos seus membros. Por isso, a função &apos;Limpar dados&apos; é acionada automaticamente 
+                    após o término de cada culto, assegurando que quaisquer dados temporários sejam 
+                    imediatamente eliminados e que a sua informação particular permaneça protegida.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

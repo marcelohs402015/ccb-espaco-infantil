@@ -210,12 +210,12 @@ export default function Home() {
         </div>
 
         {/* Worship Summary */}
-        <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-xl shadow-lg p-8 mb-8 border-2 border-green-200">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-gradient-to-r from-green-100 to-teal-100 rounded-xl shadow-lg p-6 md:p-8 mb-8 border-2 border-green-200">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
             <div className="flex items-center gap-3">
               <BookOpen className="w-7 h-7 text-green-700" />
               <div>
-                <h3 className="text-2xl font-bold text-gray-900">Resumo do Culto</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900">Resumo do Culto</h3>
                 {dadosParaExibir && (dadosParaExibir.palavraLida || dadosParaExibir.hinosCantados || dadosParaExibir.aprendizado) ? (
                   <p className="text-sm text-green-600 font-medium">
                     {new Date(dadosParaExibir.data + 'T00:00:00').toLocaleDateString('pt-BR', {
@@ -233,19 +233,20 @@ export default function Home() {
                 )}
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <button
                 onClick={handleShowSummary}
                 disabled={!dadosParaExibir}
-                className="px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md disabled:cursor-not-allowed"
+                className="flex-1 sm:flex-none px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md disabled:cursor-not-allowed"
                 aria-label="Ver resumo do culto"
               >
                 <FileText className="w-5 h-5" />
-                Resumo do Culto
+                <span className="hidden sm:inline">Resumo do Culto</span>
+                <span className="sm:hidden">Resumo</span>
               </button>
               <button
                 onClick={() => setIsEditLastCultoOpen(true)}
-                className="px-4 py-3 bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-md"
+                className="flex-1 sm:flex-none px-4 py-3 bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md"
                 aria-label="Editar último culto"
               >
                 <Edit className="w-5 h-5" />

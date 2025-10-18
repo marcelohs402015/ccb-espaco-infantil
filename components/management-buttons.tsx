@@ -1,13 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Trash2, FileText, AlertTriangle } from 'lucide-react';
+import { Trash2, FileText, AlertTriangle, Smartphone } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
 import { SummaryModal } from './summary-modal';
 import { ClearDataModal } from './clear-data-modal';
 import { SelectChurchModal } from './select-church-modal';
 import { GenericModal } from './generic-modal';
 import { useModal } from '@/hooks/use-modal';
+import { usePWAInstall } from '@/hooks/use-pwa-install';
+import { IOSInstallInstructions } from './ios-install-instructions';
 
 export const ManagementButtons: React.FC = () => {
   const { 
@@ -22,7 +24,20 @@ export const ManagementButtons: React.FC = () => {
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isClearDataOpen, setIsClearDataOpen] = useState(false);
   const [isSelectChurchOpen, setIsSelectChurchOpen] = useState(false);
+  const [isIOSModalOpen, setIsIOSModalOpen] = useState(false);
+  const [isInstalling, setIsInstalling] = useState(false);
   const { modalState, showSuccess, showError, showInfo, hideModal } = useModal();
+  
+  // Hook PWA
+  const { 
+    shouldShowPrompt, 
+    isIOS, 
+    isAndroid,
+    isDesktop,
+    promptInstall, 
+    dismissPrompt,
+    isClient
+  } = usePWAInstall();
 
   // Dados da igreja ativa
   const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
@@ -100,6 +115,34 @@ export const ManagementButtons: React.FC = () => {
     setIsSummaryOpen(true);
   };
 
+  const handleInstallApp = async () => {
+    if (isIOS) {
+      // Mostrar instruções para iOS
+      setIsIOSModalOpen(true);
+      return;
+    }
+
+    // Android/Desktop: Usar prompt nativo
+    setIsInstalling(true);
+    try {
+      const success = await promptInstall();
+      if (success) {
+        showSuccess('App instalado com sucesso!');
+      }
+    } catch (error: any) {
+      showError('Erro ao instalar app: ' + error.message);
+    } finally {
+      setIsInstalling(false);
+    }
+  };
+
+  const getPlatformText = () => {
+    if (isIOS) return 'Como Instalar no iPhone/iPad';
+    if (isAndroid) return 'Instalar no Android';
+    if (isDesktop) return 'Instalar na Área de Trabalho';
+    return 'Instalar Aplicativo';
+  };
+
   return (
     <>
       <div className="bg-white rounded-xl shadow-lg p-6 mb-6 mt-8">
@@ -109,8 +152,9 @@ export const ManagementButtons: React.FC = () => {
         </h3>
         
         <div className="flex flex-col lg:flex-row gap-6 items-start">
-          {/* Botão Limpar Dados - Lado Esquerdo */}
-          <div className="flex-shrink-0">
+          {/* Botões - Lado Esquerdo */}
+          <div className="flex-shrink-0 space-y-3">
+            {/* Botão Limpar Dados */}
             <button
               onClick={handleClearData}
               disabled={isLoading}
@@ -119,6 +163,27 @@ export const ManagementButtons: React.FC = () => {
               <Trash2 className="w-5 h-5" />
               <span>Limpar Dados</span>
             </button>
+            
+            {/* Botão Instalar App - Só aparece se disponível */}
+            {isClient && shouldShowPrompt && (
+              <button
+                onClick={handleInstallApp}
+                disabled={isInstalling}
+                className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-blue-400 disabled:to-indigo-400 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg disabled:cursor-not-allowed"
+              >
+                {isInstalling ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Instalando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Smartphone className="w-5 h-5" />
+                    <span>📱 Instalar como Aplicativo</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
 
           {/* Informações sobre LGPD - Lado Direito */}
@@ -181,6 +246,11 @@ export const ManagementButtons: React.FC = () => {
         type={modalState.type}
         onClose={hideModal}
       />
+
+      {/* Modal de Instruções iOS */}
+      {isIOSModalOpen && (
+        <IOSInstallInstructions onClose={() => setIsIOSModalOpen(false)} />
+      )}
     </>
   );
 };

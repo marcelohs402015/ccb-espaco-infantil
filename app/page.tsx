@@ -15,6 +15,7 @@ import { ChurchSelector } from '@/components/church-selector';
 import { EditLastCultoModal } from '@/components/edit-last-culto-modal';
 import { ManagementButtons } from '@/components/management-buttons';
 import { SummaryModal } from '@/components/summary-modal';
+import { EmergencyNotification } from '@/components/emergency-notification';
 import { useModal } from '@/hooks/use-modal';
 import { useRealtimeSync } from '@/hooks/use-realtime-sync';
 import { useSyncState } from '@/hooks/use-sync-state';
@@ -81,6 +82,17 @@ export default function Home() {
     },
     onEmergencyTriggered: () => {
       console.log('🚨 Emergência detectada - todos os dispositivos serão notificados!');
+      
+      // Tocar som de alerta
+      try {
+        const audio = new Audio('/sounds/emergency-alert.mp3');
+        audio.play().catch(() => {
+          // Fallback para som do sistema se arquivo não existir
+          console.log('🔊 Som de emergência ativado');
+        });
+      } catch (error) {
+        console.log('🔊 Som de emergência ativado (fallback)');
+      }
     }
   });
 
@@ -483,6 +495,9 @@ export default function Home() {
           onClose={() => setIsSummaryOpen(false)}
         />
       )}
+
+      {/* Notificação de Emergência em Tempo Real */}
+      <EmergencyNotification />
     </main>
   );
 }

@@ -95,10 +95,32 @@ export const useRealtimeSync = (options: RealtimeSyncOptions = {}) => {
           // Se for uma emergência (isChamadoAtivo = true)
           if (payload.new && (payload.new as any).is_chamado_ativo) {
             const childId = (payload.new as any).id;
+            const childName = (payload.new as any).nome;
+            const responsavelName = (payload.new as any).responsavel_nome;
+            const responsavelPhone = (payload.new as any).responsavel_telefone;
+            
             if (childId !== lastEmergencyRef.current) {
               lastEmergencyRef.current = childId;
-              console.log('🚨 EMERGÊNCIA DETECTADA - Refresh imediato!');
+              console.log('🚨 EMERGÊNCIA DETECTADA - Refresh imediato!', {
+                childId,
+                childName,
+                responsavelName,
+                responsavelPhone
+              });
+              
+              // Refresh imediato para todos os dispositivos
               refreshImmediate();
+              
+              // Disparar evento customizado para notificação de emergência
+              window.dispatchEvent(new CustomEvent('emergency-triggered', {
+                detail: {
+                  childId,
+                  childName,
+                  responsavelName,
+                  responsavelPhone,
+                  timestamp: new Date().toISOString()
+                }
+              }));
               
               if (onEmergencyTriggered) {
                 onEmergencyTriggered();

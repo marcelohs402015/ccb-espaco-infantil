@@ -16,6 +16,8 @@ import { EditLastCultoModal } from '@/components/edit-last-culto-modal';
 import { ManagementButtons } from '@/components/management-buttons';
 import { SummaryModal } from '@/components/summary-modal';
 import { useModal } from '@/hooks/use-modal';
+import { useRealtimeSync } from '@/hooks/use-realtime-sync';
+import { useSyncState } from '@/hooks/use-sync-state';
 import type { Child } from '@/types';
 
 export default function Home() {
@@ -68,6 +70,19 @@ export default function Home() {
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const { showError } = useModal();
+  const syncState = useSyncState();
+
+  // Configurar sincronização em tempo real
+  useRealtimeSync({
+    enabled: true,
+    refreshDelay: 1000,
+    onDataChange: () => {
+      console.log('🔄 Dados atualizados via sincronização em tempo real');
+    },
+    onEmergencyTriggered: () => {
+      console.log('🚨 Emergência detectada - todos os dispositivos serão notificados!');
+    }
+  });
 
   // Carregar igrejas quando o componente monta
   useEffect(() => {

@@ -2,8 +2,11 @@
 
 import Image from 'next/image';
 import { Heart, Sparkles } from 'lucide-react';
+import { SyncIndicator } from './sync-indicator';
+import { useSyncState } from '@/hooks/use-sync-state';
 
 export const Header: React.FC = () => {
+  const syncState = useSyncState();
   return (
     <header className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl relative overflow-hidden">
       {/* Decorative shapes */}
@@ -11,6 +14,15 @@ export const Header: React.FC = () => {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl translate-x-32 translate-y-32"></div>
       
       <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Indicador de Sincronização */}
+        <div className="absolute top-4 right-4 z-20">
+          <SyncIndicator 
+            isConnected={syncState.isConnected}
+            isSyncing={syncState.isSyncing}
+            lastSync={syncState.lastSync}
+          />
+        </div>
+        
         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
           <div className="bg-gradient-to-br from-yellow-200 via-amber-100 to-orange-100 rounded-3xl p-3 shadow-2xl border-4 border-yellow-300 transform hover:scale-105 transition-transform card-hover">
             <Image 

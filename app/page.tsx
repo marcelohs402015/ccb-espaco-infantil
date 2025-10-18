@@ -17,6 +17,7 @@ import { ManagementButtons } from '@/components/management-buttons';
 import { SummaryModal } from '@/components/summary-modal';
 import { EmergencyNotification } from '@/components/emergency-notification';
 import { NotificationPermissionPrompt } from '@/components/notification-permission-prompt';
+import { InstallAppCard } from '@/components/install-app-card';
 import { useModal } from '@/hooks/use-modal';
 import { useRealtimeSync } from '@/hooks/use-realtime-sync';
 import { useSyncState } from '@/hooks/use-sync-state';
@@ -366,6 +367,9 @@ export default function Home() {
             </div>
           )}
         </div>
+
+        {/* Install App Card */}
+        <InstallAppCard />
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-6 mb-8">

@@ -15,6 +15,7 @@ interface SyncIndicatorProps {
   autoRefreshActive?: boolean;
   nextRefresh?: Date | null;
   notificationsEnabled?: boolean;
+  isPWAInstalled?: boolean;
 }
 
 export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
@@ -23,7 +24,8 @@ export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
   lastSync,
   autoRefreshActive = false,
   nextRefresh,
-  notificationsEnabled = false
+  notificationsEnabled = false,
+  isPWAInstalled = false
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -116,6 +118,9 @@ export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
             )}
             <div className={`${notificationsEnabled ? 'text-green-300' : 'text-gray-300'}`}>
               Notificações: {notificationsEnabled ? 'Ativadas' : 'Desativadas'}
+            </div>
+            <div className={`${isPWAInstalled ? 'text-green-300' : 'text-gray-300'}`}>
+              PWA: {isPWAInstalled ? 'Instalado' : 'Não instalado'}
             </div>
           </div>
           

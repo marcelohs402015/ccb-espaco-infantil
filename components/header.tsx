@@ -6,7 +6,6 @@ import { SyncIndicator } from './sync-indicator';
 import { useSyncState } from '@/hooks/use-sync-state';
 import { useAutoRefresh } from '@/hooks/use-auto-refresh';
 import { useNotification } from '@/hooks/use-notification';
-import { usePWAInstall } from '@/hooks/use-pwa-install';
 
 export const Header: React.FC = () => {
   const syncState = useSyncState();
@@ -17,7 +16,6 @@ export const Header: React.FC = () => {
     pauseOnError: true
   });
   const { isNotificationEnabled } = useNotification();
-  const { isInstalled } = usePWAInstall();
   return (
     <header className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl relative overflow-hidden">
       {/* Decorative shapes */}
@@ -34,7 +32,6 @@ export const Header: React.FC = () => {
             autoRefreshActive={autoRefresh.isActive}
             nextRefresh={autoRefresh.lastRefresh ? new Date(autoRefresh.lastRefresh.getTime() + 5000) : null}
             notificationsEnabled={isNotificationEnabled()}
-            isPWAInstalled={isInstalled}
           />
         </div>
         

@@ -1,15 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Trash2, FileText, AlertTriangle, Smartphone } from 'lucide-react';
+import { Trash2, FileText, AlertTriangle } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
 import { SummaryModal } from './summary-modal';
 import { ClearDataModal } from './clear-data-modal';
 import { SelectChurchModal } from './select-church-modal';
 import { GenericModal } from './generic-modal';
 import { useModal } from '@/hooks/use-modal';
-import { usePWAInstall } from '@/hooks/use-pwa-install';
-import { IOSInstallInstructions } from './ios-install-instructions';
 
 export const ManagementButtons: React.FC = () => {
   const { 
@@ -24,20 +22,8 @@ export const ManagementButtons: React.FC = () => {
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isClearDataOpen, setIsClearDataOpen] = useState(false);
   const [isSelectChurchOpen, setIsSelectChurchOpen] = useState(false);
-  const [isIOSModalOpen, setIsIOSModalOpen] = useState(false);
-  const [isInstalling, setIsInstalling] = useState(false);
   const { modalState, showSuccess, showError, showInfo, hideModal } = useModal();
   
-  // Hook PWA
-  const { 
-    shouldShowPrompt, 
-    isIOS, 
-    isAndroid,
-    isDesktop,
-    promptInstall, 
-    dismissPrompt,
-    isClient
-  } = usePWAInstall();
 
   // Dados da igreja ativa
   const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
@@ -115,33 +101,6 @@ export const ManagementButtons: React.FC = () => {
     setIsSummaryOpen(true);
   };
 
-  const handleInstallApp = async () => {
-    if (isIOS) {
-      // Mostrar instruções para iOS
-      setIsIOSModalOpen(true);
-      return;
-    }
-
-    // Android/Desktop: Usar prompt nativo
-    setIsInstalling(true);
-    try {
-      const success = await promptInstall();
-      if (success) {
-        showSuccess('App instalado com sucesso!');
-      }
-    } catch (error: any) {
-      showError('Erro ao instalar app: ' + error.message);
-    } finally {
-      setIsInstalling(false);
-    }
-  };
-
-  const getPlatformText = () => {
-    if (isIOS) return 'Como Instalar no iPhone/iPad';
-    if (isAndroid) return 'Instalar no Android';
-    if (isDesktop) return 'Instalar na Área de Trabalho';
-    return 'Instalar Aplicativo';
-  };
 
   return (
     <>
@@ -164,26 +123,6 @@ export const ManagementButtons: React.FC = () => {
               <span>Limpar Dados</span>
             </button>
             
-            {/* Botão Instalar App - Desktop: embaixo, Mobile: ao lado */}
-            {isClient && shouldShowPrompt && (
-              <button
-                onClick={handleInstallApp}
-                disabled={isInstalling}
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-blue-400 disabled:to-indigo-400 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg disabled:cursor-not-allowed mt-3 lg:mt-3"
-              >
-                {isInstalling ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span className="text-sm">Instalando...</span>
-                  </>
-                ) : (
-                  <>
-                    <Smartphone className="w-4 h-4" />
-                    <span className="text-sm">📱 CCB Infantil</span>
-                  </>
-                )}
-              </button>
-            )}
           </div>
 
           {/* Informações sobre LGPD - Lado Direito */}
@@ -247,10 +186,6 @@ export const ManagementButtons: React.FC = () => {
         onClose={hideModal}
       />
 
-      {/* Modal de Instruções iOS */}
-      {isIOSModalOpen && (
-        <IOSInstallInstructions onClose={() => setIsIOSModalOpen(false)} />
-      )}
     </>
   );
 };

@@ -33,7 +33,7 @@ export const usePWAInstall = () => {
 
   // Detectar plataforma
   const detectPlatform = useCallback(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return { isIOS: false, isAndroid: false, isDesktop: false };
 
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(userAgent) || 
@@ -81,6 +81,13 @@ export const usePWAInstall = () => {
       isDismissed
     }));
   }, [detectPlatform, checkIfInstalled, checkIfDismissed]);
+
+  // Verificar se está no cliente (hidratação)
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Capturar evento beforeinstallprompt
   useEffect(() => {
@@ -175,17 +182,18 @@ export const usePWAInstall = () => {
 
   // Verificar se deve mostrar o prompt
   const shouldShowPrompt = useCallback(() => {
+    if (!isClient) return false; // Não mostrar durante SSR
     return (
       !state.isInstalled && 
-      !state.isDismissed && 
-      (state.canInstall || state.isIOS)
+      !state.isDismissed
     );
-  }, [state.isInstalled, state.isDismissed, state.canInstall, state.isIOS]);
+  }, [isClient, state.isInstalled, state.isDismissed]);
 
   return {
     ...state,
     promptInstall,
     dismissPrompt,
-    shouldShowPrompt: shouldShowPrompt()
+    shouldShowPrompt: shouldShowPrompt(),
+    isClient
   };
 };

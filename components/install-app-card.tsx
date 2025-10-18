@@ -17,8 +17,18 @@ export const InstallAppCard: React.FC = () => {
     isAndroid,
     isDesktop,
     promptInstall, 
-    dismissPrompt 
+    dismissPrompt,
+    isClient
   } = usePWAInstall();
+
+  // Debug
+  console.log('🔍 InstallAppCard Debug:', {
+    shouldShowPrompt,
+    isIOS,
+    isAndroid,
+    isDesktop,
+    isClient
+  });
 
   const [isIOSModalOpen, setIsIOSModalOpen] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
@@ -43,7 +53,8 @@ export const InstallAppCard: React.FC = () => {
     dismissPrompt();
   };
 
-  if (!shouldShowPrompt) {
+  // Temporariamente sempre mostrar para debug
+  if (!isClient) {
     return null;
   }
 

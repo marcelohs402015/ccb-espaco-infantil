@@ -12,12 +12,16 @@ interface SyncIndicatorProps {
   isConnected?: boolean;
   isSyncing?: boolean;
   lastSync?: Date | null;
+  autoRefreshActive?: boolean;
+  nextRefresh?: Date | null;
 }
 
 export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
   isConnected = true,
   isSyncing = false,
-  lastSync
+  lastSync,
+  autoRefreshActive = false,
+  nextRefresh
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -65,6 +69,9 @@ export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
         {/* Texto do Status */}
         <span className="text-xs font-medium text-gray-700">
           {isSyncing ? 'Sincronizando...' : isConnected ? 'Online' : 'Offline'}
+          {autoRefreshActive && !isSyncing && (
+            <span className="ml-1 text-green-600">•</span>
+          )}
         </span>
       </div>
 
@@ -86,6 +93,16 @@ export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
             <div className="text-gray-300">
               {isSyncing ? 'Atualizando dados...' : 'Dados sincronizados'}
             </div>
+            {autoRefreshActive && (
+              <div className="text-green-300">
+                Auto-refresh ativo (5s)
+              </div>
+            )}
+            {nextRefresh && (
+              <div className="text-gray-300">
+                Próximo refresh: {formatLastSync(nextRefresh)}
+              </div>
+            )}
           </div>
           
           {/* Seta do tooltip */}

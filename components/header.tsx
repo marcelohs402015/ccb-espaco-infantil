@@ -4,9 +4,16 @@ import Image from 'next/image';
 import { Heart, Sparkles } from 'lucide-react';
 import { SyncIndicator } from './sync-indicator';
 import { useSyncState } from '@/hooks/use-sync-state';
+import { useAutoRefresh } from '@/hooks/use-auto-refresh';
 
 export const Header: React.FC = () => {
   const syncState = useSyncState();
+  const autoRefresh = useAutoRefresh({
+    enabled: true,
+    interval: 5000,
+    pauseOnFocus: true,
+    pauseOnError: true
+  });
   return (
     <header className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl relative overflow-hidden">
       {/* Decorative shapes */}
@@ -20,6 +27,8 @@ export const Header: React.FC = () => {
             isConnected={syncState.isConnected}
             isSyncing={syncState.isSyncing}
             lastSync={syncState.lastSync}
+            autoRefreshActive={autoRefresh.isActive}
+            nextRefresh={autoRefresh.lastRefresh ? new Date(autoRefresh.lastRefresh.getTime() + 5000) : null}
           />
         </div>
         

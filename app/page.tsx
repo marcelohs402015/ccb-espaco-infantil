@@ -19,6 +19,7 @@ import { EmergencyNotification } from '@/components/emergency-notification';
 import { useModal } from '@/hooks/use-modal';
 import { useRealtimeSync } from '@/hooks/use-realtime-sync';
 import { useSyncState } from '@/hooks/use-sync-state';
+import { useAutoRefresh } from '@/hooks/use-auto-refresh';
 import type { Child } from '@/types';
 
 export default function Home() {
@@ -72,6 +73,14 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const { showError } = useModal();
   const syncState = useSyncState();
+
+  // Sistema de auto-refresh a cada 5 segundos (fallback)
+  const autoRefresh = useAutoRefresh({
+    enabled: true,
+    interval: 5000, // 5 segundos
+    pauseOnFocus: true, // Pausar quando aba não está ativa
+    pauseOnError: true // Pausar temporariamente em caso de erro
+  });
 
   // Configurar sincronização em tempo real
   useRealtimeSync({

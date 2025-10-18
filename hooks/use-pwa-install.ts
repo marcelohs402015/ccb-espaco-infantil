@@ -41,6 +41,8 @@ export const usePWAInstall = () => {
     const isAndroid = /android/.test(userAgent);
     const isDesktop = !isIOS && !isAndroid;
 
+    console.log('🔍 PWA: Plataforma detectada:', { isIOS, isAndroid, isDesktop, userAgent: userAgent.substring(0, 50) });
+
     return { isIOS, isAndroid, isDesktop };
   }, []);
 
@@ -182,12 +184,23 @@ export const usePWAInstall = () => {
 
   // Verificar se deve mostrar o prompt
   const shouldShowPrompt = useCallback(() => {
-    if (!isClient) return false; // Não mostrar durante SSR
-    return (
-      !state.isInstalled && 
-      !state.isDismissed
-    );
-  }, [isClient, state.isInstalled, state.isDismissed]);
+    if (!isClient) {
+      console.log('🔍 PWA: Não está no cliente (SSR)');
+      return false; // Não mostrar durante SSR
+    }
+    
+    const shouldShow = !state.isInstalled && !state.isDismissed;
+    console.log('🔍 PWA: shouldShowPrompt =', shouldShow, {
+      isInstalled: state.isInstalled,
+      isDismissed: state.isDismissed,
+      canInstall: state.canInstall,
+      isIOS: state.isIOS,
+      isAndroid: state.isAndroid,
+      isDesktop: state.isDesktop
+    });
+    
+    return shouldShow;
+  }, [isClient, state.isInstalled, state.isDismissed, state.canInstall, state.isIOS, state.isAndroid, state.isDesktop]);
 
   return {
     ...state,

@@ -153,7 +153,7 @@ export const ManagementButtons: React.FC = () => {
         
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Botões - Lado Esquerdo */}
-          <div className="flex-shrink-0 space-y-3">
+          <div className="flex-shrink-0">
             {/* Botão Limpar Dados */}
             <button
               onClick={handleClearData}
@@ -164,22 +164,22 @@ export const ManagementButtons: React.FC = () => {
               <span>Limpar Dados</span>
             </button>
             
-            {/* Botão Instalar App - Só aparece se disponível */}
+            {/* Botão Instalar App - Desktop: embaixo, Mobile: ao lado */}
             {isClient && shouldShowPrompt && (
               <button
                 onClick={handleInstallApp}
                 disabled={isInstalling}
-                className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-blue-400 disabled:to-indigo-400 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-blue-400 disabled:to-indigo-400 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg disabled:cursor-not-allowed mt-3 lg:mt-3"
               >
                 {isInstalling ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Instalando...</span>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span className="text-sm">Instalando...</span>
                   </>
                 ) : (
                   <>
-                    <Smartphone className="w-5 h-5" />
-                    <span>📱 Instalar como Aplicativo</span>
+                    <Smartphone className="w-4 h-4" />
+                    <span className="text-sm">📱 CCB Infantil</span>
                   </>
                 )}
               </button>

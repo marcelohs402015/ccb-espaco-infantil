@@ -60,9 +60,28 @@ const createDefaultIgrejaData = (): IgrejaData => ({
   diasDeUso: [],
 });
 
+// Função para salvar igreja ativa no sessionStorage
+const saveIgrejaAtiva = (igrejaId: string | null) => {
+  if (typeof window !== 'undefined') {
+    if (igrejaId) {
+      sessionStorage.setItem('ccb-igreja-ativa', igrejaId);
+    } else {
+      sessionStorage.removeItem('ccb-igreja-ativa');
+    }
+  }
+};
+
+// Função para carregar igreja ativa do sessionStorage
+const loadIgrejaAtiva = (): string | null => {
+  if (typeof window !== 'undefined') {
+    return sessionStorage.getItem('ccb-igreja-ativa');
+  }
+  return null;
+};
+
 export const useSpaceStore = create<SpaceStore>((set, get) => ({
   igrejas: [],
-  igrejaAtiva: null,
+  igrejaAtiva: loadIgrejaAtiva(), // Carregar igreja salva
   dadosPorIgreja: {},
   isLoading: false,
   error: null,
@@ -87,6 +106,13 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
       set({ igrejas: igrejasMapeadas, isLoading: false });
       
       console.log('✅ Igrejas carregadas:', igrejasMapeadas.length);
+
+      // Recuperar igreja ativa salva se existir
+      const igrejaAtivaSalva = loadIgrejaAtiva();
+      if (igrejaAtivaSalva && igrejasMapeadas.some(i => i.id === igrejaAtivaSalva)) {
+        console.log('🔄 Recuperando igreja ativa salva:', igrejaAtivaSalva);
+        await get().setIgrejaAtiva(igrejaAtivaSalva);
+      }
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       console.error('❌ Erro ao carregar igrejas:', error);
@@ -189,6 +215,9 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
   setIgrejaAtiva: async (igrejaId) => {
     set({ igrejaAtiva: igrejaId });
+    
+    // Salvar igreja selecionada no sessionStorage
+    saveIgrejaAtiva(igrejaId);
     
     if (igrejaId) {
       // Carregar dados da igreja

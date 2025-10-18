@@ -111,6 +111,32 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Detectar quando o app volta do lock screen e fazer refresh
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && igrejaAtiva) {
+        console.log('📱 App voltou do lock screen - fazendo refresh dos dados');
+        // Fazer refresh dos dados quando voltar do lock screen
+        loadIgrejaData(igrejaAtiva);
+      }
+    };
+
+    const handleFocus = () => {
+      if (igrejaAtiva) {
+        console.log('📱 App ganhou foco - fazendo refresh dos dados');
+        loadIgrejaData(igrejaAtiva);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [igrejaAtiva, loadIgrejaData]);
+
   // Carregar dados da igreja ativa e registrar dia de uso
   useEffect(() => {
     if (igrejaAtiva) {

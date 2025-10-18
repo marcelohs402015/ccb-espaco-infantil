@@ -1,0 +1,50 @@
+{
+  "name": "CCB Espaço Infantil Bíblico",
+  "short_name": "CCB Infantil",
+  "description": "Sistema de gerenciamento do espaço infantil bíblico da Congregação Cristã no Brasil",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#4f46e5",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt-BR",
+  "categories": ["religion", "education", "productivity"],
+  "icons": [
+    {
+      "src": "/ccb-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/ccb-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/ccb-logo.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nova Criança",
+      "short_name": "Nova Criança",
+      "description": "Cadastrar nova criança no espaço infantil",
+      "url": "/?action=new-child",
+      "icons": [
+        {
+          "src": "/ccb-logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}

@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { Wifi, WifiOff, RefreshCw, Bell, BellOff } from 'lucide-react';
 
 interface SyncIndicatorProps {
   isConnected?: boolean;
@@ -14,6 +14,7 @@ interface SyncIndicatorProps {
   lastSync?: Date | null;
   autoRefreshActive?: boolean;
   nextRefresh?: Date | null;
+  notificationsEnabled?: boolean;
 }
 
 export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
@@ -21,7 +22,8 @@ export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
   isSyncing = false,
   lastSync,
   autoRefreshActive = false,
-  nextRefresh
+  nextRefresh,
+  notificationsEnabled = false
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -73,6 +75,15 @@ export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
             <span className="ml-1 text-green-600">•</span>
           )}
         </span>
+
+        {/* Indicador de Notificações */}
+        <div className="ml-2">
+          {notificationsEnabled ? (
+            <Bell className="w-3 h-3 text-green-600" />
+          ) : (
+            <BellOff className="w-3 h-3 text-gray-400" />
+          )}
+        </div>
       </div>
 
       {/* Tooltip */}
@@ -103,6 +114,9 @@ export const SyncIndicator: React.FC<SyncIndicatorProps> = ({
                 Próximo refresh: {formatLastSync(nextRefresh)}
               </div>
             )}
+            <div className={`${notificationsEnabled ? 'text-green-300' : 'text-gray-300'}`}>
+              Notificações: {notificationsEnabled ? 'Ativadas' : 'Desativadas'}
+            </div>
           </div>
           
           {/* Seta do tooltip */}

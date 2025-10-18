@@ -7,6 +7,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useSpaceStore } from '@/store/use-space-store';
 import { useSyncState } from './use-sync-state';
+import { useNotification } from './use-notification';
 
 interface RealtimeSyncOptions {
   enabled?: boolean;
@@ -25,6 +26,7 @@ export const useRealtimeSync = (options: RealtimeSyncOptions = {}) => {
 
   const { igrejaAtiva, loadIgrejaData, loadIgrejas } = useSpaceStore();
   const { setConnected, setSyncing, setLastSync, setError } = useSyncState();
+  const { sendEmergencyNotification, isNotificationEnabled } = useNotification();
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isInitialLoadRef = useRef(true);
   const lastEmergencyRef = useRef<string | null>(null);
@@ -121,6 +123,18 @@ export const useRealtimeSync = (options: RealtimeSyncOptions = {}) => {
                   timestamp: new Date().toISOString()
                 }
               }));
+
+              // Enviar notificação push nativa se habilitada
+              if (isNotificationEnabled()) {
+                sendEmergencyNotification({
+                  childId,
+                  childName,
+                  responsavelName,
+                  responsavelPhone
+                }).catch(error => {
+                  console.error('❌ Erro ao enviar notificação de emergência:', error);
+                });
+              }
               
               if (onEmergencyTriggered) {
                 onEmergencyTriggered();

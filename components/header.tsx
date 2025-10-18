@@ -5,6 +5,7 @@ import { Heart, Sparkles } from 'lucide-react';
 import { SyncIndicator } from './sync-indicator';
 import { useSyncState } from '@/hooks/use-sync-state';
 import { useAutoRefresh } from '@/hooks/use-auto-refresh';
+import { useNotification } from '@/hooks/use-notification';
 
 export const Header: React.FC = () => {
   const syncState = useSyncState();
@@ -14,6 +15,7 @@ export const Header: React.FC = () => {
     pauseOnFocus: true,
     pauseOnError: true
   });
+  const { isNotificationEnabled } = useNotification();
   return (
     <header className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl relative overflow-hidden">
       {/* Decorative shapes */}
@@ -29,6 +31,7 @@ export const Header: React.FC = () => {
             lastSync={syncState.lastSync}
             autoRefreshActive={autoRefresh.isActive}
             nextRefresh={autoRefresh.lastRefresh ? new Date(autoRefresh.lastRefresh.getTime() + 5000) : null}
+            notificationsEnabled={isNotificationEnabled()}
           />
         </div>
         

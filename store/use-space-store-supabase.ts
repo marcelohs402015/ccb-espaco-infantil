@@ -39,6 +39,7 @@ interface SpaceStore {
   limparDadosMockados: () => Promise<void>;
   limparDadosIgreja: () => Promise<boolean>;
   verificarSeExistemDados: (igrejaId: string) => Promise<boolean>;
+  verificarELimparDadosAntigos: (igrejaId: string) => Promise<void>;
 }
 
 const defaultSettings: Settings = {
@@ -122,6 +123,9 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
   loadIgrejaData: async (igrejaId: string) => {
     set({ isLoading: true, error: null });
     try {
+      // NOVO: Verificar e limpar dados antigos automaticamente (LGPD)
+      await get().verificarELimparDadosAntigos(igrejaId);
+      
       const hoje = new Date().toISOString().split('T')[0];
 
       // Carregar todas as children da igreja (persistência permanente)
@@ -1072,6 +1076,41 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     } catch (error: any) {
       console.error('❌ Erro ao verificar dados da igreja:', error);
       throw error;
+    }
+  },
+
+  verificarELimparDadosAntigos: async (igrejaId: string): Promise<void> => {
+    try {
+      const hoje = new Date().toISOString().split('T')[0];
+      console.log('🔍 Verificando dados antigos para:', igrejaId, 'Data atual:', hoje);
+
+      // Verificar se há crianças cadastradas (qualquer data)
+      const { data: todasCriancas } = await supabase
+        .from('children')
+        .select('id, data_cadastro')
+        .eq('igreja_id', igrejaId);
+
+      if (todasCriancas && todasCriancas.length > 0) {
+        // Verificar se alguma criança NÃO é de hoje
+        const temCriancasAntigas = todasCriancas.some(crianca => crianca.data_cadastro !== hoje);
+        
+        if (temCriancasAntigas) {
+          console.log('🧹 Crianças de dias anteriores detectadas - executando limpeza automática (LGPD)');
+          console.log('💡 Caso esqueçam de apagar os dados do dia anterior, o sistema ao entrar e ver que é um novo dia, vai apagar sozinho os dados do dia anterior');
+          console.log('📊 Crianças encontradas:', todasCriancas.map(c => ({ id: c.id, data: c.data_cadastro })));
+          
+          // Executar limpeza silenciosa
+          await get().limparDadosIgreja();
+          
+          console.log('✅ Limpeza automática concluída');
+        } else {
+          console.log('✓ Todas as crianças são de hoje - nenhuma limpeza necessária');
+        }
+      } else {
+        console.log('✓ Nenhuma criança cadastrada');
+      }
+    } catch (error: any) {
+      console.error('❌ Erro ao verificar/limpar dados antigos:', error);
     }
   },
 }));

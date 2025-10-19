@@ -146,7 +146,8 @@ export const ManagementButtons: React.FC = () => {
                     <strong> Congregação Cristã no Brasil (CCB)</strong> prioriza a privacidade 
                     dos seus membros. Por isso, a função &apos;Limpar dados&apos; é acionada automaticamente 
                     após o término de cada culto, assegurando que quaisquer dados temporários sejam 
-                    imediatamente eliminados e que a sua informação particular permaneça protegida.
+                    imediatamente eliminados e que a sua informação particular permaneça protegida. 
+                    Caso esqueçam de apagar os dados do dia anterior, o sistema ao entrar e ver que é um novo dia, vai apagar sozinho os dados do dia anterior.
                   </p>
                 </div>
               </div>

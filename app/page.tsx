@@ -370,6 +370,15 @@ export default function Home() {
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-6 mb-8">
           <button
+            onClick={() => setIsObservationsOpen(true)}
+            className="flex-1 min-w-[280px] px-8 py-6 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 text-white font-black text-xl rounded-2xl hover:scale-105 transition-all shadow-2xl hover:shadow-green-500/50 button-pop flex items-center justify-center gap-3 border-4 border-white/30 relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 gradient-shine"></div>
+            <BookOpen className="w-8 h-8 group-hover:rotate-12 transition-transform" />
+            <span className="relative z-10">📖 Sobre o Culto</span>
+          </button>
+
+          <button
             onClick={handleAddNewChild}
             disabled={isCapacityFull}
             className={`flex-1 min-w-[280px] px-8 py-6 font-black text-xl rounded-2xl transition-all shadow-2xl flex items-center justify-center gap-3 border-4 border-white/30 relative overflow-hidden group ${
@@ -385,24 +394,7 @@ export default function Home() {
               {isCapacityFull ? '🚫 Capacidade Cheia' : '✨ Nova Criança'}
             </span>
           </button>
-          
-          <button
-            onClick={() => setIsObservationsOpen(true)}
-            className="flex-1 min-w-[280px] px-8 py-6 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 text-white font-black text-xl rounded-2xl hover:scale-105 transition-all shadow-2xl hover:shadow-green-500/50 button-pop flex items-center justify-center gap-3 border-4 border-white/30 relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 gradient-shine"></div>
-            <BookOpen className="w-8 h-8 group-hover:rotate-12 transition-transform" />
-            <span className="relative z-10">📖 Sobre o Culto</span>
-          </button>
 
-          <button
-            onClick={() => setIsHistoryOpen(true)}
-            className="flex-1 min-w-[280px] px-8 py-6 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white font-black text-xl rounded-2xl hover:scale-105 transition-all shadow-2xl hover:shadow-orange-500/50 button-pop flex items-center justify-center gap-3 border-4 border-white/30 relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 gradient-shine"></div>
-            <History className="w-8 h-8 group-hover:rotate-12 transition-transform" />
-            <span className="relative z-10">📚 Ver Histórico de Cultos</span>
-          </button>
         </div>
 
         {/* Search Field */}

@@ -16,6 +16,7 @@ interface SpaceStore {
   dadosPorIgreja: Record<string, IgrejaData>;
   isLoading: boolean;
   error: string | null;
+  lgpdCleanupExecuted: boolean;
   
   // Ações
   setIgrejaAtiva: (igrejaId: string | null) => Promise<void>;
@@ -39,7 +40,8 @@ interface SpaceStore {
   limparDadosMockados: () => Promise<void>;
   limparDadosIgreja: () => Promise<boolean>;
   verificarSeExistemDados: (igrejaId: string) => Promise<boolean>;
-  verificarELimparDadosAntigos: (igrejaId: string) => Promise<void>;
+  verificarELimparDadosAntigos: (igrejaId: string) => Promise<boolean>;
+  setLgpdCleanupExecuted: (value: boolean) => void;
 }
 
 const defaultSettings: Settings = {
@@ -86,6 +88,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
   dadosPorIgreja: {},
   isLoading: false,
   error: null,
+  lgpdCleanupExecuted: false,
 
   loadIgrejas: async () => {
     set({ isLoading: true, error: null });
@@ -124,7 +127,10 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       // NOVO: Verificar e limpar dados antigos automaticamente (LGPD)
-      await get().verificarELimparDadosAntigos(igrejaId);
+      const houveLinpeza = await get().verificarELimparDadosAntigos(igrejaId);
+      
+      // Armazenar flag se houve limpeza (para componente acessar)
+      set({ lgpdCleanupExecuted: houveLinpeza });
       
       const hoje = new Date().toISOString().split('T')[0];
 
@@ -1079,39 +1085,70 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     }
   },
 
-  verificarELimparDadosAntigos: async (igrejaId: string): Promise<void> => {
+  verificarELimparDadosAntigos: async (igrejaId: string): Promise<boolean> => {
     try {
-      const hoje = new Date().toISOString().split('T')[0];
-      console.log('🔍 Verificando dados antigos para:', igrejaId, 'Data atual:', hoje);
+      // NOVA REGRA: Só executa limpeza se há igreja selecionada
+      if (!igrejaId) {
+        console.log('⚠️ Nenhuma igreja selecionada - limpeza automática não executada');
+        return false;
+      }
 
-      // Verificar se há crianças cadastradas (qualquer data)
+      const hoje = new Date().toISOString().split('T')[0];
+      console.log('🔍 Verificando dados antigos para igreja selecionada:', igrejaId, 'Data atual:', hoje);
+
+      // Verificar children com created_at de dias anteriores
       const { data: todasCriancas } = await supabase
         .from('children')
-        .select('id, data_cadastro')
+        .select('id, created_at')
         .eq('igreja_id', igrejaId);
 
+      // Verificar histórico de cultos com created_at de dias anteriores
+      const { data: todosHistoricos } = await supabase
+        .from('historico_cultos')
+        .select('id, created_at')
+        .eq('igreja_id', igrejaId);
+
+      let temDadosAntigos = false;
+
       if (todasCriancas && todasCriancas.length > 0) {
-        // Verificar se alguma criança NÃO é de hoje
-        const temCriancasAntigas = todasCriancas.some(crianca => crianca.data_cadastro !== hoje);
+        temDadosAntigos = todasCriancas.some(crianca => {
+          const dataCreated = crianca.created_at?.split('T')[0];
+          return dataCreated && dataCreated !== hoje;
+        });
+      }
+
+      if (!temDadosAntigos && todosHistoricos && todosHistoricos.length > 0) {
+        temDadosAntigos = todosHistoricos.some(historico => {
+          const dataCreated = historico.created_at?.split('T')[0];
+          return dataCreated && dataCreated !== hoje;
+        });
+      }
+
+      if (temDadosAntigos) {
+        console.log('🧹 Dados antigos detectados na igreja selecionada - executando limpeza automática (LGPD)');
+        console.log('💡 Caso esqueçam de apagar os dados do dia anterior, o sistema ao entrar e ver que é um novo dia, vai apagar sozinho os dados do dia anterior');
+        console.log('📊 Dados encontrados:', {
+          criancas: todasCriancas?.map(c => ({ id: c.id, created_at: c.created_at })),
+          historicos: todosHistoricos?.map(h => ({ id: h.id, created_at: h.created_at }))
+        });
         
-        if (temCriancasAntigas) {
-          console.log('🧹 Crianças de dias anteriores detectadas - executando limpeza automática (LGPD)');
-          console.log('💡 Caso esqueçam de apagar os dados do dia anterior, o sistema ao entrar e ver que é um novo dia, vai apagar sozinho os dados do dia anterior');
-          console.log('📊 Crianças encontradas:', todasCriancas.map(c => ({ id: c.id, data: c.data_cadastro })));
-          
-          // Executar limpeza silenciosa
-          await get().limparDadosIgreja();
-          
-          console.log('✅ Limpeza automática concluída');
-        } else {
-          console.log('✓ Todas as crianças são de hoje - nenhuma limpeza necessária');
-        }
+        // Executar limpeza silenciosa
+        await get().limparDadosIgreja();
+        
+        console.log('✅ Limpeza automática concluída');
+        return true; // Retorna true indicando que limpeza foi executada
       } else {
-        console.log('✓ Nenhuma criança cadastrada');
+        console.log('✓ Nenhum dado antigo detectado na igreja selecionada');
+        return false; // Retorna false indicando que não havia dados antigos
       }
     } catch (error: any) {
       console.error('❌ Erro ao verificar/limpar dados antigos:', error);
+      return false;
     }
+  },
+
+  setLgpdCleanupExecuted: (value: boolean) => {
+    set({ lgpdCleanupExecuted: value });
   },
 }));
 

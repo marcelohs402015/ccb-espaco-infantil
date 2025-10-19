@@ -17,6 +17,7 @@ import { ManagementButtons } from '@/components/management-buttons';
 import { SummaryModal } from '@/components/summary-modal';
 import { EmergencyNotification } from '@/components/emergency-notification';
 import { NotificationPermissionPrompt } from '@/components/notification-permission-prompt';
+import { AlertModal } from '@/components/alert-modal';
 import { useModal } from '@/hooks/use-modal';
 import { useRealtimeSync } from '@/hooks/use-realtime-sync';
 import { useSyncState } from '@/hooks/use-sync-state';
@@ -71,8 +72,10 @@ export default function Home() {
   const [isChurchesOpen, setIsChurchesOpen] = useState(false);
   const [isEditLastCultoOpen, setIsEditLastCultoOpen] = useState(false);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [showLgpdCleanupModal, setShowLgpdCleanupModal] = useState(false);
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isHydrated, setIsHydrated] = useState(false);
   const { showError } = useModal();
   const syncState = useSyncState();
   const { registerServiceWorker, requestPermission } = useNotification();
@@ -107,6 +110,11 @@ export default function Home() {
       }
     }
   });
+
+  // Marcar hidratação como completa
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Carregar igrejas quando o componente monta
   useEffect(() => {
@@ -177,6 +185,16 @@ export default function Home() {
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [igrejaAtiva]);
+
+  // Detectar quando limpeza automática LGPD foi executada
+  useEffect(() => {
+    const { lgpdCleanupExecuted, setLgpdCleanupExecuted } = useSpaceStore.getState();
+    
+    if (lgpdCleanupExecuted && igrejaAtiva) {
+      setShowLgpdCleanupModal(true);
+      setLgpdCleanupExecuted(false); // Reset flag
+    }
+  }, [igrejaAtiva, dadosPorIgreja]);
 
   // Listener para abrir modal de igrejas via evento
   useEffect(() => {
@@ -253,7 +271,7 @@ export default function Home() {
         <ChurchSelector />
 
         {/* Capacity Status */}
-        {igrejaAtiva ? (
+        {isHydrated && igrejaAtiva ? (
           <>
         <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border-4 border-purple-200 card-hover backdrop-blur-sm bg-opacity-95">
           <div className="flex items-center justify-between flex-wrap gap-6">
@@ -488,7 +506,7 @@ export default function Home() {
         )}
 
         {/* Management Buttons - No final, após a lista de crianças */}
-        {igrejaAtiva && <ManagementButtons />}
+        {isHydrated && igrejaAtiva && <ManagementButtons />}
         </>
         ) : null}
       </div>
@@ -548,6 +566,22 @@ export default function Home() {
 
       {/* Prompt de Permissão de Notificações */}
       <NotificationPermissionPrompt />
+
+      {/* Modal de Limpeza Automática LGPD */}
+      {showLgpdCleanupModal && (
+        <AlertModal
+          title="Dados Limpos Automaticamente"
+          message="Ontem esqueceram de apagar os dados desta igreja, mas já apaguei para manter a LGPD. A interface foi atualizada e está pronta para o novo dia!"
+          type="info"
+          onClose={() => {
+            setShowLgpdCleanupModal(false);
+            // Forçar refresh da interface
+            if (igrejaAtiva) {
+              loadIgrejaData(igrejaAtiva);
+            }
+          }}
+        />
+      )}
     </main>
   );
 }

@@ -2,11 +2,24 @@
   "version": 2,
   "framework": "nextjs",
   "regions": ["gru1"],
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ]
 }

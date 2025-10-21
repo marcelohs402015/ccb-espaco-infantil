@@ -383,3 +383,4 @@ export const NotificationPermissionModal: React.FC = () => {
     </div>
   );
 };
+

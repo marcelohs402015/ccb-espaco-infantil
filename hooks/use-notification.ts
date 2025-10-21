@@ -47,6 +47,13 @@ export const useNotification = () => {
       const isSupported = 'Notification' in window && 'serviceWorker' in navigator;
       const hasPermission = isSupported && Notification.permission === 'granted';
       
+      console.log('🔔 useNotification - Verificando suporte:', {
+        isSupported,
+        hasPermission,
+        notificationPermission: Notification.permission,
+        serviceWorkerSupport: 'serviceWorker' in navigator
+      });
+      
       setState(prev => ({
         ...prev,
         isSupported,

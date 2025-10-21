@@ -16,13 +16,12 @@ import { EditLastCultoModal } from '@/components/edit-last-culto-modal';
 import { ManagementButtons } from '@/components/management-buttons';
 import { SummaryModal } from '@/components/summary-modal';
 import { EmergencyNotification } from '@/components/emergency-notification';
-import { NotificationPermissionPrompt } from '@/components/notification-permission-prompt';
+import { NotificationPermissionModal } from '@/components/notification-permission-modal';
 import { AlertModal } from '@/components/alert-modal';
 import { useModal } from '@/hooks/use-modal';
 import { useRealtimeSync } from '@/hooks/use-realtime-sync';
 import { useSyncState } from '@/hooks/use-sync-state';
 import { useAutoRefresh } from '@/hooks/use-auto-refresh';
-import { useNotification } from '@/hooks/use-notification';
 import type { Child } from '@/types';
 
 export default function Home() {
@@ -78,7 +77,6 @@ export default function Home() {
   const [isHydrated, setIsHydrated] = useState(false);
   const { showError } = useModal();
   const syncState = useSyncState();
-  const { registerServiceWorker, requestPermission } = useNotification();
 
   // Sistema de auto-refresh a cada 5 segundos (fallback)
   const autoRefresh = useAutoRefresh({
@@ -121,23 +119,6 @@ export default function Home() {
     loadIgrejas();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Registrar service worker na montagem
-  useEffect(() => {
-    registerServiceWorker();
-  }, [registerServiceWorker]);
-
-  // Solicitar permissão de notificações quando igreja é selecionada
-  useEffect(() => {
-    if (igrejaAtiva) {
-      // Pequeno delay para não ser intrusivo
-      const timer = setTimeout(() => {
-        requestPermission();
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [igrejaAtiva, requestPermission]);
 
   // Detectar quando o app volta do lock screen e fazer refresh
   useEffect(() => {
@@ -564,8 +545,8 @@ export default function Home() {
       {/* Notificação de Emergência em Tempo Real */}
       <EmergencyNotification />
 
-      {/* Prompt de Permissão de Notificações */}
-      <NotificationPermissionPrompt />
+      {/* Modal de Permissão de Notificações */}
+      <NotificationPermissionModal />
 
       {/* Modal de Limpeza Automática LGPD */}
       {showLgpdCleanupModal && (

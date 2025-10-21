@@ -3,7 +3,7 @@
  * Suporte a notificações push e cache offline
  */
 
-const CACHE_NAME = 'ccb-espaco-infantil-v1';
+const CACHE_NAME = 'ccb-espaco-infantil-v5';
 const urlsToCache = [
   '/',
   '/ccb-logo.png',
@@ -30,6 +30,26 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Ativar Service Worker e limpar caches antigos
+self.addEventListener('activate', (event) => {
+  console.log('🔄 Service Worker: Ativando...');
+  
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      // Limpar TODOS os caches para forçar atualização
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          console.log('🗑️ Service Worker: Removendo cache:', cacheName);
+          return caches.delete(cacheName);
+        })
+      );
+    }).then(() => {
+      console.log('✅ Service Worker: Ativado e TODOS os caches limpos');
+      return self.clients.claim();
+    })
+  );
+});
+
 // Ativar Service Worker
 self.addEventListener('activate', (event) => {
   console.log('🚀 Service Worker: Ativando...');
@@ -51,46 +71,11 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Interceptar requisições (Cache First Strategy)
+// Interceptar requisições - APENAS para notificações push
 self.addEventListener('fetch', (event) => {
-  // Apenas para requisições GET
-  if (event.request.method !== 'GET') {
-    return;
-  }
-
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - retornar do cache
-        if (response) {
-          return response;
-        }
-
-        // Cache miss - buscar da rede
-        return fetch(event.request).then((response) => {
-          // Verificar se é uma resposta válida
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          // Clonar a resposta
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-
-          return response;
-        });
-      })
-      .catch(() => {
-        // Fallback para página offline se necessário
-        if (event.request.destination === 'document') {
-          return caches.match('/');
-        }
-      })
-  );
+  // Desabilitar cache completamente para evitar erros
+  // O Service Worker será usado apenas para notificações push
+  return;
 });
 
 // Gerenciar notificações push

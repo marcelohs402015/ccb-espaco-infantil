@@ -6,10 +6,18 @@ const nextConfig = {
   swcMinify: true,
   poweredByHeader: false,
   
-  // Configuração experimental para melhor compatibilidade com Vercel
+  // Otimizações de compilação para Vercel
   experimental: {
     serverComponentsExternalPackages: ['@supabase/supabase-js'],
+    // Otimização de bundle para Vercel
+    optimizePackageImports: ['lucide-react'],
   },
+
+  // Otimizações de output
+  output: 'standalone',
+  
+  // Configuração para Vercel Edge Runtime (se necessário)
+  // runtime: 'edge', // Descomente apenas se usar Edge Functions
 
   // Configuração para PWA
   async headers() {

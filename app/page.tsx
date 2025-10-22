@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Settings, Users, BookOpen, Edit, Search, History, Church, FileText } from 'lucide-react';
+import { Plus, Settings, Users, BookOpen, Edit, Search, History, Church, FileText, Bell } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
 import { Header } from '@/components/header';
 import { ChildListItem } from '@/components/child-list-item';
@@ -71,6 +71,7 @@ export default function Home() {
   const [isChurchesOpen, setIsChurchesOpen] = useState(false);
   const [isEditLastCultoOpen, setIsEditLastCultoOpen] = useState(false);
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [showLgpdCleanupModal, setShowLgpdCleanupModal] = useState(false);
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -249,7 +250,7 @@ export default function Home() {
       
       <div className="container mx-auto px-4 py-8 relative">
         {/* Church Selector */}
-        <ChurchSelector />
+        <ChurchSelector onOpenNotificationModal={() => setIsNotificationModalOpen(true)} />
 
         {/* Capacity Status */}
         {isHydrated && igrejaAtiva ? (
@@ -279,14 +280,16 @@ export default function Home() {
               </p>
             </div>
 
-            <button
-              onClick={() => setIsSettingsOpen(true)}
-              className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-2xl button-pop flex items-center gap-2"
-              aria-label="Configurações"
-            >
-              <Settings className="w-6 h-6" />
-              Configurar
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-2xl button-pop flex items-center gap-2"
+                aria-label="Configurações"
+              >
+                <Settings className="w-6 h-6" />
+                Configurar
+              </button>
+            </div>
           </div>
         </div>
 
@@ -546,7 +549,10 @@ export default function Home() {
       <EmergencyNotification />
 
       {/* Modal de Permissão de Notificações */}
-      <NotificationPermissionModal />
+      <NotificationPermissionModal
+        isOpen={isNotificationModalOpen}
+        onClose={() => setIsNotificationModalOpen(false)}
+      />
 
       {/* Modal de Limpeza Automática LGPD */}
       {showLgpdCleanupModal && (

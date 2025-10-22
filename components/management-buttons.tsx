@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Trash2, FileText, AlertTriangle } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
 import { SummaryModal } from './summary-modal';
+import { ClearDataModal } from './clear-data-modal';
 import { SelectChurchModal } from './select-church-modal';
 import { GenericModal } from './generic-modal';
 import { useModal } from '@/hooks/use-modal';
@@ -19,6 +20,7 @@ export const ManagementButtons: React.FC = () => {
   } = useSpaceStore();
 
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [isClearDataOpen, setIsClearDataOpen] = useState(false);
   const [isSelectChurchOpen, setIsSelectChurchOpen] = useState(false);
   const { modalState, showSuccess, showError, showInfo, hideModal } = useModal();
   
@@ -66,9 +68,9 @@ export const ManagementButtons: React.FC = () => {
         return;
       }
 
-      // Se existem dados, limpar diretamente
-      console.log('✅ Existem dados - limpando diretamente');
-      await handleConfirmClearData();
+      // Se existem dados, abrir modal de confirmação
+      console.log('✅ Existem dados - abrindo modal de confirmação');
+      setIsClearDataOpen(true);
     } catch (error: any) {
       console.error('❌ Erro ao verificar dados:', error);
       showError('Erro ao verificar dados: ' + error.message);
@@ -78,6 +80,7 @@ export const ManagementButtons: React.FC = () => {
   const handleConfirmClearData = async (): Promise<void> => {
     try {
       const dadosForamLimpados = await limparDadosIgreja();
+      setIsClearDataOpen(false);
       
       if (dadosForamLimpados) {
         showSuccess('Dados limpos com sucesso!');
@@ -163,9 +166,25 @@ export const ManagementButtons: React.FC = () => {
         />
       )}
 
+      {isClearDataOpen && (
+        <ClearDataModal
+          igrejaNome={igrejaAtivaNome}
+          onConfirm={handleConfirmClearData}
+          onCancel={() => setIsClearDataOpen(false)}
+        />
+      )}
+
       {isSelectChurchOpen && (
         <SelectChurchModal
           onClose={() => setIsSelectChurchOpen(false)}
+        />
+      )}
+
+      {isClearDataOpen && (
+        <ClearDataModal
+          igrejaNome={igrejaAtivaNome}
+          onConfirm={handleConfirmClearData}
+          onCancel={() => setIsClearDataOpen(false)}
         />
       )}
 

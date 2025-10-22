@@ -11,6 +11,7 @@ interface ChurchesModalProps {
 
 export const ChurchesModal: React.FC<ChurchesModalProps> = ({ onClose }) => {
   const { igrejas, addIgreja, updateIgreja, removeIgreja } = useSpaceStore();
+  const [igrejaToDelete, setIgrejaToDelete] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [igrejaEditando, setIgrejaEditando] = useState<Igreja | null>(null);
   const [formData, setFormData] = useState({ id: '', nome: '' });
@@ -79,7 +80,14 @@ export const ChurchesModal: React.FC<ChurchesModalProps> = ({ onClose }) => {
   };
 
   const handleRemove = (id: string): void => {
-    removeIgreja(id);
+    setIgrejaToDelete(id);
+  };
+
+  const handleConfirmRemove = (): void => {
+    if (igrejaToDelete) {
+      removeIgreja(igrejaToDelete);
+      setIgrejaToDelete(null);
+    }
   };
 
   return (
@@ -246,6 +254,44 @@ export const ChurchesModal: React.FC<ChurchesModalProps> = ({ onClose }) => {
           </button>
         </div>
       </div>
+
+      {/* Modal de Confirmação Elegante */}
+      {igrejaToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-[60]">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-red-100 rounded-lg">
+                <Trash2 className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800">
+                Confirmar Remoção
+              </h3>
+            </div>
+            
+            <p className="text-gray-600 mb-2">
+              Tem certeza que deseja remover esta igreja?
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              Esta ação não pode ser desfeita e todos os dados relacionados serão perdidos.
+            </p>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIgrejaToDelete(null)}
+                className="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmRemove}
+                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                Remover
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -44,6 +44,7 @@ export const NotificationPermissionModal: React.FC = () => {
   
   const [isVisible, setIsVisible] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const hasCheckedRef = useRef(false);
 
   /**
@@ -185,7 +186,12 @@ export const NotificationPermissionModal: React.FC = () => {
    * Effect: Verificação inicial ao montar componente
    */
   useEffect(() => {
-    if (hasCheckedRef.current) return;
+    // Primeiro, marcar que estamos no cliente
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient || hasCheckedRef.current) return;
     hasCheckedRef.current = true;
 
     // Verificar suporte
@@ -231,10 +237,10 @@ export const NotificationPermissionModal: React.FC = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [checkNotificationSupport]);
+  }, [isClient, checkNotificationSupport]);
 
-  // Não renderizar se não for visível
-  if (!isVisible) return null;
+  // Não renderizar se não for visível OU se ainda não estamos no cliente
+  if (!isVisible || !isClient) return null;
 
   return (
     <div 

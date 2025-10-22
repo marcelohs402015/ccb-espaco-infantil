@@ -12,7 +12,6 @@ interface HistoryModalProps {
 export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
   const { igrejaAtiva, dadosPorIgreja, removeCultoFromHistorico } = useSpaceStore();
   const [cultoDetalhado, setCultoDetalhado] = useState<HistoricoCulto | null>(null);
-  const [cultoToDelete, setCultoToDelete] = useState<HistoricoCulto | null>(null);
 
   // Dados da igreja ativa
   const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
@@ -61,17 +60,6 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
   const mediaCriancasPorCulto = historicoCultos.length > 0
     ? Math.round(historicoCultos.reduce((sum, h) => sum + h.totalCriancas, 0) / historicoCultos.length)
     : 0;
-
-  const handleDeleteCulto = async () => {
-    if (!cultoToDelete) return;
-    
-    try {
-      await removeCultoFromHistorico(cultoToDelete.id);
-      setCultoToDelete(null);
-    } catch (error) {
-      console.error('Erro ao apagar culto:', error);
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -160,7 +148,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
                             </span>
                           </div>
                           <button
-                            onClick={() => setCultoToDelete(culto)}
+                            onClick={() => removeCultoFromHistorico(culto.id)}
                             className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                             aria-label="Apagar este culto"
                             title="Apagar este culto"
@@ -380,43 +368,6 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
         </div>
       )}
 
-      {/* Modal de Confirmação para Apagar Culto Individual */}
-      {cultoToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-[70]">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <Trash2 className="w-6 h-6 text-red-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800">
-                Apagar Culto
-              </h3>
-            </div>
-            
-            <p className="text-gray-600 mb-2">
-              Tem certeza que deseja apagar o culto de <strong>{formatarData(cultoToDelete.data)}</strong>?
-            </p>
-            <p className="text-sm text-gray-500 mb-6">
-              Esta ação não pode ser desfeita.
-            </p>
-            
-            <div className="flex gap-3">
-              <button
-                onClick={() => setCultoToDelete(null)}
-                className="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleDeleteCulto}
-                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
-              >
-                Apagar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

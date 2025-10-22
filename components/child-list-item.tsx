@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Phone, Trash2, Clock, User, AlertCircle, Edit, Bell } from 'lucide-react';
 import type { Child } from '@/types';
-import { ConfirmModal } from './confirm-modal';
 import { useSpaceStore } from '@/store/use-space-store';
 
 interface ChildListItemProps {
@@ -13,7 +12,6 @@ interface ChildListItemProps {
 }
 
 export const ChildListItem: React.FC<ChildListItemProps> = ({ child, onRemove, onEdit }) => {
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const { updateChild } = useSpaceStore();
 
   const handleEmergencyClick = (): void => {
@@ -25,12 +23,7 @@ export const ChildListItem: React.FC<ChildListItemProps> = ({ child, onRemove, o
   };
 
   const handleRemove = (): void => {
-    setIsConfirmModalOpen(true);
-  };
-
-  const handleConfirmRemove = (): void => {
     onRemove(child.id);
-    setIsConfirmModalOpen(false);
   };
 
   const responsavelLabel = 
@@ -137,18 +130,6 @@ export const ChildListItem: React.FC<ChildListItemProps> = ({ child, onRemove, o
           </div>
         </div>
       </div>
-
-      {isConfirmModalOpen && (
-        <ConfirmModal
-          title="Remover Criança"
-          message={`Deseja realmente remover ${child.nome} do espaço infantil bíblico?`}
-          confirmText="Remover"
-          cancelText="Cancelar"
-          type="error"
-          onConfirm={handleConfirmRemove}
-          onCancel={() => setIsConfirmModalOpen(false)}
-        />
-      )}
     </>
   );
 };

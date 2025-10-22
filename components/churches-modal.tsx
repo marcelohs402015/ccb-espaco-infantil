@@ -79,9 +79,7 @@ export const ChurchesModal: React.FC<ChurchesModalProps> = ({ onClose }) => {
   };
 
   const handleRemove = (id: string): void => {
-    if (confirm('Tem certeza que deseja remover esta igreja?')) {
-      removeIgreja(id);
-    }
+    removeIgreja(id);
   };
 
   return (

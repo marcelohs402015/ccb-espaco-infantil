@@ -1,31 +1,100 @@
+/**
+ * Modal de Permissão de Notificações de Emergência
+ * CCB Espaço Infantil - Sistema de Alerta para Pais e Responsáveis
+ * 
+ * Conformidade LGPD:
+ * - Transparência total sobre uso de notificações
+ * - Permissão explícita do usuário
+ * - Possibilidade de recusa
+ * - Dados usados apenas para segurança das crianças
+ */
+
 'use client';
 
-import { useState, useCallback } from 'react';
-import { X, Bell, BellRing, Shield, Volume2, Check, Info } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Bell, BellRing, Shield, Volume2, X, AlertTriangle, Check, Info } from 'lucide-react';
 
-interface NotificationPermissionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+/**
+ * Estado das permissões de notificação
+ */
+interface NotificationState {
+  permission: NotificationPermission;
+  isSupported: boolean;
+  isRequesting: boolean;
+  hasAsked: boolean;
 }
 
-export const NotificationPermissionModal: React.FC<NotificationPermissionModalProps> = ({ 
-  isOpen, 
-  onClose
-}) => {
-  const [isRequesting, setIsRequesting] = useState(false);
+/**
+ * Modal de Solicitação de Permissão para Notificações de Emergência
+ * 
+ * Funcionalidades:
+ * - Solicita permissão para notificações push
+ * - Explica claramente o propósito (emergências com crianças)
+ * - Registra Service Worker para notificações em background
+ * - Compatível com dispositivos móveis (Android/iOS)
+ * - Interface moderna e acessível
+ */
+export const NotificationPermissionModal: React.FC = () => {
+  const [state, setState] = useState<NotificationState>({
+    permission: 'default',
+    isSupported: false,
+    isRequesting: false,
+    hasAsked: false
+  });
+  
+  const [isVisible, setIsVisible] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const hasCheckedRef = useRef(false);
 
-  const registerServiceWorker = useCallback(async () => {
+  /**
+   * Verifica suporte a notificações no navegador
+   */
+  const checkNotificationSupport = useCallback((): boolean => {
+    if (typeof window === 'undefined') return false;
+    
+    const supported = (
+      'Notification' in window &&
+      'serviceWorker' in navigator &&
+      window.isSecureContext
+    );
+
+    console.log('🔔 Verificação de suporte a notificações:', {
+      hasNotification: 'Notification' in window,
+      hasServiceWorker: 'serviceWorker' in navigator,
+      isSecureContext: window.isSecureContext,
+      supported
+    });
+
+    return supported;
+  }, []);
+
+  /**
+   * Registra Service Worker para notificações em background
+   */
+  const registerServiceWorker = useCallback(async (): Promise<boolean> => {
+    if (!('serviceWorker' in navigator)) {
+      console.warn('⚠️ Service Worker não suportado');
+      return false;
+    }
+
     try {
-      if ('serviceWorker' in navigator) {
-        console.log('🔧 Registrando Service Worker...');
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('✅ Service Worker registrado:', registration.scope);
-        await navigator.serviceWorker.ready;
-        console.log('🚀 Service Worker pronto para uso');
-        return registration;
-      } else {
-        throw new Error('Service Worker não suportado');
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/'
+      });
+
+      console.log('✅ Service Worker registrado:', registration.scope);
+
+      // Aguardar ativação
+      if (registration.installing) {
+        await new Promise<void>((resolve) => {
+          registration.installing!.addEventListener('statechange', (e: Event) => {
+            const target = e.target as ServiceWorker;
+            if (target.state === 'activated') {
+              resolve();
+            }
+          });
+        });
       }
     } catch (error) {
       console.error('❌ Erro ao registrar Service Worker:', error);
@@ -63,13 +132,80 @@ export const NotificationPermissionModal: React.FC<NotificationPermissionModalPr
       }
     } catch (error) {
       console.error('❌ Erro ao solicitar permissão:', error);
-      alert('Erro ao configurar notificações. Tente novamente.');
-    } finally {
-      setIsRequesting(false);
+      setState(prev => ({ ...prev, isRequesting: false }));
     }
-  }, [onClose, registerServiceWorker]);
+  }, [state.isSupported, registerServiceWorker]);
 
-  if (!isOpen) return null;
+  /**
+   * Fecha o modal e registra que usuário dispensou (apenas na sessão)
+   */
+  const handleDismiss = useCallback((): void => {
+    // Registrar que perguntamos nesta sessão (mais simples e confiável)
+    sessionStorage.setItem('ccb-notification-asked-today', 'true');
+
+    setState(prev => ({ ...prev, hasAsked: true }));
+    setIsVisible(false);
+  }, []);
+
+  /**
+   * Effect: Verificação inicial ao montar componente
+   */
+  useEffect(() => {
+    // Primeiro, marcar que estamos no cliente
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient || hasCheckedRef.current) return;
+    hasCheckedRef.current = true;
+
+    // Verificar suporte
+    const isSupported = checkNotificationSupport();
+    
+    if (!isSupported) {
+      console.warn('⚠️ Notificações não suportadas neste navegador/dispositivo');
+      return;
+    }
+
+    // Abordagem mais simples: verificar apenas a permissão do navegador
+    const currentPermission: NotificationPermission = Notification.permission;
+    
+    // Usar sessionStorage (mais confiável que localStorage)
+    const sessionKey = 'ccb-notification-asked-today';
+    const askedInSession = sessionStorage.getItem(sessionKey) === 'true';
+
+    setState({
+      permission: currentPermission,
+      isSupported,
+      isRequesting: false,
+      hasAsked: askedInSession
+    });
+
+    // Mostrar modal apenas se:
+    // 1. Notificações são suportadas
+    // 2. Não perguntamos nesta sessão
+    // 3. Permissão ainda não foi definida (nem granted nem denied)
+    const shouldShow = isSupported && !askedInSession && currentPermission === 'default';
+    
+    console.log('🔔 Debug modal:', {
+      isSupported,
+      askedInSession,
+      currentPermission,
+      shouldShow
+    });
+    
+    if (shouldShow) {
+      // Aguardar 3 segundos antes de mostrar (melhor UX)
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isClient, checkNotificationSupport]);
+
+  // Não renderizar se não for visível OU se ainda não estamos no cliente
+  if (!isVisible || !isClient) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

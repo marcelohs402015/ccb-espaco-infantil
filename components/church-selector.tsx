@@ -131,7 +131,7 @@ export const ChurchSelector: React.FC = () => {
           ))}
           {/* Se a igreja ativa não está na lista filtrada, mas existe, mostra ela */}
           {igrejaAtiva && !igrejasFiltradas.find(i => i.id === igrejaAtiva) && (
-            <option value={igrejaAtiva} style={{ backgroundColor: '#e0f2fe' }}>
+            <option value={igrejaAtiva} className="bg-blue-50">
               {igrejaAtualNome} (selecionada)
             </option>
           )}

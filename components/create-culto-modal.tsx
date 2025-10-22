@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, BookOpen, Plus } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
+import { AlertModal } from '@/components/alert-modal';
 
 interface CreateCultoModalProps {
   onClose: () => void;
@@ -11,6 +12,7 @@ interface CreateCultoModalProps {
 export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) => {
   const { criarCultoNoHistorico, dadosPorIgreja, igrejaAtiva } = useSpaceStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   
   const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
     ? dadosPorIgreja[igrejaAtiva] 
@@ -66,7 +68,7 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
       onClose();
     } catch (error) {
       console.error('Erro ao criar culto:', error);
-      alert('Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).');
+      setShowErrorModal(true);
     } finally {
       setIsLoading(false);
     }
@@ -80,8 +82,17 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <>
+      {showErrorModal && (
+        <AlertModal
+          title="Erro ao Criar Registro"
+          message="Não foi possível criar o registro. Verifique se a data está no formato correto (DD/MM/AAAA) e tente novamente."
+          type="error"
+          onClose={() => setShowErrorModal(false)}
+        />
+      )}
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 p-4 flex justify-between items-center rounded-t-2xl">
           <div className="flex items-center gap-2">
             <Plus className="w-6 h-6 text-white" />
@@ -219,6 +230,7 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
         </form>
       </div>
     </div>
+    </>
   );
 };
 

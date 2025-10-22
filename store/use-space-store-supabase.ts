@@ -516,8 +516,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     if (!igrejaExiste) {
       console.error('❌ Igreja ativa não encontrada na lista de igrejas');
-      alert('Erro: Igreja não encontrada. Recarregue a página e tente novamente.');
-      return;
+      throw new Error('Igreja não encontrada. Recarregue a página e tente novamente.');
     }
 
     // Verificar se a igreja existe no banco de dados
@@ -530,8 +529,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     if (igrejaError || !igrejaDB) {
       console.error('❌ Igreja não encontrada no banco:', igrejaError);
-      alert('Erro: Igreja não existe no banco de dados. Recarregue a página.');
-      return;
+      throw new Error('Igreja não existe no banco de dados. Recarregue a página.');
     }
 
     console.log('✅ Igreja encontrada no banco:', igrejaDB);
@@ -551,8 +549,7 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
       const dataRegex = /^\d{4}-\d{2}-\d{2}$/;
       if (!dataRegex.test(data)) {
         console.error('❌ Formato de data inválido:', data);
-        alert('Erro: Formato de data inválido. Use DD/MM/YYYY no formulário.');
-        return;
+        throw new Error('Formato de data inválido. Use DD/MM/YYYY no formulário.');
       }
 
       console.log('📤 Criando novo culto no histórico:', historicoPayload);

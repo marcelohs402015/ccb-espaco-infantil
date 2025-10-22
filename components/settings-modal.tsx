@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, Settings as SettingsIcon } from 'lucide-react';
+import { AlertModal } from '@/components/alert-modal';
 import type { Settings } from '@/types';
 
 interface SettingsModalProps {
@@ -16,12 +17,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose 
 }) => {
   const [capacidade, setCapacidade] = useState(settings.capacidadeMaxima);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     
     if (capacidade < 1) {
-      alert('A capacidade deve ser maior que zero');
+      setShowErrorModal(true);
       return;
     }
 
@@ -30,8 +32,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+    <>
+      {showErrorModal && (
+        <AlertModal
+          title="Valor Inválido"
+          message="A capacidade deve ser maior que zero. Por favor, insira um valor válido."
+          type="error"
+          onClose={() => setShowErrorModal(false)}
+        />
+      )}
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 flex justify-between items-center rounded-t-2xl">
           <div className="flex items-center gap-2">
             <SettingsIcon className="w-6 h-6 text-white" />
@@ -83,6 +94,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </form>
       </div>
     </div>
+    </>
   );
 };
 

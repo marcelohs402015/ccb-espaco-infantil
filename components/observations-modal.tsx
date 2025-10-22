@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, BookOpen } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
+import { AlertModal } from '@/components/alert-modal';
 import type { CultoObservacoes } from '@/types';
 
 interface ObservationsModalProps {
@@ -43,6 +44,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
     ...observacoes,
     data: obterDataAtual()
   });
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const { criarCultoNoHistorico, dadosPorIgreja, igrejaAtiva } = useSpaceStore();
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -71,7 +73,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
       onClose();
     } catch (error) {
       console.error('❌ Erro ao criar culto:', error);
-      alert('Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).');
+      setShowErrorModal(true);
     }
   };
 
@@ -94,8 +96,17 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <>
+      {showErrorModal && (
+        <AlertModal
+          title="Erro ao Criar Registro"
+          message="Não foi possível criar o registro. Verifique se a data está no formato correto (DD/MM/AAAA) e tente novamente."
+          type="error"
+          onClose={() => setShowErrorModal(false)}
+        />
+      )}
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-gradient-to-r from-green-600 to-teal-600 p-4 flex justify-between items-center rounded-t-2xl">
           <div className="flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-white" />
@@ -214,6 +225,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
         </form>
       </div>
     </div>
+    </>
   );
 };
 

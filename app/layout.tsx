@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { GlobalAlertModal } from "@/components/global-alert-modal";
 
 export const metadata: Metadata = {
   title: "CCB - Espaço Infantil Bíblico",
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className="antialiased">
         {children}
+        <GlobalAlertModal />
       </body>
     </html>
   );

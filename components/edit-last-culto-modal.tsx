@@ -54,7 +54,6 @@ export const EditLastCultoModal: React.FC<EditLastCultoModalProps> = ({ onClose 
     e.preventDefault();
     
     if (!ultimoCulto) {
-      alert('Nenhum culto encontrado para editar');
       return;
     }
 

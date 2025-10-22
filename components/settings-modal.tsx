@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, Settings as SettingsIcon } from 'lucide-react';
+import { useAlertStore } from '@/store/use-alert-store';
 import type { Settings } from '@/types';
 
 interface SettingsModalProps {
@@ -15,13 +16,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onUpdate, 
   onClose 
 }) => {
+  const { showAlert } = useAlertStore();
   const [capacidade, setCapacidade] = useState(settings.capacidadeMaxima);
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     
     if (capacidade < 1) {
-      alert('A capacidade deve ser maior que zero');
+      showAlert({
+        title: 'Valor Inválido',
+        message: 'A capacidade deve ser maior que zero',
+        type: 'warning',
+      });
       return;
     }
 

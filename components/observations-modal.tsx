@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, BookOpen } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
+import { useAlertStore } from '@/store/use-alert-store';
 import type { CultoObservacoes } from '@/types';
 
 interface ObservationsModalProps {
@@ -16,6 +17,7 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
   onUpdate, 
   onClose 
 }) => {
+  const { showAlert } = useAlertStore();
   // Formatar data para o padrão brasileiro DD/MM/YYYY
   const formatarDataParaExibicao = (dataISO: string): string => {
     if (!dataISO) return '';
@@ -71,7 +73,11 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
       onClose();
     } catch (error) {
       console.error('❌ Erro ao criar culto:', error);
-      alert('Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).');
+      showAlert({
+        title: 'Erro ao Criar Registro',
+        message: 'Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).',
+        type: 'error',
+      });
     }
   };
 

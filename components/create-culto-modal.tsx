@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, BookOpen, Plus } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
+import { useAlertStore } from '@/store/use-alert-store';
 
 interface CreateCultoModalProps {
   onClose: () => void;
@@ -10,6 +11,7 @@ interface CreateCultoModalProps {
 
 export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) => {
   const { criarCultoNoHistorico, dadosPorIgreja, igrejaAtiva } = useSpaceStore();
+  const { showAlert } = useAlertStore();
   const [isLoading, setIsLoading] = useState(false);
   
   const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
@@ -66,7 +68,11 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
       onClose();
     } catch (error) {
       console.error('Erro ao criar culto:', error);
-      alert('Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).');
+      showAlert({
+        title: 'Erro ao Criar Registro',
+        message: 'Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).',
+        type: 'error',
+      });
     } finally {
       setIsLoading(false);
     }

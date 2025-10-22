@@ -20,6 +20,7 @@ export const ManagementButtons: React.FC = () => {
 
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isSelectChurchOpen, setIsSelectChurchOpen] = useState(false);
+  const [showClearDataConfirm, setShowClearDataConfirm] = useState(false);
   const { modalState, showSuccess, showError, showInfo, hideModal } = useModal();
   
 
@@ -66,9 +67,9 @@ export const ManagementButtons: React.FC = () => {
         return;
       }
 
-      // Se existem dados, limpar diretamente
-      console.log('✅ Existem dados - limpando diretamente');
-      await handleConfirmClearData();
+      // Se existem dados, mostrar modal de confirmação
+      console.log('✅ Existem dados - mostrando modal de confirmação');
+      setShowClearDataConfirm(true);
     } catch (error: any) {
       console.error('❌ Erro ao verificar dados:', error);
       showError('Erro ao verificar dados: ' + error.message);
@@ -77,6 +78,7 @@ export const ManagementButtons: React.FC = () => {
 
   const handleConfirmClearData = async (): Promise<void> => {
     try {
+      setShowClearDataConfirm(false);
       const dadosForamLimpados = await limparDadosIgreja();
       
       if (dadosForamLimpados) {
@@ -88,6 +90,10 @@ export const ManagementButtons: React.FC = () => {
       console.error('❌ Erro ao limpar dados:', error);
       showError('Erro ao limpar dados: ' + error.message);
     }
+  };
+
+  const handleCancelClearData = (): void => {
+    setShowClearDataConfirm(false);
   };
 
   const handleShowSummary = (): void => {
@@ -176,6 +182,51 @@ export const ManagementButtons: React.FC = () => {
         type={modalState.type}
         onClose={hideModal}
       />
+
+      {/* Modal de Confirmação de Limpeza de Dados */}
+      {showClearDataConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Trash2 className="w-6 h-6" />
+                Confirmar Limpeza
+              </h3>
+            </div>
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <div className="bg-red-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Trash2 className="w-8 h-8 text-red-600" />
+                </div>
+                <h4 className="text-lg font-bold text-gray-800 mb-2">
+                  Tem certeza que deseja limpar todos os dados?
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <p className="font-semibold text-gray-800">{igrejaAtivaNome}</p>
+                  <p className="text-sm text-gray-500">Todos os dados desta igreja serão removidos</p>
+                </div>
+                <p className="text-sm text-red-600 font-medium">
+                  ⚠️ Esta ação não pode ser desfeita
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelClearData}
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmClearData}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
+                >
+                  Sim, Limpar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </>
   );

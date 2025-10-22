@@ -15,6 +15,8 @@ export const ChurchesModal: React.FC<ChurchesModalProps> = ({ onClose }) => {
   const [igrejaEditando, setIgrejaEditando] = useState<Igreja | null>(null);
   const [formData, setFormData] = useState({ id: '', nome: '' });
   const [erro, setErro] = useState('');
+  // Estado para modal de confirmação de exclusão
+  const [igrejaParaRemover, setIgrejaParaRemover] = useState<Igreja | null>(null);
 
   const handleOpenForm = (igreja?: Igreja): void => {
     if (igreja) {
@@ -79,7 +81,21 @@ export const ChurchesModal: React.FC<ChurchesModalProps> = ({ onClose }) => {
   };
 
   const handleRemove = (id: string): void => {
-    removeIgreja(id);
+    const igreja = igrejas.find(i => i.id === id);
+    if (igreja) {
+      setIgrejaParaRemover(igreja);
+    }
+  };
+
+  const handleConfirmRemove = (): void => {
+    if (igrejaParaRemover) {
+      removeIgreja(igrejaParaRemover.id);
+      setIgrejaParaRemover(null);
+    }
+  };
+
+  const handleCancelRemove = (): void => {
+    setIgrejaParaRemover(null);
   };
 
   return (
@@ -246,6 +262,51 @@ export const ChurchesModal: React.FC<ChurchesModalProps> = ({ onClose }) => {
           </button>
         </div>
       </div>
+
+      {/* Modal de Confirmação de Exclusão */}
+      {igrejaParaRemover && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-60">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Trash2 className="w-6 h-6" />
+                Confirmar Exclusão
+              </h3>
+            </div>
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <div className="bg-red-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Trash2 className="w-8 h-8 text-red-600" />
+                </div>
+                <h4 className="text-lg font-bold text-gray-800 mb-2">
+                  Tem certeza que deseja remover esta igreja?
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <p className="font-semibold text-gray-800">{igrejaParaRemover.nome}</p>
+                  <p className="text-sm text-gray-500">ID: {igrejaParaRemover.id}</p>
+                </div>
+                <p className="text-sm text-red-600 font-medium">
+                  ⚠️ Esta ação não pode ser desfeita
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelRemove}
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmRemove}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
+                >
+                  Sim, Remover
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

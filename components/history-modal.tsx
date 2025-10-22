@@ -12,6 +12,7 @@ interface HistoryModalProps {
 export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
   const { igrejaAtiva, dadosPorIgreja, removeCultoFromHistorico } = useSpaceStore();
   const [cultoDetalhado, setCultoDetalhado] = useState<HistoricoCulto | null>(null);
+  const [cultoParaRemover, setCultoParaRemover] = useState<HistoricoCulto | null>(null);
 
   // Dados da igreja ativa
   const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
@@ -53,6 +54,21 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
       month: '2-digit',
       year: 'numeric'
     });
+  };
+
+  const handleRemoveCulto = (culto: HistoricoCulto): void => {
+    setCultoParaRemover(culto);
+  };
+
+  const handleConfirmRemoveCulto = (): void => {
+    if (cultoParaRemover) {
+      removeCultoFromHistorico(cultoParaRemover.id);
+      setCultoParaRemover(null);
+    }
+  };
+
+  const handleCancelRemoveCulto = (): void => {
+    setCultoParaRemover(null);
   };
 
   const totalCultosRealizados = historicoCultos.length;
@@ -148,7 +164,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
                             </span>
                           </div>
                           <button
-                            onClick={() => removeCultoFromHistorico(culto.id)}
+                            onClick={() => handleRemoveCulto(culto)}
                             className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                             aria-label="Apagar este culto"
                             title="Apagar este culto"
@@ -361,6 +377,51 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({ onClose }) => {
                   className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
                 >
                   Fechar Detalhes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Confirmação de Exclusão */}
+      {cultoParaRemover && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-60">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Trash2 className="w-6 h-6" />
+                Confirmar Exclusão
+              </h3>
+            </div>
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <div className="bg-red-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <BookOpen className="w-8 h-8 text-red-600" />
+                </div>
+                <h4 className="text-lg font-bold text-gray-800 mb-2">
+                  Tem certeza que deseja remover este culto?
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <p className="font-semibold text-gray-800">{formatarData(cultoParaRemover.data)}</p>
+                  <p className="text-sm text-gray-500">{cultoParaRemover.totalCriancas} {cultoParaRemover.totalCriancas === 1 ? 'criança' : 'crianças'}</p>
+                </div>
+                <p className="text-sm text-red-600 font-medium">
+                  ⚠️ Esta ação não pode ser desfeita
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelRemoveCulto}
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmRemoveCulto}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
+                >
+                  Sim, Remover
                 </button>
               </div>
             </div>

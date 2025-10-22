@@ -134,12 +134,8 @@ export const NotificationPermissionModal: React.FC = () => {
         hasAsked: true
       }));
 
-      // 3. Salvar resposta no localStorage (LGPD - registro de consentimento)
-      localStorage.setItem('ccb-notification-permission', JSON.stringify({
-        status: permission,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent
-      }));
+      // 3. Registrar que perguntamos (apenas na sessão - mais simples)
+      sessionStorage.setItem('ccb-notification-asked-today', 'true');
 
       // 4. Se permitido, mostrar mensagem de sucesso e enviar notificação de teste
       if (permission === 'granted') {
@@ -175,15 +171,11 @@ export const NotificationPermissionModal: React.FC = () => {
   }, [state.isSupported, registerServiceWorker]);
 
   /**
-   * Fecha o modal e registra que usuário dispensou
+   * Fecha o modal e registra que usuário dispensou (apenas na sessão)
    */
   const handleDismiss = useCallback((): void => {
-    // Registrar que usuário escolheu "Agora não" (LGPD - registro de recusa)
-    localStorage.setItem('ccb-notification-permission', JSON.stringify({
-      status: 'dismissed',
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent
-    }));
+    // Registrar que perguntamos nesta sessão (mais simples e confiável)
+    sessionStorage.setItem('ccb-notification-asked-today', 'true');
 
     setState(prev => ({ ...prev, hasAsked: true }));
     setIsVisible(false);
@@ -204,24 +196,32 @@ export const NotificationPermissionModal: React.FC = () => {
       return;
     }
 
-    // Verificar se já pedimos permissão antes
-    const savedPermission = localStorage.getItem('ccb-notification-permission');
+    // Abordagem mais simples: verificar apenas a permissão do navegador
     const currentPermission: NotificationPermission = Notification.permission;
-
-    const hasAsked = savedPermission !== null || currentPermission !== 'default';
+    
+    // Usar sessionStorage (mais confiável que localStorage)
+    const sessionKey = 'ccb-notification-asked-today';
+    const askedInSession = sessionStorage.getItem(sessionKey) === 'true';
 
     setState({
       permission: currentPermission,
       isSupported,
       isRequesting: false,
-      hasAsked
+      hasAsked: askedInSession
     });
 
     // Mostrar modal apenas se:
     // 1. Notificações são suportadas
-    // 2. Ainda não perguntamos ao usuário
-    // 3. Permissão não foi concedida
-    const shouldShow = isSupported && !hasAsked && currentPermission === 'default';
+    // 2. Não perguntamos nesta sessão
+    // 3. Permissão ainda não foi definida (nem granted nem denied)
+    const shouldShow = isSupported && !askedInSession && currentPermission === 'default';
+    
+    console.log('🔔 Debug modal:', {
+      isSupported,
+      askedInSession,
+      currentPermission,
+      shouldShow
+    });
     
     if (shouldShow) {
       // Aguardar 3 segundos antes de mostrar (melhor UX)
@@ -342,7 +342,7 @@ export const NotificationPermissionModal: React.FC = () => {
             <p className="text-xs text-gray-600 leading-relaxed">
               <strong>Privacidade:</strong> Usamos notificações apenas para alertas de emergência. 
               Você pode desativar a qualquer momento nas configurações do navegador. 
-              Conforme LGPD, seus dados são protegidos e usados exclusivamente para segurança.
+              O sistema pergunta uma vez por sessão, sem armazenar dados permanentes.
             </p>
           </div>
         </div>

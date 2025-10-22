@@ -81,8 +81,11 @@ export const ChurchesModal: React.FC<ChurchesModalProps> = ({ onClose }) => {
   };
 
   const handleRemove = (id: string): void => {
+    console.log('🗑️ HandleRemove chamado para ID:', id);
     const igreja = igrejas.find(i => i.id === id);
+    console.log('🏢 Igreja encontrada:', igreja);
     if (igreja) {
+      console.log('✅ Definindo igreja para remover');
       setIgrejaParaRemover(igreja);
     }
   };
@@ -265,7 +268,7 @@ export const ChurchesModal: React.FC<ChurchesModalProps> = ({ onClose }) => {
 
       {/* Modal de Confirmação de Exclusão */}
       {igrejaParaRemover && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-60">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[100]">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
             <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">

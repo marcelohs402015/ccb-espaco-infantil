@@ -2,6 +2,9 @@
  * Modal de Permissão de Notificações de Emergência
  * CCB Espaço Infantil - Sistema de Alerta para Pais e Responsáveis
  * 
+ * Este modal é exibido APENAS em dispositivos móveis para simplificar
+ * a experiência do usuário e o código da aplicação.
+ * 
  * Conformidade LGPD:
  * - Transparência total sobre uso de notificações
  * - Permissão explícita do usuário
@@ -13,6 +16,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Bell, BellRing, Shield, Volume2, X, AlertTriangle, Check, Info } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 
 /**
  * Estado das permissões de notificação
@@ -33,6 +37,7 @@ interface NotificationState {
  * - Registra Service Worker para notificações em background
  * - Compatível com dispositivos móveis (Android/iOS)
  * - Interface moderna e acessível
+ * - Exibido APENAS em dispositivos móveis para simplificar a codificação
  */
 export const NotificationPermissionModal: React.FC = () => {
   const [state, setState] = useState<NotificationState>({
@@ -46,6 +51,7 @@ export const NotificationPermissionModal: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const hasCheckedRef = useRef(false);
+  const isMobile = useIsMobile();
 
   /**
    * Verifica suporte a notificações no navegador
@@ -220,12 +226,14 @@ export const NotificationPermissionModal: React.FC = () => {
     // 1. Notificações são suportadas
     // 2. Não perguntamos nesta sessão
     // 3. Permissão ainda não foi definida (nem granted nem denied)
-    const shouldShow = isSupported && !askedInSession && currentPermission === 'default';
+    // 4. Dispositivo é mobile (NOVO)
+    const shouldShow = isSupported && !askedInSession && currentPermission === 'default' && isMobile;
     
     console.log('🔔 Debug modal:', {
       isSupported,
       askedInSession,
       currentPermission,
+      isMobile,
       shouldShow
     });
     
@@ -237,7 +245,7 @@ export const NotificationPermissionModal: React.FC = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [isClient, checkNotificationSupport]);
+  }, [isClient, checkNotificationSupport, isMobile]);
 
   // Não renderizar se não for visível OU se ainda não estamos no cliente
   if (!isVisible || !isClient) return null;

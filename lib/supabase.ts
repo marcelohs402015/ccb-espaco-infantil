@@ -10,12 +10,17 @@ import type { Database } from '@/types/database.types';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
+// Verificação robusta para build e runtime
+if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
+  console.error(
     '❌ Erro: Variáveis de ambiente do Supabase não configuradas!\n' +
-    'Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY no arquivo .env.local'
+    'Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY no Vercel'
   );
 }
+
+// Para builds: usar valores fallback se não estiverem disponíveis
+const safeSupabaseUrl = supabaseUrl || 'https://placeholder.supabase.co';
+const safeSupabaseAnonKey = supabaseAnonKey || 'placeholder-key';
 
 if (supabaseUrl === 'sua-url-aqui' || supabaseAnonKey === 'sua-chave-anon-aqui') {
   console.warn(
@@ -37,7 +42,7 @@ if (supabaseUrl === 'sua-url-aqui' || supabaseAnonKey === 'sua-chave-anon-aqui')
  *   .select('*');
  * ```
  */
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<Database>(safeSupabaseUrl, safeSupabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
@@ -63,10 +68,12 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
  */
 export const isSupabaseConfigured = (): boolean => {
   return (
+    !!supabaseUrl && 
+    !!supabaseAnonKey &&
     supabaseUrl !== 'sua-url-aqui' && 
     supabaseAnonKey !== 'sua-chave-anon-aqui' &&
-    supabaseUrl !== undefined &&
-    supabaseAnonKey !== undefined
+    supabaseUrl !== 'https://placeholder.supabase.co' &&
+    supabaseAnonKey !== 'placeholder-key'
   );
 };
 

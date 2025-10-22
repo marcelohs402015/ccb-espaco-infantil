@@ -52,3 +52,6 @@ QUICK-START.md
 database/*.sql
 !database/migration.sql
 
+# Pasta do projeto React antigo (não é o frontend principal)
+nome-app/
+

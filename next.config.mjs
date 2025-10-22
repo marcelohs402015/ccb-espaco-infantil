@@ -13,8 +13,8 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
-  // Otimizações de output
-  output: 'standalone',
+  // Remover output standalone - Vercel gerencia isso automaticamente
+  // output: 'standalone',
   
   // Configuração para Vercel Edge Runtime (se necessário)
   // runtime: 'edge', // Descomente apenas se usar Edge Functions

@@ -18,6 +18,7 @@ import { SummaryModal } from '@/components/summary-modal';
 import { EmergencyNotification } from '@/components/emergency-notification';
 import { NotificationPermissionModal } from '@/components/notification-permission-modal';
 import { AlertModal } from '@/components/alert-modal';
+import { GlobalAlertManager } from '@/components/global-alert-manager';
 import { useModal } from '@/hooks/use-modal';
 import { useRealtimeSync } from '@/hooks/use-realtime-sync';
 import { useSyncState } from '@/hooks/use-sync-state';
@@ -171,12 +172,36 @@ export default function Home() {
   // Detectar quando limpeza automática LGPD foi executada
   useEffect(() => {
     const { lgpdCleanupExecuted, setLgpdCleanupExecuted } = useSpaceStore.getState();
-    
+
     if (lgpdCleanupExecuted && igrejaAtiva) {
       setShowLgpdCleanupModal(true);
       setLgpdCleanupExecuted(false); // Reset flag
     }
   }, [igrejaAtiva, dadosPorIgreja]);
+
+  // Mostrar modal de notificações automaticamente após delay
+  useEffect(() => {
+    if (!isHydrated || !igrejaAtiva) return;
+
+    // Verificar se permissão já foi concedida
+    if ('Notification' in window && Notification.permission === 'granted') {
+      return; // Já tem permissão, não mostrar modal
+    }
+
+    // Verificar se modal já foi mostrado antes
+    const modalShown = localStorage.getItem('notification-modal-shown');
+    if (modalShown === 'true') {
+      return; // Já foi mostrado, não mostrar novamente
+    }
+
+    // Delay de 3 segundos após igreja estar ativa
+    const timer = setTimeout(() => {
+      setIsNotificationModalOpen(true);
+      localStorage.setItem('notification-modal-shown', 'true');
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [isHydrated, igrejaAtiva]);
 
   // Listener para abrir modal de igrejas via evento
   useEffect(() => {
@@ -553,6 +578,9 @@ export default function Home() {
         isOpen={isNotificationModalOpen}
         onClose={() => setIsNotificationModalOpen(false)}
       />
+
+      {/* Gerenciador de Alertas Globais */}
+      <GlobalAlertManager />
 
       {/* Modal de Limpeza Automática LGPD */}
       {showLgpdCleanupModal && (

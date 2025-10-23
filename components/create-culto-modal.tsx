@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, BookOpen, Plus } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
+import { AlertModal } from './alert-modal';
 
 interface CreateCultoModalProps {
   onClose: () => void;
@@ -11,6 +12,17 @@ interface CreateCultoModalProps {
 export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) => {
   const { criarCultoNoHistorico, dadosPorIgreja, igrejaAtiva } = useSpaceStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [alertModal, setAlertModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info'
+  });
   
   const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
     ? dadosPorIgreja[igrejaAtiva] 
@@ -66,7 +78,12 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
       onClose();
     } catch (error) {
       console.error('Erro ao criar culto:', error);
-      alert('Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).');
+      setAlertModal({
+        isOpen: true,
+        title: 'Erro ao Criar Registro',
+        message: 'Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA) e tente novamente.',
+        type: 'error'
+      });
     } finally {
       setIsLoading(false);
     }
@@ -218,6 +235,16 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
           </div>
         </form>
       </div>
+
+      {/* Modal de Alerta Elegante */}
+      {alertModal.isOpen && (
+        <AlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          type={alertModal.type}
+          onClose={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
+        />
+      )}
     </div>
   );
 };

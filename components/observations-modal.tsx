@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, BookOpen } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
+import { AlertModal } from './alert-modal';
 import type { CultoObservacoes } from '@/types';
 
 interface ObservationsModalProps {
@@ -44,6 +45,17 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
     data: obterDataAtual()
   });
   const { criarCultoNoHistorico, dadosPorIgreja, igrejaAtiva } = useSpaceStore();
+  const [alertModal, setAlertModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info'
+  });
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -71,7 +83,12 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
       onClose();
     } catch (error) {
       console.error('❌ Erro ao criar culto:', error);
-      alert('Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA).');
+      setAlertModal({
+        isOpen: true,
+        title: 'Erro ao Criar Registro',
+        message: 'Erro ao criar registro. Verifique se a data está no formato correto (DD/MM/AAAA) e tente novamente.',
+        type: 'error'
+      });
     }
   };
 
@@ -213,6 +230,16 @@ export const ObservationsModal: React.FC<ObservationsModalProps> = ({
           </div>
         </form>
       </div>
+
+      {/* Modal de Alerta Elegante */}
+      {alertModal.isOpen && (
+        <AlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          type={alertModal.type}
+          onClose={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
+        />
+      )}
     </div>
   );
 };

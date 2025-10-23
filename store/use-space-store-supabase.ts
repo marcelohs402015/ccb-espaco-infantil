@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
+import { showGlobalAlert } from '@/hooks/use-global-alert';
 import type { Child, Settings, CultoObservacoes, HistoricoCulto, DiaUso, Igreja, ResponsavelType } from '@/types';
 
 interface IgrejaData {
@@ -516,7 +517,11 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     if (!igrejaExiste) {
       console.error('❌ Igreja ativa não encontrada na lista de igrejas');
-      alert('Erro: Igreja não encontrada. Recarregue a página e tente novamente.');
+      showGlobalAlert(
+        'Igreja Não Encontrada',
+        'Erro: Igreja não encontrada. Recarregue a página e tente novamente.',
+        'error'
+      );
       return;
     }
 
@@ -530,7 +535,11 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
     if (igrejaError || !igrejaDB) {
       console.error('❌ Igreja não encontrada no banco:', igrejaError);
-      alert('Erro: Igreja não existe no banco de dados. Recarregue a página.');
+      showGlobalAlert(
+        'Erro no Banco de Dados',
+        'Erro: Igreja não existe no banco de dados. Recarregue a página.',
+        'error'
+      );
       return;
     }
 
@@ -551,7 +560,11 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
       const dataRegex = /^\d{4}-\d{2}-\d{2}$/;
       if (!dataRegex.test(data)) {
         console.error('❌ Formato de data inválido:', data);
-        alert('Erro: Formato de data inválido. Use DD/MM/YYYY no formulário.');
+        showGlobalAlert(
+          'Formato de Data Inválido',
+          'Erro: Formato de data inválido. Use DD/MM/YYYY no formulário.',
+          'error'
+        );
         return;
       }
 

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, Settings as SettingsIcon } from 'lucide-react';
+import { AlertModal } from './alert-modal';
 import type { Settings } from '@/types';
 
 interface SettingsModalProps {
@@ -16,12 +17,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose 
 }) => {
   const [capacidade, setCapacidade] = useState(settings.capacidadeMaxima);
+  const [alertModal, setAlertModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info'
+  });
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     
     if (capacidade < 1) {
-      alert('A capacidade deve ser maior que zero');
+      setAlertModal({
+        isOpen: true,
+        title: 'Valor Inválido',
+        message: 'A capacidade deve ser maior que zero. Por favor, insira um valor válido.',
+        type: 'warning'
+      });
       return;
     }
 
@@ -82,6 +99,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
         </form>
       </div>
+
+      {/* Modal de Alerta Elegante */}
+      {alertModal.isOpen && (
+        <AlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          type={alertModal.type}
+          onClose={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
+        />
+      )}
     </div>
   );
 };

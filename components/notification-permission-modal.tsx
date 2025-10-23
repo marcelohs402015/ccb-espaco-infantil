@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Bell, X, Check, Info } from 'lucide-react';
+import { AlertModal } from './alert-modal';
 
 interface NotificationPermissionModalProps {
   isOpen: boolean;
@@ -14,10 +15,26 @@ export const NotificationPermissionModal: React.FC<NotificationPermissionModalPr
 }) => {
   const [isRequesting, setIsRequesting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [alertModal, setAlertModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info'
+  });
 
   const handleRequestPermission = async () => {
     if (!('Notification' in window)) {
-      alert('Seu navegador não suporta notificações');
+      setAlertModal({
+        isOpen: true,
+        title: 'Navegador Não Suportado',
+        message: 'Seu navegador não suporta notificações. Por favor, use um navegador mais recente.',
+        type: 'warning'
+      });
       return;
     }
 
@@ -65,11 +82,21 @@ export const NotificationPermissionModal: React.FC<NotificationPermissionModalPr
           setShowSuccess(false);
         }, 2000);
       } else {
-        alert('Para receber alertas de emergência, é necessário permitir notificações.');
+        setAlertModal({
+          isOpen: true,
+          title: 'Permissão Necessária',
+          message: 'Para receber alertas de emergência, é necessário permitir notificações. Por favor, permita as notificações nas configurações do seu navegador.',
+          type: 'warning'
+        });
       }
     } catch (error) {
       console.error('Erro ao solicitar permissão:', error);
-      alert('Erro ao configurar notificações. Tente novamente.');
+      setAlertModal({
+        isOpen: true,
+        title: 'Erro na Configuração',
+        message: 'Erro ao configurar notificações. Tente novamente ou verifique as configurações do seu navegador.',
+        type: 'error'
+      });
     } finally {
       setIsRequesting(false);
     }
@@ -162,6 +189,16 @@ export const NotificationPermissionModal: React.FC<NotificationPermissionModalPr
           )}
         </div>
       </div>
+
+      {/* Modal de Alerta Elegante */}
+      {alertModal.isOpen && (
+        <AlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          type={alertModal.type}
+          onClose={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
+        />
+      )}
     </div>
   );
 };

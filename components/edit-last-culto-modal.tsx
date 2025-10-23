@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Edit } from 'lucide-react';
 import { useSpaceStore } from '@/store/use-space-store';
+import { AlertModal } from './alert-modal';
 import type { HistoricoCulto } from '@/types';
 
 interface EditLastCultoModalProps {
@@ -12,6 +13,17 @@ interface EditLastCultoModalProps {
 export const EditLastCultoModal: React.FC<EditLastCultoModalProps> = ({ onClose }) => {
   const { atualizarUltimoCultoHistorico, dadosPorIgreja, igrejaAtiva } = useSpaceStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [alertModal, setAlertModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info'
+  });
   
   const igrejaData = (igrejaAtiva && dadosPorIgreja && dadosPorIgreja[igrejaAtiva]) 
     ? dadosPorIgreja[igrejaAtiva] 
@@ -54,7 +66,12 @@ export const EditLastCultoModal: React.FC<EditLastCultoModalProps> = ({ onClose 
     e.preventDefault();
     
     if (!ultimoCulto) {
-      alert('Nenhum culto encontrado para editar');
+      setAlertModal({
+        isOpen: true,
+        title: 'Nenhum Culto Encontrado',
+        message: 'Nenhum culto encontrado para editar. Crie um novo registro primeiro.',
+        type: 'warning'
+      });
       return;
     }
 
@@ -213,6 +230,16 @@ export const EditLastCultoModal: React.FC<EditLastCultoModalProps> = ({ onClose 
           </div>
         </form>
       </div>
+
+      {/* Modal de Alerta Elegante */}
+      {alertModal.isOpen && (
+        <AlertModal
+          title={alertModal.title}
+          message={alertModal.message}
+          type={alertModal.type}
+          onClose={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
+        />
+      )}
     </div>
   );
 };

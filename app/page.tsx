@@ -203,6 +203,29 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [isHydrated, igrejaAtiva]);
 
+  // Exibe automaticamente o modal de permissão de notificações após 3 s.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Não mostrar se o usuário já decidiu (granted/denied)
+    if ('Notification' in window && Notification.permission !== 'default') return;
+
+    // Evitar reabrir se já está aberto
+    if (isNotificationModalOpen) return;
+
+    // Evitar exibir mais de uma vez por dia (usa YYYY-MM-DD)
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const lastPrompt = localStorage.getItem('notificationPromptDate');
+    if (lastPrompt === todayKey) return;
+
+    const timerId = setTimeout(() => {
+      setIsNotificationModalOpen(true);
+      localStorage.setItem('notificationPromptDate', todayKey);
+    }, 3000);
+
+    return () => clearTimeout(timerId);
+  }, [isNotificationModalOpen]);
+
   // Listener para abrir modal de igrejas via evento
   useEffect(() => {
     const handleOpenChurches = (): void => {

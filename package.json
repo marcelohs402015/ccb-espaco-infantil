@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:staging": "cross-env NEXT_PUBLIC_ENV=staging next dev",
     "build": "next build",
+    "build:staging": "cross-env NEXT_PUBLIC_ENV=staging next build",
     "start": "next start",
     "lint": "next lint",
     "setup:supabase": "bash scripts/setup-supabase.sh",

@@ -2,6 +2,12 @@
   "version": 2,
   "framework": "nextjs",
   "regions": ["gru1"],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "develop": true
+    }
+  },
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30

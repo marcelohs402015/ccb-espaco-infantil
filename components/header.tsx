@@ -16,6 +16,9 @@ export const Header: React.FC = () => {
     pauseOnError: true
   });
   const { isNotificationEnabled } = useNotification();
+  const env = process.env.NEXT_PUBLIC_ENV || 'production';
+  const isStaging = env !== 'production';
+  
   return (
     <header className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl relative overflow-hidden">
       {/* Decorative shapes */}
@@ -23,6 +26,13 @@ export const Header: React.FC = () => {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl translate-x-32 translate-y-32"></div>
       
       <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Badge de Ambiente Staging */}
+        {isStaging && (
+          <div className="absolute top-2 left-4 z-20 bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-pulse">
+            🚧 STAGING
+          </div>
+        )}
+        
         {/* Indicador de Sincronização */}
         <div className="absolute top-4 right-4 z-20">
           <SyncIndicator 

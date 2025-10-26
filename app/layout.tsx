@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { EnvironmentIndicator } from "@/components/environment-indicator";
 
 export const metadata: Metadata = {
   title: "CCB - Espaço Infantil Bíblico",
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className="antialiased">
         {children}
+        <EnvironmentIndicator />
       </body>
     </html>
   );

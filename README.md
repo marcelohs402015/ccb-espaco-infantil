@@ -401,6 +401,71 @@ vercel --prod
 
 ---
 
+## 🔄 Workflow de Desenvolvimento
+
+Este projeto utiliza uma estratégia de desenvolvimento segura com ambientes separados para garantir qualidade e estabilidade.
+
+### 🌳 Branches
+
+- **`main`** - Produção (protegida, apenas via Pull Request)
+- **`develop`** - Staging/Testes (ambiente de desenvolvimento seguro)
+- **`feature/*`** - Features individuais
+
+### 🚀 Fluxo de Desenvolvimento
+
+#### Desenvolvendo Nova Feature:
+```bash
+# 1. Criar branch da feature
+git checkout develop
+git pull origin develop
+git checkout -b feature/nome-da-funcionalidade
+
+# 2. Desenvolver e testar localmente
+npm run dev:staging
+
+# 3. Commit e push
+git add .
+git commit -m "feat: adicionar funcionalidade X"
+git push origin feature/nome-da-funcionalidade
+
+# 4. Criar PR para develop
+# - Testar no preview deployment automático
+# - Merge após aprovação
+```
+
+#### Promovendo para Produção:
+```bash
+# 1. Testar completamente em staging
+# URL: https://seu-projeto-git-develop.vercel.app
+
+# 2. Criar PR de develop → main
+# - Revisar todas as mudanças
+# - Merge após validação
+
+# 3. Deploy automático para produção
+```
+
+### 🆘 Rollback Rápido
+
+Se algo der errado em produção:
+1. Acesse Vercel Dashboard → Deployments
+2. Selecione deployment anterior estável
+3. Clique em "Promote to Production"
+4. Rollback completo em ~30 segundos
+
+### 📚 Documentação Completa
+
+Para guia completo de desenvolvimento, consulte:
+- **[Workflow Detalhado](docs/WORKFLOW-DESENVOLVIMENTO.md)** - Guia completo
+- **[Configuração Vercel](docs/CONFIGURACAO-VERCEL-MANUAL.md)** - Setup manual
+
+### 🎯 Indicadores Visuais
+
+- **Produção**: Interface limpa, sem indicadores
+- **Staging**: Badge "🚧 STAGING" no header + "🚧 AMBIENTE DE TESTE" no rodapé
+
+---
+
 ## 🛠️ Tecnologias Utilizadas
 
 ### Frontend

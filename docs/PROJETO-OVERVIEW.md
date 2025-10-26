@@ -150,6 +150,11 @@ ccb-espaco-infantil/
 - **Persistência**: Dados mantidos entre sessões
 - **Sincronização**: Integração com Supabase Realtime
 
+## Regras LGPD Recentes
+
+- **Limpeza Global Automática**: sempre que o usuário clica em "Entrar" no modal LGPD de boas-vindas, o sistema executa `limparDadosAntigosGlobal()`, removendo de TODAS as igrejas qualquer registro (`children`, `historico_cultos`, `dias_uso`) com `data`/`data_cadastro` anterior ao dia atual.
+- **Data do Registro de Culto Imutável**: no modal **Criar Novo Registro de Culto** o campo de data agora é somente leitura. A data é preenchida automaticamente com o dia corrente, impedindo alterações manuais e garantindo consistência histórica.
+
 ## Deploy e Configuração
 
 ### Variáveis de Ambiente

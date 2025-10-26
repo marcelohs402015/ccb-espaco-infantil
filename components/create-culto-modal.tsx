@@ -129,32 +129,8 @@ export const CreateCultoModal: React.FC<CreateCultoModalProps> = ({ onClose }) =
               id="data"
               name="data"
               value={formData.data}
-              onChange={handleInputChange}
-              required
-              placeholder="DD/MM/AAAA"
-              maxLength={10}
-              pattern="\d{2}/\d{2}/\d{4}"
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900"
-              onKeyPress={(e) => {
-                const char = e.key;
-                const value = e.currentTarget.value;
-                
-                // Permitir apenas números e /
-                if (!/[\d/]/.test(char)) {
-                  e.preventDefault();
-                  return;
-                }
-                
-                // Auto-adicionar barras
-                if (char !== '/' && (value.length === 2 || value.length === 5)) {
-                  const target = e.currentTarget;
-                  setTimeout(() => {
-                    target.value = value + '/' + char;
-                    setFormData(prev => ({ ...prev, data: target.value }));
-                  }, 0);
-                  e.preventDefault();
-                }
-              }}
+              readOnly
+              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-gray-700"
             />
             <p className="text-xs text-gray-500 mt-1">
               Formato: Dia/Mês/Ano (ex: 11/10/2025)

@@ -43,6 +43,7 @@ interface SpaceStore {
   verificarSeExistemDados: (igrejaId: string) => Promise<boolean>;
   verificarELimparDadosAntigos: (igrejaId: string) => Promise<boolean>;
   setLgpdCleanupExecuted: (value: boolean) => void;
+  limparDadosAntigosGlobal: () => Promise<void>;
 }
 
 const defaultSettings: Settings = {
@@ -233,6 +234,13 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
     if (igrejaId) {
       // Carregar dados da igreja
       await get().loadIgrejaData(igrejaId);
+      
+      // 🔄 Verificar e limpar dados antigos (LGPD)
+      const executouLimpeza = await get().verificarELimparDadosAntigos(igrejaId);
+      if (executouLimpeza) {
+        // Flag global usada pela página para mostrar modal informativo
+        get().setLgpdCleanupExecuted(true);
+      }
     }
   },
 
@@ -1162,6 +1170,24 @@ export const useSpaceStore = create<SpaceStore>((set, get) => ({
 
   setLgpdCleanupExecuted: (value: boolean) => {
     set({ lgpdCleanupExecuted: value });
+  },
+
+  limparDadosAntigosGlobal: async (): Promise<void> => {
+    try {
+      const hoje = new Date().toISOString().split('T')[0];
+      console.log('🧹 [LGPD] Limpando dados de todas as igrejas com data anterior a', hoje);
+
+      // Children
+      await supabase.from('children').delete().lt('data_cadastro', hoje);
+      // Historico cultos
+      await supabase.from('historico_cultos').delete().lt('data', hoje);
+      // Dias de uso
+      await supabase.from('dias_uso').delete().lt('data', hoje);
+
+      console.log('✅ [LGPD] Limpeza global concluída');
+    } catch (error) {
+      console.error('❌ [LGPD] Erro na limpeza global:', error);
+    }
   },
 }));
 

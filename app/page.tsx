@@ -17,6 +17,7 @@ import { ManagementButtons } from '@/components/management-buttons';
 import { SummaryModal } from '@/components/summary-modal';
 import { EmergencyNotification } from '@/components/emergency-notification';
 import { NotificationPermissionModal } from '@/components/notification-permission-modal';
+import { LgpdWelcomeModal } from '@/components/lgpd-welcome-modal';
 import { AlertModal } from '@/components/alert-modal';
 import { GlobalAlertManager } from '@/components/global-alert-manager';
 import { useModal } from '@/hooks/use-modal';
@@ -39,6 +40,7 @@ export default function Home() {
     setIgrejaAtiva,
     loadIgrejas,
     loadIgrejaData,
+    limparDadosAntigosGlobal,
     isLoading,
     error
   } = useSpaceStore();
@@ -74,6 +76,7 @@ export default function Home() {
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [showLgpdCleanupModal, setShowLgpdCleanupModal] = useState(false);
+  const [isLgpdWelcomeModalOpen, setIsLgpdWelcomeModalOpen] = useState(false);
   const [childToEdit, setChildToEdit] = useState<Child | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isHydrated, setIsHydrated] = useState(false);
@@ -179,9 +182,17 @@ export default function Home() {
     }
   }, [igrejaAtiva, dadosPorIgreja]);
 
-  // Mostrar modal de notificações automaticamente após delay
+  // Mostrar modal LGPD sempre que a aplicação for aberta
   useEffect(() => {
-    if (!isHydrated || !igrejaAtiva) return;
+    if (typeof window === 'undefined') return;
+
+    // Mostrar modal imediatamente sempre que a aplicação carrega
+    setIsLgpdWelcomeModalOpen(true);
+  }, []);
+
+  // Mostrar modal de notificações automaticamente após delay (apenas depois do LGPD)
+  useEffect(() => {
+    if (!isHydrated || !igrejaAtiva || isLgpdWelcomeModalOpen) return;
 
     // Verificar se permissão já foi concedida
     if ('Notification' in window && Notification.permission === 'granted') {
@@ -194,18 +205,18 @@ export default function Home() {
       return; // Já foi mostrado, não mostrar novamente
     }
 
-    // Delay de 3 segundos após igreja estar ativa
+    // Delay de 3 segundos após igreja estar ativa e LGPD ter sido aceito
     const timer = setTimeout(() => {
       setIsNotificationModalOpen(true);
       localStorage.setItem('notification-modal-shown', 'true');
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [isHydrated, igrejaAtiva]);
+  }, [isHydrated, igrejaAtiva, isLgpdWelcomeModalOpen]);
 
-  // Exibe automaticamente o modal de permissão de notificações após 3 s.
+  // Exibe automaticamente o modal de permissão de notificações após 3 s. (apenas depois do LGPD)
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || isLgpdWelcomeModalOpen) return;
 
     // Não mostrar se o usuário já decidiu (granted/denied)
     if ('Notification' in window && Notification.permission !== 'default') return;
@@ -224,7 +235,7 @@ export default function Home() {
     }, 3000);
 
     return () => clearTimeout(timerId);
-  }, [isNotificationModalOpen]);
+  }, [isNotificationModalOpen, isLgpdWelcomeModalOpen]);
 
   // Listener para abrir modal de igrejas via evento
   useEffect(() => {
@@ -595,6 +606,19 @@ export default function Home() {
 
       {/* Notificação de Emergência em Tempo Real */}
       <EmergencyNotification />
+
+      {/* Modal de Boas-vindas LGPD - Porta de Entrada */}
+      <LgpdWelcomeModal
+        isOpen={isLgpdWelcomeModalOpen}
+        onEnter={async () => {
+          setIsLgpdWelcomeModalOpen(false);
+          await limparDadosAntigosGlobal();
+          // Opcional: reload active church data if needed
+          if (igrejaAtiva) {
+            await loadIgrejaData(igrejaAtiva);
+          }
+        }}
+      />
 
       {/* Modal de Permissão de Notificações */}
       <NotificationPermissionModal
